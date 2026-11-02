@@ -1,0 +1,66 @@
+#!/bin/sh
+# bootstrap.sh — crée ~/ai et ~/project, relie Claude Code. Appelé par install.sh.
+# N'écrase jamais un fichier existant ; sauvegarde ce qu'il remplace en *.bak-bci.
+set -eu
+SRC="$(cd "$(dirname "$0")" && pwd)"
+AI="$HOME/ai"
+CL="$HOME/.claude"
+HOOK="$SRC/hooks/guard-sensible.sh"
+
+# --- Arborescence et fichiers de base -----------------------------------------
+mkdir -p "$AI/0-persona/system-agents" "$AI/1-bench" "$AI/2-tools/0-mcp" \
+         "$AI/2-tools/1-skills" "$AI/2-tools/2-plugins" "$AI/2-tools/3-software" \
+         "$AI/3-llm" "$AI/4-trash" "$HOME/project"
+
+( cd "$SRC/skeleton" && find . -type f ) | while read -r f; do
+  dst="$HOME/${f#./}"
+  if [ -e "$dst" ]; then echo "conservé : $dst"; else
+    mkdir -p "$(dirname "$dst")"; cp "$SRC/skeleton/$f" "$dst"; echo "créé     : $dst"
+  fi
+done
+chmod +x "$AI/2-tools/1-skills/bench/sector" "$AI/2-tools/1-skills/project/new-unit" "$HOOK"
+
+# --- Environnement -------------------------------------------------------------
+MUSL=false
+{ [ -f /etc/alpine-release ] || ldd --version 2>&1 | grep -qi musl; } && MUSL=true
+grep -q '.local/bin' "$HOME/.profile" 2>/dev/null || \
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.profile"
+if $MUSL; then
+  # Le ripgrep intégré à Claude Code est compilé pour glibc : utiliser celui du système.
+  grep -q USE_BUILTIN_RIPGREP "$HOME/.profile" 2>/dev/null || \
+    echo 'export USE_BUILTIN_RIPGREP=0' >> "$HOME/.profile"
+fi
+
+# --- Liens Claude Code -----------------------------------------------------------
+[ -L "$CL/agents" ] && rm "$CL/agents"   # ancienne installation : agents était un lien vers un dossier
+mkdir -p "$CL/agents"
+link() { # link <cible> <lien>
+  if [ -e "$2" ] && [ ! -L "$2" ]; then mv "$2" "$2.bak-bci"; echo "sauvegardé : $2.bak-bci"; fi
+  ln -sfn "$1" "$2"; echo "lien     : $2 -> $1"
+}
+link "$AI/AGENTS.md"                 "$CL/CLAUDE.md"
+link "$AI/2-tools/1-skills"          "$CL/skills"
+link "$AI/0-persona/system-agents"   "$CL/agents/system-agents"
+
+# --- settings.json : agents intégrés désactivés + hook sensible/ --------------
+ADD=$(cat <<EOF
+{"permissions":{"deny":["Agent(Explore)","Agent(Plan)","Agent(general-purpose)","Agent(statusline-setup)","Agent(claude-code-guide)"]},
+ "hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"sh \"$HOOK\""}]}]}}
+EOF
+)
+S="$CL/settings.json"
+if [ ! -s "$S" ]; then
+  printf '%s\n' "$ADD" > "$S"
+  $MUSL && command -v jq >/dev/null && { jq '.env.USE_BUILTIN_RIPGREP="0"' "$S" > "$S.tmp" && mv "$S.tmp" "$S"; }
+elif command -v jq >/dev/null 2>&1; then
+  [ -e "$S.bak-bci" ] || cp "$S" "$S.bak-bci"
+  jq --argjson add "$ADD" --argjson musl "$MUSL" '
+    .permissions.deny = (((.permissions.deny // []) + $add.permissions.deny) | unique)
+    | .hooks.PreToolUse = (((.hooks.PreToolUse // [])
+        | map(select((.hooks[0].command // "") | contains("guard-sensible") | not)))
+        + $add.hooks.PreToolUse)
+    | if $musl then .env.USE_BUILTIN_RIPGREP = "0" else . end' "$S" > "$S.tmp" && mv "$S.tmp" "$S"
+else
+  echo "ATTENTION : jq absent, $S existant non modifié. Ajoutez-y à la main : $ADD" >&2
+fi
+echo "réglages : $S"

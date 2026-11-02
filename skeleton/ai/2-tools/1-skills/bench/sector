@@ -1,0 +1,26 @@
+#!/bin/sh
+# sector new            : crée le prochain secteur libre dans ~/ai/1-bench et affiche son chemin
+# sector release <nom>  : supprime ce secteur
+# Ordre : A..Z, puis AB..ZB, puis AC..ZC, etc. (mkdir est atomique : pas de collision)
+set -eu
+BENCH="$HOME/ai/1-bench"
+LETTERS="A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"
+
+case "${1:-}" in
+  new)
+    mkdir -p "$BENCH"
+    for suffix in "" $LETTERS; do
+      [ "$suffix" = A ] && continue
+      for l in $LETTERS; do
+        dir="$BENCH/$l$suffix-sector"
+        if mkdir "$dir" 2>/dev/null; then echo "$dir"; exit 0; fi
+      done
+    done
+    echo "Aucun secteur libre." >&2; exit 1 ;;
+  release)
+    name="$(basename "${2:?nom du secteur requis}")"
+    case "$name" in *-sector) ;; *) echo "Nom invalide : $name" >&2; exit 1 ;; esac
+    rm -rf "${BENCH:?}/$name" ;;
+  *)
+    echo "usage : sector new | sector release <nom>" >&2; exit 1 ;;
+esac

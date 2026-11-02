@@ -1,0 +1,29 @@
+#!/bin/sh
+# new-unit <catégorie>/<project>[/<sub-project>]
+# Crée une unité (dépôt Git) dans ~/project avec AGENTS.md, CLAUDE.md -> AGENTS.md,
+# README.md, .gitignore (sensible/ toujours exclu) et sensible/.
+set -eu
+export MSYS=winsymlinks:nativestrict   # Windows (Git Bash) : vrai lien ou échec, jamais une copie
+path="${1:?usage : new-unit <catégorie>/<project>[/<sub-project>]}"
+depth=$(printf '%s' "$path" | awk -F/ '{print NF}')
+[ "$depth" -ge 2 ] && [ "$depth" -le 3 ] || { echo "Profondeur attendue : 2 ou 3 niveaux." >&2; exit 1; }
+
+dir="$HOME/project/$path"
+[ -e "$dir/AGENTS.md" ] && { echo "Existe déjà : $dir" >&2; exit 1; }
+mkdir -p "$dir/sensible"
+name=$(basename "$path")
+
+cat > "$dir/AGENTS.md" <<EOF
+# $name
+
+## Objectif
+(à compléter)
+
+## Règles du projet
+(à compléter — aucune donnée sensible ici : elles vont dans sensible/)
+EOF
+printf '# %s\n' "$name" > "$dir/README.md"
+printf 'sensible/\n' > "$dir/.gitignore"
+ln -s AGENTS.md "$dir/CLAUDE.md" 2>/dev/null || printf '@AGENTS.md\n' > "$dir/CLAUDE.md"
+command -v git >/dev/null && git -C "$dir" init -q
+echo "$dir"
