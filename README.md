@@ -18,7 +18,7 @@ Dans un terminal, ou dans l'application Termux installée depuis F-Droid :
 curl -fsSL https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/install.sh | sh
 ```
 
-Au premier lancement de `claude`, connectez-vous à votre compte Anthropic. Pour adapter l'installation à vos besoins plutôt que de l'appliquer telle quelle, voir l'[installation négociée](docs/installation.md#installation-négociée).
+Au premier lancement de `claude`, connectez-vous à votre compte Anthropic. Ensuite : `bci install` met à jour, `bci uninstall` désinstalle, `bci status` fait le point (voir [la commande bci](docs/installation.md#commande-bci)). Pour adapter l'installation à vos besoins plutôt que de l'appliquer telle quelle, voir l'[installation négociée](docs/installation.md#installation-négociée).
 
 ## Ce que vous obtenez
 

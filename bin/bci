@@ -1,0 +1,48 @@
+#!/bin/sh
+# bci — commande de Better Claude Instance (Linux, Alpine sous Termux ; Windows : bci.cmd).
+set -eu
+DEST="$HOME/ai/2-tools/3-software/better-claude-instance"
+AI="$HOME/ai"
+PY=$(command -v python3 || command -v python)
+
+usage() {
+  cat <<'TXT'
+bci install            installe ou met à jour BCI (dernière version de GitHub) ; alias : bci update
+bci uninstall          désinstalle, après deux confirmations (puis deux autres avant toute suppression)
+bci status             état : versions, configuration, recherche, sauvegardes
+bci backup [list]      sauvegarde immédiate, ou liste des sauvegardes
+bci search "requête"   recherche web (SearXNG local) ; options : bci search -h
+bci version            version installée
+TXT
+}
+
+case "${1:-}" in
+  install|update)
+    shift
+    # install.sh met à jour le dépôt (git pull) puis relance l'installation ; aucune donnée écrasée.
+    if [ -d "$DEST/.git" ]; then git -C "$DEST" pull -q --ff-only || echo "ATTENTION : mise à jour Git impossible, version locale utilisée" >&2; fi
+    exec sh "$DEST/install.sh" "$@" ;;
+  uninstall)
+    exec sh "$DEST/uninstall.sh" ;;
+  backup)
+    if [ "${2:-}" = list ]; then exec "$PY" "$DEST/hooks/bci-backup.py" list; fi
+    exec "$PY" "$DEST/hooks/bci-backup.py" quotidienne ;;
+  search)
+    shift; exec "$PY" "$AI/2-tools/1-skills/search/search.py" "$@" ;;
+  version)
+    git -C "$DEST" log -1 --format='BCI %h (%cs)' 2>/dev/null || echo "BCI : dépôt introuvable ($DEST)" ;;
+  status)
+    git -C "$DEST" log -1 --format='BCI          %h (%cs)' 2>/dev/null || echo "BCI          introuvable"
+    printf 'Claude Code  %s\n' "$(claude --version 2>/dev/null || echo absent)"
+    printf 'config       %s %s\n' "${CLAUDE_CONFIG_DIR:-NON DÉFINIE}" \
+      "$([ "${CLAUDE_CONFIG_DIR:-}" = "$AI/2-tools/3-software/claude-code" ] && echo '(ok)' || echo '(ouvrir un nouveau terminal)')"
+    [ -e "$HOME/.claude" ] && echo "ATTENTION    ~/.claude existe : CLAUDE_CONFIG_DIR manquait au lancement de claude"
+    printf 'recherche    %s\n' "$("$PY" "$AI/2-tools/1-skills/search/search.py" status 2>/dev/null || echo 'SearXNG absent')"
+    printf 'sauvegardes  %s\n' "$("$PY" "$DEST/hooks/bci-backup.py" list 2>/dev/null | wc -l | tr -d ' ') ($AI/2-tools/logs/backup-bci)"
+    if command -v restic >/dev/null 2>&1; then printf 'restic       %s\n' "$(restic version | cut -d' ' -f2)"
+    else echo "restic       absent (sauvegardes en tar.xz)"; fi ;;
+  ""|-h|--help|help)
+    usage ;;
+  *)
+    echo "bci : commande inconnue « $1 »" >&2; usage >&2; exit 1 ;;
+esac

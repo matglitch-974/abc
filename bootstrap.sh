@@ -28,6 +28,11 @@ chmod +x "$SRC/hooks/memory-hook.py" "$SRC/hooks/bci-backup.py" "$AI/2-tools/1-s
   "$AI/2-tools/1-skills/bench/agent-id.py" "$AI/2-tools/1-skills/project/new-unit" "$HOOK" \
   "$AI/2-tools/1-skills/mission/tool-scan.py" "$AI/2-tools/1-skills/mission/tool-install.py"
 
+# --- Commande bci ------------------------------------------------------------------
+mkdir -p "$HOME/.local/bin"
+chmod +x "$SRC/bin/bci"
+ln -sfn "$SRC/bin/bci" "$HOME/.local/bin/bci"
+
 # --- Environnement -------------------------------------------------------------
 MUSL=false
 { [ -f /etc/alpine-release ] || ldd --version 2>&1 | grep -qi musl; } && MUSL=true

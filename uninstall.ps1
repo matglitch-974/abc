@@ -3,6 +3,13 @@
 # Remet la configuration de Claude Code dans ~/.claude, retire les liens et réglages ajoutés,
 # puis demande avant de toucher à ~/ai et ~/project. Claude Code reste installé.
 $ErrorActionPreference = 'Stop'
+function Confirm2($Warning, $Question, $Word) {   # deux confirmations : [o/N], puis le mot tapé en entier
+  Write-Host $Warning -ForegroundColor Red
+  if ((Read-Host "$Question [o/N]") -notin 'o','O') { return $false }
+  if ((Read-Host "Seconde confirmation : tapez « $Word »") -ne $Word) { Write-Host 'Annulé.'; return $false }
+  return $true
+}
+if (-not (Confirm2 'ATTENTION : la désinstallation retire Better Claude Instance de Claude Code (réglages, hooks, liens, variable CLAUDE_CONFIG_DIR) et remet la configuration dans ~/.claude. Vos dossiers ~/ai et ~/project restent en place, sauf si vous demandez ensuite leur suppression.' 'Désinstaller Better Claude Instance ?' 'desinstaller')) { Write-Host "Rien n'a été modifié."; exit 0 }
 $AI = Join-Path $HOME 'ai'
 $CC = Join-Path $AI '2-tools\3-software\claude-code'
 $CL = Join-Path $HOME '.claude'
@@ -24,6 +31,7 @@ if ((Test-Path $CC) -and -not (Test-Path $CL)) {
     if (-not (Test-Path $orig)) { Move-Item $_.FullName $orig; Write-Host "restauré : $orig" }
   }
 }
+Remove-Item "$HOME\.local\bin\bci.cmd" -ErrorAction SilentlyContinue
 [Environment]::SetEnvironmentVariable('CLAUDE_CONFIG_DIR', $null, 'User'); Remove-Item Env:CLAUDE_CONFIG_DIR -ErrorAction SilentlyContinue
 
 # 2. Réglages : retirer uniquement ce que l'installation a ajouté
@@ -37,6 +45,6 @@ if (Test-Path $S) {
   [IO.File]::WriteAllText($S, ($cfg | ConvertTo-Json -Depth 20)); Write-Host "réglages nettoyés : $S"
 }
 
-if ((Read-Host 'Supprimer définitivement ~/ai (personas, skills, sauvegardes, corbeille compris) ? [o/N]') -eq 'o') { Remove-Item -Recurse -Force $AI; Write-Host '~/ai supprimé' }
-if ((Read-Host 'Supprimer définitivement ~/project (tous vos projets) ? [o/N]') -eq 'o') { Remove-Item -Recurse -Force (Join-Path $HOME 'project'); Write-Host '~/project supprimé' }
+if (Confirm2 'DANGER : supprimer ~/ai efface DÉFINITIVEMENT mémoire, personas, skills, corbeille ET toutes les sauvegardes (backup-bci). Aucune récupération possible.' 'Supprimer définitivement ~/ai ?' 'supprimer ai') { Remove-Item -Recurse -Force $AI; Write-Host '~/ai supprimé' }
+if (Confirm2 "DANGER : supprimer ~/project efface DÉFINITIVEMENT tous vos projets, y compris leurs dossiers sensible/ et ce qui n'a jamais été poussé sur GitHub." 'Supprimer définitivement ~/project ?' 'supprimer project') { Remove-Item -Recurse -Force (Join-Path $HOME 'project'); Write-Host '~/project supprimé' }
 Write-Host 'Désinstallation terminée. Claude Code lui-même reste installé. Ouvrez un nouveau terminal.'
