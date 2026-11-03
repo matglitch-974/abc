@@ -14,12 +14,13 @@ description: Comment Claude génère ses tokens, ce qu'il peut réellement régl
 - **modèle** (Haiku, Sonnet, Opus, Fable) et **max_tokens**.
 - Dans Claude Code : `claude --effort <niveau>` et `--model <modèle>` au lancement, `/model` en session, `/fast` (même modèle, sortie plus rapide).
 
-`generate.py` délègue un passage à un appel API où ces réglages sont fixés, puis rend le texte avec ses paramètres :
+`generate.py` délègue un passage à une instance isolée (sans outils, sans CLAUDE.md, réglages ni MCP) dont ces réglages sont fixés, puis rend le texte avec ses paramètres. Par défaut : `claude -p` avec le compte connecté (abonnement, pas de clé API), modèle `claude-sonnet-5-5`.
 ```
-python3 ~/ai/2-tools/1-skills/sampling/generate.py --effort low --model claude-haiku-5-5 "consigne"
-python3 … --compare low,high "consigne"     # même consigne, plusieurs efforts
+python3 ~/ai/2-tools/1-skills/sampling/generate.py --effort low "consigne"
+python3 … --compare low,max --system "prompt système" "consigne"   # même consigne, plusieurs efforts
+python3 … --api …                                                  # SDK anthropic + clé API
 ```
-Exige le SDK `anthropic` (`uv tool run --with anthropic` ou `pip install anthropic`) et une clé (`ANTHROPIC_API_KEY` ou `ant auth login`). Le texte vient d'une autre instance : le présenter comme tel.
+Constaté (Sonnet 5.5, énigme de l'escargot) : `low` se trompe puis se corrige en cours de réponse, `max` répond juste d'emblée. Le texte vient d'une autre instance : le présenter comme tel. Chaque appel consomme le quota de l'abonnement.
 
 ## Contrôle comportemental (consigne, pas réglage)
 Sur demande, adopter et tenir jusqu'à contre-ordre : formulation la plus attendue (« déterministe »), registre, longueur, langue, bégaiement, style imposé. Le dire honnêtement : c'est un comportement choisi, comme un humain qui s'applique à parler autrement, pas un changement d'échantillonnage.
