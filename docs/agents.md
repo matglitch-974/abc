@@ -14,7 +14,7 @@
 └── <catégorie>-agents/          toute nouvelle catégorie d'agents
 ```
 - Nom du persona principal : entièrement libre (majuscules, chiffres, caractères spéciaux, Unicode, émojis).
-- Chaque `<catégorie>-agents/` est relié dans `~/.claude/agents/`. Claude Code y cherche récursivement ; l'identité d'un agent vient du champ `name` de son en-tête, pas de son chemin.
+- Chaque `<catégorie>-agents/` est relié dans `agents/` de la configuration de Claude Code (`$CLAUDE_CONFIG_DIR`, soit `~/ai/2-tools/3-software/claude-code/`). Claude Code y cherche récursivement ; l'identité d'un agent vient du champ `name` de son en-tête, pas de son chemin.
 - Activation du persona principal : ligne `@~/ai/0-persona/<nom>` dans `~/ai/AGENTS.md`.
 
 ## Confidentialité
@@ -24,7 +24,7 @@
 ## `slave` — l'unique sous-agent
 Nom choisi pour exprimer l'obéissance totale et sans jugement attendue d'un automate d'exécution. Il exécute aussi les récapitulatifs, recherches et explorations : ce ne sont pas des agents à part, mais des tâches qui lui sont confiées.
 
-Son en-tête contient `omitClaudeMd: true` : il ne charge pas `~/.claude/CLAUDE.md`, donc ni `AGENTS.md` ni le persona principal. C'est ce qui garantit que le persona principal reste réservé à l'agent principal. En contrepartie, l'agent principal doit inclure dans chaque consigne de délégation les règles utiles à la tâche.
+Son en-tête contient `omitClaudeMd: true` : il ne charge pas le `CLAUDE.md` de la configuration, donc ni `AGENTS.md` ni le persona principal. C'est ce qui garantit que le persona principal reste réservé à l'agent principal. En contrepartie, l'agent principal doit inclure dans chaque consigne de délégation les règles utiles à la tâche.
 
 Prompt complet : [`skeleton/ai/0-persona/system-agents/slave.md`](../skeleton/ai/0-persona/system-agents/slave.md) (une seule source, pas de copie ici).
 

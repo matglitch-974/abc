@@ -4,14 +4,7 @@
 
 ```
 ~/
-├── .claude/                              ce que Claude Code lit : uniquement des liens
-│   ├── CLAUDE.md  ─────────▶ ~/ai/AGENTS.md
-│   ├── skills     ─────────▶ ~/ai/2-tools/1-skills/
-│   ├── agents/
-│   │   └── system-agents ──▶ ~/ai/0-persona/system-agents/
-│   └── settings.json                     agents intégrés désactivés + hook sensible/
-│
-├── ai/                                   tout ce qui concerne l'IA
+├── ai/                                   tout ce qui concerne l'IA (~/.claude n'existe plus)
 │   ├── AGENTS.md                         sommaire + règles de travail
 │   ├── 0-persona/                        personas et agents (contenu non numéroté)
 │   │   ├── <persona principal>           facultatif, nom libre
@@ -19,10 +12,19 @@
 │   │       └── slave.md                  l'unique sous-agent
 │   ├── 1-bench/                          espace de travail temporaire (secteurs)
 │   ├── 2-tools/
-│   │   ├── 0-mcp/                        serveurs MCP
-│   │   ├── 1-skills/                     skills : persona, bench, project, memory, context, mission, scraping, sampling, leçons…
-│   │   ├── 2-plugins/
-│   │   └── 3-software/                   logiciels de l'IA, dont better-claude-instance
+│   │   ├── 0-mcp/                        serveurs MCP ; sensible/ (clés, ex. Brave Search)
+│   │   ├── 1-skills/                     skills : persona, bench, project, memory, context, mission, scraping, sampling, specula, leçons…
+│   │   ├── 2-plugins/                    plugins de Claude Code
+│   │   ├── 3-software/                   logiciels de l'IA
+│   │   │   ├── better-claude-instance/   ce dépôt
+│   │   │   └── claude-code/              configuration de Claude Code (CLAUDE_CONFIG_DIR) : historiques, caches, .claude.json
+│   │   │       ├── CLAUDE.md  ───────▶ ~/ai/AGENTS.md
+│   │   │       ├── skills     ───────▶ ~/ai/2-tools/1-skills/
+│   │   │       ├── plugins    ───────▶ ~/ai/2-tools/2-plugins/
+│   │   │       ├── agents/system-agents ▶ ~/ai/0-persona/system-agents/
+│   │   │       └── settings.json ────▶ ~/ai/memory/settings.json
+│   │   └── logs/
+│   │       └── backup-bci/               sauvegardes (voir memory.md)
 │   ├── 3-llm/                            modèles et runtimes locaux
 │   ├── 4-trash/                          corbeille
 │   └── memory/                           mémoire (voir memory.md)
@@ -35,8 +37,9 @@
 
 ## Pourquoi chaque choix
 
-### `~/.claude/` ne contient que des liens
-Claude Code cherche ses fichiers dans `~/.claude/`. En n'y mettant que des liens, la vraie source reste dans `~/ai/`, rangée selon nos règles et facile à sauvegarder ou synchroniser. Remplacer l'instance revient à refaire les liens.
+### `~/.claude/` disparaît : tout vit dans `~/ai`
+Claude Code lit sa configuration dans le dossier que désigne la variable `CLAUDE_CONFIG_DIR` (vérifié : `.claude.json` y est aussi rangé). L'installateur la fixe à `~/ai/2-tools/3-software/claude-code/` (`.profile`, `.bashrc`, `.zshrc` ; variable utilisateur sous Windows) et y déplace l'ancien `~/.claude` et `~/.claude.json`. Chaque élément utile y est un lien vers sa place dans `~/ai` : instructions, skills, plugins, agents, réglages (rangés avec la mémoire : ce sont des autorisations personnelles). Tout ce qui concerne l'IA tient ainsi dans un seul dossier, sauvegardé d'un bloc.
+Risque : si `CLAUDE_CONFIG_DIR` manque (terminal qui ne lit pas `.profile`), Claude Code recrée un `~/.claude` vide et semble avoir tout oublié. Parade : ouvrir un nouveau terminal, ou `. ~/.profile`, puis supprimer ce `~/.claude` vide. Windows : `settings.json` reste un vrai fichier dans `claude-code/` (un lien de fichier y exige des droits administrateur).
 
 ### `AGENTS.md` plutôt que `CLAUDE.md`
 `AGENTS.md` est le nom ouvert, lu par plusieurs outils d'IA. `CLAUDE.md` n'existe que là où Claude Code l'exige, sous forme de lien vers `AGENTS.md` (sous Windows, un fichier d'une ligne `@~/ai/AGENTS.md`, car les liens de fichiers y exigent des droits administrateur).

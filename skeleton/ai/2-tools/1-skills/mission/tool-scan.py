@@ -15,7 +15,7 @@ import urllib.request
 from pathlib import Path
 
 HOME = Path.home()
-CL = HOME / ".claude"
+CL = Path(os.environ.get("CLAUDE_CONFIG_DIR") or HOME / ".claude")  # configuration de Claude Code
 
 
 def words(args):
@@ -42,7 +42,7 @@ def front(path):
 
 def mcp_servers():
     out = {}
-    for f in (HOME / ".claude.json", Path.cwd() / ".mcp.json"):
+    for f in (CL / ".claude.json", HOME / ".claude.json", Path.cwd() / ".mcp.json"):
         try:
             d = json.loads(f.read_text(encoding="utf-8"))
         except (OSError, ValueError):

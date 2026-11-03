@@ -1,0 +1,16 @@
+#!/bin/sh
+# Hook Git pre-push (posé par new-unit) : refuse tout push dont l'arbre ou l'historique envoyé
+# contient un fichier de sensible/. Agit quel que soit l'outil qui lance le push.
+while read -r lref lsha rref rsha; do
+  case "$lsha" in *[!0]*) ;; *) continue ;; esac          # suppression de branche distante
+  case "$rsha" in *[!0]*) range="$rsha..$lsha" ;; *) range="$lsha --not --remotes" ;; esac
+  bad=$( { git ls-tree -r --name-only "$lsha"
+           git rev-list $range | while read -r c; do git diff-tree --no-commit-id --name-only -r --root "$c"; done
+         } | grep -E '(^|/)sensible/' | sort -u | head -5)
+  if [ -n "$bad" ]; then
+    printf 'Push refusé : %s contient des fichiers de sensible/ :\n%s\n' "$lref" "$bad" >&2
+    echo "Retirer de l'index (git rm -r --cached sensible) et réécrire l'historique local avant de pousser." >&2
+    exit 1
+  fi
+done
+exit 0

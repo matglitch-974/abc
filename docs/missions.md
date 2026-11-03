@@ -1,6 +1,8 @@
 # Missions, recherche web et réglages de génération
 
-## Système « mission » (skill `mission`)
+## Système « mission » (AGENTS.md, section Missions ; consigne de reconnaissance : skill `mission`)
+La méthode est dans `AGENTS.md` parce qu'elle s'applique en permanence ; le skill ne garde que la consigne type du `slave` de reconnaissance et les règles d'installation. L'agent principal est un coordinateur : il ne lit aucun fichier, un `slave` exécute et un second `slave` contrôle.
+
 Inspiré de Dr. Stone : partir de l'objectif, remonter jusqu'aux prérequis élémentaires, puis gravir l'arbre palier par palier.
 
 1. **Reconnaissance** par un sous-agent `slave` : `tool-scan.py local` inventorie skills, MCP, plugins et agents installés ; `tool-scan.py online` interroge le registre officiel MCP (`registry.modelcontextprotocol.io`) et GitHub (étoiles, licence, dernière mise à jour, archivage). Le sous-agent complète par une recherche web (forums, comparatifs).
@@ -16,17 +18,17 @@ Inspiré de Dr. Stone : partir de l'objectif, remonter jusqu'aux prérequis él�
 - **Format de `PLAN.md`** : choisi pour être relu par un LLM au moindre coût (identifiants courts, dépendances `<-`, états `[ ] [~] [x] [!]`), y compris après une compaction.
 
 ## Recherche web (skill `scraping`)
-Installés par `bootstrap.sh` / `install.ps1`, tous gratuits, sans clé ni quota imposé par un service :
+Installés par `bootstrap.sh` / `install.ps1` ; tous gratuits et sans clé, sauf Brave Search (choix de l'utilisateur, à la place de DuckDuckGo) :
 
 | Outil | Licence | Rôle |
 |---|---|---|
 | `fetch` (`mcp-server-fetch`, MCP officiel) | MIT | page statique → Markdown |
-| `duckduckgo` (`duckduckgo-mcp-server`) | MIT | recherche ; limitation de débit intégrée |
+| `brave` (`@brave/brave-search-mcp-server`, officiel) | MIT | **seul moteur de recherche** : web, actualités, contexte LLM, réponse IA (`brave_summarizer`) ; clé API requise (`BRAVE_API_KEY_FILE` → `~/ai/2-tools/0-mcp/sensible/brave-api-key`) |
 | `playwright` (`@playwright/mcp`, Microsoft) | Apache-2.0 | navigateur réel, interaction |
 | `scrapling` (`scrapling[ai,fetchers]`) | BSD-3-Clause | navigateur furtif, sites protégés |
 | `crwl` (Crawl4AI, CLI) | Apache-2.0 | exploration de sites entiers |
 
-Écartés : Firecrawl, Tavily, Exa, Bright Data (clé requise, quotas gratuits limités). Les échecs d'installation ne bloquent pas l'instance (navigateurs absents sous Termux/musl, par exemple).
+Écartés : DuckDuckGo (remplacé par Brave Search), Firecrawl, Tavily, Exa, Bright Data (clé requise, quotas gratuits limités). Les échecs d'installation ne bloquent pas l'instance (navigateurs absents sous Termux/musl, par exemple).
 
 ### Sources dédiées
 - **`specula`** : synthèses publiques quotidiennes de La Note Sentinelle (specula.fr). Passe par l'API WordPress publique du site plutôt que par l'analyse des pages : une requête par appel, données structurées, et une rupture de format détectée (nombre de points clés extraits comparé au nombre annoncé). L'édition complète, payante et envoyée par e-mail, n'est pas récupérée ; les contenus restent à usage personnel (CGV).

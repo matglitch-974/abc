@@ -38,6 +38,9 @@ Il n'y a donc plus de dossiers `private/` et `public/` : `sensible/` suffit à s
 2. **Hook Claude Code** (`hooks/guard-sensible.sh`, événement `PreToolUse`) : avant chaque commande, il bloque
    - toute commande qui mentionne `sensible` avec un moyen de sortie (`git add -f`, `git push`, `scp`, `rsync`, `curl`, `wget`, `nc`, `ftp`, `gh`, `tar`, `zip`) ;
    - tout `git push` depuis un dépôt qui suit déjà un fichier de `sensible/`.
+   Seule la commande est examinée (pas sa description), et une exclusion (`--exclude=sensible`) ne compte pas : moins de blocages à tort. Ce filtre reste contournable (script, motif `sensi*`) : la vraie barrière est la suivante.
+3. **Hook Git `pre-push`** (posé par `new-unit` dans chaque unité ; unité existante : `new-unit --hook <dossier>`) : refuse tout push dont l'arbre ou l'historique envoyé contient un fichier de `sensible/`, quel que soit l'outil qui pousse. Un simple `git rm --cached` ne suffit pas : le fichier reste dans l'historique, il faut réécrire l'historique local avant de pousser.
+4. **Contrôle par sous-agent avant tout push** : un `slave` relit tout le diff, pas seulement `sensible/` (clé, mot de passe, IP, e-mail, chemin personnel). Tout ce qui est publié sur GitHub reste récupérable dans l'historique, même supprimé ensuite.
 
 ## Pourquoi pas une partie privée dans un dépôt public
 GitHub ne le permet pas : un dépôt est entièrement public ou entièrement privé. Les dépôts privés sont en revanche gratuits et illimités depuis 2019. Solutions étudiées :
@@ -46,6 +49,5 @@ GitHub ne le permet pas : un dépôt est entièrement public ou entièrement pri
 
 ## Sécurités supplémentaires possibles
 À proposer lors d'une installation négociée (`SETUP.md`), non installées par défaut :
-- hook Git `pre-push` refusant tout fichier de `sensible/` ;
 - analyse de secrets avant publication (ex. gitleaks) ;
 - vérification de la visibilité du dépôt distant avant un push.

@@ -20,5 +20,5 @@ description: Documentation du système de personas et d'agents (emplacement, cat
 - Catégorie minimale obligatoire : `system-agents/`, qui contient `slave.md`.
 - `slave` est l'unique sous-agent : exécution, récapitulatifs, recherches, explorations.
 - Les agents système font partie du projet public.
-- Chaque dossier `<catégorie>-agents/` est relié dans `~/.claude/agents/` (Claude Code y cherche récursivement ; l'identité vient du champ `name`).
-- Nouvelle catégorie : créer `0-persona/<catégorie>-agents/`, puis `ln -s ~/ai/0-persona/<catégorie>-agents ~/.claude/agents/<catégorie>-agents`.
+- Chaque dossier `<catégorie>-agents/` est relié dans `agents/` de la configuration de Claude Code (`$CLAUDE_CONFIG_DIR`, soit `~/ai/2-tools/3-software/claude-code/`) (Claude Code y cherche récursivement ; l'identité vient du champ `name`).
+- Nouvelle catégorie : créer `0-persona/<catégorie>-agents/`, puis `ln -s ~/ai/0-persona/<catégorie>-agents "$CLAUDE_CONFIG_DIR/agents/<catégorie>-agents"`.

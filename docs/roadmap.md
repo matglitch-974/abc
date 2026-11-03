@@ -18,6 +18,9 @@ Les commandes actuelles passent par `raw.githubusercontent.com`. Pistes :
 ## Second cerveau
 Relier l'instance à une base de connaissances persistante, au-delà des skills de leçons.
 
+## Modes d'autorisation « yolo » et « sécurité »
+Deux jeux de réglages (`~/ai/memory/settings.json`) entre lesquels basculer : « yolo » (le moins de demandes d'autorisation possible) et « sécurité » (tout ce qui modifie ou publie demande confirmation). Les réglages restent des autorisations personnelles, donc rangés avec la mémoire.
+
 ## Vocal Instant (`vocal-instant`)
 Dictée vocale instantanée dans l'esprit de Wispr Flow : parler, et le texte propre s'insère là où se trouve le curseur.
 - **Déclenchement** : raccourci clavier global (maintenir pour parler) ou commande terminal `vocal-instant`.

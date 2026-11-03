@@ -4,7 +4,8 @@ $ErrorActionPreference = 'Stop'
 $Repo   = 'https://github.com/matglitch-974/better-claude-instance'
 $Branch = if ($env:BCI_BRANCH) { $env:BCI_BRANCH } else { 'main' }
 $AI     = Join-Path $HOME 'ai'
-$CL     = Join-Path $HOME '.claude'
+$OLD    = Join-Path $HOME '.claude'
+$CC     = Join-Path $AI '2-tools\3-software\claude-code'   # CLAUDE_CONFIG_DIR : remplace ~/.claude
 $Dest   = Join-Path $AI '2-tools\3-software\better-claude-instance'
 
 function Say($m) { Write-Host "`n==> $m" -ForegroundColor Cyan }
@@ -36,9 +37,15 @@ Say 'Téléchargement de Better Claude Instance'
 if (Test-Path "$Dest\.git") { git -C $Dest pull -q --ff-only }
 else { New-Item -ItemType Directory -Force (Split-Path $Dest) | Out-Null; git clone -q --depth 1 -b $Branch $Repo $Dest }
 
+$Py = (Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' } | Select-Object -First 1).Source
+$Backup = Join-Path $Dest 'hooks\bci-backup.py'
+
+# --- Sauvegarde avant installation (première installation seulement, conservée à vie) ----
+if ((Test-Path $AI) -or (Test-Path $OLD)) { & $Py $Backup install-avant }
+
 # --- Arborescence et fichiers de base (jamais écrasés) ---------------------------
 Say 'Création de ~/ai et ~/project'
-'0-persona\system-agents','1-bench','2-tools\0-mcp','2-tools\1-skills','2-tools\2-plugins','2-tools\3-software','3-llm','4-trash' |
+'0-persona\system-agents','1-bench','2-tools\0-mcp\sensible','2-tools\1-skills','2-tools\2-plugins','2-tools\3-software\claude-code','2-tools\logs','3-llm','4-trash' |
   ForEach-Object { New-Item -ItemType Directory -Force (Join-Path $AI $_) | Out-Null }
 New-Item -ItemType Directory -Force (Join-Path $HOME 'project') | Out-Null
 'user','feedback','project','reference','journal' | ForEach-Object { New-Item -ItemType Directory -Force (Join-Path $AI "memory\$_") | Out-Null }
@@ -50,17 +57,33 @@ Get-ChildItem $Skel -Recurse -File | ForEach-Object {
   else { New-Item -ItemType Directory -Force (Split-Path $dst) | Out-Null; Copy-Item $_.FullName $dst; Write-Host "créé     : $dst" }
 }
 
-# --- Liens Claude Code ------------------------------------------------------------
-# Windows : les liens symboliques de fichiers exigent des droits admin.
-# CLAUDE.md importe donc AGENTS.md ; les dossiers utilisent des jonctions (sans droits admin).
-New-Item -ItemType Directory -Force "$CL\agents" | Out-Null
-function Backup($p) { if ((Test-Path $p) -and -not ((Get-Item $p -Force).LinkType)) { Move-Item $p "$p.bak-bci" -Force; Write-Host "sauvegardé : $p.bak-bci" } }
+# --- Configuration de Claude Code dans ~/ai (CLAUDE_CONFIG_DIR) ----------------------
+[Environment]::SetEnvironmentVariable('CLAUDE_CONFIG_DIR', $CC, 'User'); $env:CLAUDE_CONFIG_DIR = $CC
+$Stamp = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
+if ((Test-Path $OLD) -and -not (Get-Item $OLD -Force).LinkType) {
+  Get-ChildItem $OLD -Force | ForEach-Object {
+    $item = $_; $n = $item.Name; $f = $item.FullName           # dans switch, $_ désigne la valeur testée
+    if ($item.LinkType) { return }                               # anciens liens BCI : recréés plus bas
+    switch ($n) {
+      'plugins' { if (-not (Get-ChildItem "$AI\2-tools\2-plugins" -Force)) { Remove-Item "$AI\2-tools\2-plugins"; Move-Item $f "$AI\2-tools\2-plugins" } else { Move-Item $f "$CC\plugins.bak-bci" } }
+      { $_ -in 'CLAUDE.md','skills' } { if (-not (Test-Path "$CC\$n.bak-bci")) { Move-Item $f "$CC\$n.bak-bci" } }
+      default { if (-not (Test-Path "$CC\$n")) { Move-Item $f "$CC\$n" } }
+    }
+  }
+  Move-Item $OLD "$AI\4-trash\claude-ancien_$Stamp"; Write-Host "migré    : ~/.claude -> $CC (restes dans 4-trash)"
+}
+$OldJson = Join-Path $HOME '.claude.json'
+if (Test-Path $OldJson) { if (Test-Path "$CC\.claude.json") { Move-Item $OldJson "$AI\4-trash\claude.json-ancien_$Stamp" } else { Move-Item $OldJson "$CC\.claude.json" } }
 
-$ClaudeMd = "$CL\CLAUDE.md"
+# Windows : les liens symboliques de fichiers exigent des droits admin.
+# CLAUDE.md importe donc AGENTS.md ; settings.json reste un vrai fichier dans $CC ; les dossiers sont des jonctions.
+New-Item -ItemType Directory -Force "$CC\agents" | Out-Null
+function Backup($p) { if ((Test-Path $p) -and -not ((Get-Item $p -Force).LinkType)) { Move-Item $p "$p.bak-bci" -Force; Write-Host "sauvegardé : $p.bak-bci" } }
+$ClaudeMd = "$CC\CLAUDE.md"
 if (-not ((Test-Path $ClaudeMd) -and ((Get-Content $ClaudeMd -Raw) -match '@~/ai/AGENTS.md'))) {
   Backup $ClaudeMd; [IO.File]::WriteAllText($ClaudeMd, "@~/ai/AGENTS.md`n"); Write-Host "lien     : $ClaudeMd -> ~/ai/AGENTS.md"
 }
-foreach ($pair in @(@("$CL\skills", "$AI\2-tools\1-skills"), @("$CL\agents\system-agents", "$AI\0-persona\system-agents"))) {
+foreach ($pair in @(@("$CC\skills", "$AI\2-tools\1-skills"), @("$CC\plugins", "$AI\2-tools\2-plugins"), @("$CC\agents\system-agents", "$AI\0-persona\system-agents"))) {
   $link, $target = $pair
   if ((Test-Path $link) -and (Get-Item $link -Force).LinkType) { (Get-Item $link -Force).Delete() } else { Backup $link }
   New-Item -ItemType Junction -Path $link -Target $target | Out-Null; Write-Host "lien     : $link -> $target"
@@ -70,12 +93,11 @@ foreach ($pair in @(@("$CL\skills", "$AI\2-tools\1-skills"), @("$CL\agents\syste
 $Bash = Join-Path (Split-Path (Split-Path (Get-Command git).Source)) 'bin\bash.exe'
 $Hook = (Join-Path $Dest 'hooks\guard-sensible.sh') -replace '\\','/'
 $HookCmd = "`"$($Bash -replace '\\','/')`" `"$Hook`""
-$Py = (Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' } | Select-Object -First 1).Source
 $MemHook = (Join-Path $Dest 'hooks\memory-hook.py') -replace '\\','/'
 $MemCmd = "`"$($Py -replace '\\','/')`" `"$MemHook`""
 $Deny = 'Agent(Explore)','Agent(Plan)','Agent(general-purpose)','Agent(statusline-setup)','Agent(claude-code-guide)'
 
-$S = "$CL\settings.json"
+$S = "$CC\settings.json"
 $cfg = if ((Test-Path $S) -and (Get-Content $S -Raw).Trim()) { if (-not (Test-Path "$S.bak-bci")) { Copy-Item $S "$S.bak-bci" }; Get-Content $S -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
 if (-not $cfg.permissions) { $cfg | Add-Member permissions ([pscustomobject]@{}) }
 $cfg.permissions | Add-Member deny (@(@($cfg.permissions.deny) + $Deny | Where-Object { $_ } | Select-Object -Unique)) -Force
@@ -92,13 +114,18 @@ foreach ($ev in 'SessionStart','UserPromptSubmit','PostToolUse','PreCompact','St
 [IO.File]::WriteAllText($S, ($cfg | ConvertTo-Json -Depth 20))   # UTF-8 sans BOM
 Write-Host "réglages : $S"
 
-# --- Outils de recherche web (gratuits, sans clé) ; échecs non bloquants ---------
-Say 'Outils de recherche web'
+# --- Outils : restic, recherche web (Brave Search uniquement, clé dans 2-tools\0-mcp\sensible\brave-api-key) ; non bloquants
+Say 'Outils de recherche web et de sauvegarde'
+if (-not (Get-Command restic -ErrorAction SilentlyContinue)) { winget install --id restic.restic -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
 if (-not (Get-Command npx -ErrorAction SilentlyContinue)) { winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
 if (-not (Get-Command uv -ErrorAction SilentlyContinue)) { winget install --id astral-sh.uv -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
 $env:Path = "$HOME\.local\bin;$env:Path"
 if (Get-Command claude -ErrorAction SilentlyContinue) {
-  foreach ($m in @(@('fetch','uvx','mcp-server-fetch'), @('duckduckgo','uvx','duckduckgo-mcp-server'), @('playwright','npx','-y','@playwright/mcp@latest'))) {
+  claude mcp remove -s user duckduckgo *> $null   # remplacé par Brave Search
+  $BraveKey = "$AI\2-tools\0-mcp\sensible\brave-api-key"
+  claude mcp get brave *> $null
+  if ($LASTEXITCODE -ne 0) { claude mcp add -s user brave -e "BRAVE_API_KEY_FILE=$BraveKey" -- npx -y '@brave/brave-search-mcp-server'; if ($LASTEXITCODE -ne 0) { Write-Warning 'MCP brave non installé' } }
+  foreach ($m in @(@('fetch','uvx','mcp-server-fetch'), @('playwright','npx','-y','@playwright/mcp@latest'))) {
     claude mcp get $m[0] *> $null
     if ($LASTEXITCODE -ne 0) { claude mcp add -s user $m[0] -- @($m[1..($m.Count-1)]); if ($LASTEXITCODE -ne 0) { Write-Warning "MCP $($m[0]) non installé" } }
   }
@@ -113,4 +140,7 @@ if ((Get-Command uv -ErrorAction SilentlyContinue) -and -not (Get-Command crwl -
   uv tool install -q crawl4ai; if ($LASTEXITCODE -eq 0) { crawl4ai-setup } else { Write-Warning 'Crawl4AI non installé' }
 }
 
+# --- Sauvegarde après installation ---------------------------------------------------
+& $Py $Backup install-apres
+Write-Host "Clé Brave Search à placer dans : $AI\2-tools\0-mcp\sensible\brave-api-key"
 Say 'Terminé. Ouvrez un nouveau terminal, puis tapez : claude'

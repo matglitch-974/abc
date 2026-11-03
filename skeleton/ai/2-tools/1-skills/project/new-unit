@@ -1,9 +1,13 @@
 #!/bin/sh
 # new-unit <catégorie>/<project>[/<sub-project>]
 # Crée une unité (dépôt Git) dans ~/project avec AGENTS.md, CLAUDE.md -> AGENTS.md,
-# README.md, TODO.md, .gitignore (sensible/ toujours exclu) et sensible/.
+# README.md, TODO.md, .gitignore (sensible/ toujours exclu), sensible/ et le hook Git pre-push.
+# new-unit --hook <dossier> : pose seulement le hook pre-push dans une unité existante.
 set -eu
 export MSYS=winsymlinks:nativestrict   # Windows (Git Bash) : vrai lien ou échec, jamais une copie
+HOOKSRC="$(cd "$(dirname "$0")" && pwd)/pre-push"
+hook() { [ -d "$1/.git" ] || return 0; cp "$HOOKSRC" "$1/.git/hooks/pre-push"; chmod +x "$1/.git/hooks/pre-push"; }
+if [ "${1:-}" = "--hook" ]; then hook "${2:?dossier requis}"; echo "hook pre-push posé : $2"; exit 0; fi
 path="${1:?usage : new-unit <catégorie>/<project>[/<sub-project>]}"
 depth=$(printf '%s' "$path" | awk -F/ '{print NF}')
 [ "$depth" -ge 2 ] && [ "$depth" -le 3 ] || { echo "Profondeur attendue : 2 ou 3 niveaux." >&2; exit 1; }
@@ -26,5 +30,5 @@ printf '# %s\n' "$name" > "$dir/README.md"
 printf '# TODO — %s\n\n' "$name" > "$dir/TODO.md"
 printf 'sensible/\n' > "$dir/.gitignore"
 ln -s AGENTS.md "$dir/CLAUDE.md" 2>/dev/null || printf '@AGENTS.md\n' > "$dir/CLAUDE.md"
-command -v git >/dev/null && git -C "$dir" init -q
+command -v git >/dev/null && git -C "$dir" init -q && hook "$dir"
 echo "$dir"
