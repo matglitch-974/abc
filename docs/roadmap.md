@@ -18,6 +18,16 @@ Les commandes actuelles passent par `raw.githubusercontent.com`. Pistes :
 ## Second cerveau
 Relier l'instance à une base de connaissances persistante, au-delà des skills de leçons.
 
+## Vocal Instant (`vocal-instant`)
+Dictée vocale instantanée dans l'esprit de Wispr Flow : parler, et le texte propre s'insère là où se trouve le curseur.
+- **Déclenchement** : raccourci clavier global (maintenir pour parler) ou commande terminal `vocal-instant`.
+- **Interface** : ultra minimaliste, en terminal ; au plus un indicateur d'enregistrement.
+- **Chaîne** : micro → transcription locale → nettoyage (ponctuation, hésitations, mise en forme) → presse-papiers ou saisie directe.
+- **Transcription** : modèle local obligatoire, l'API Claude n'acceptant pas l'audio en entrée (vérifié, novembre 2026). Candidats à évaluer : whisper.cpp, faster-whisper, ou un modèle local de voix plus récent.
+- **Nettoyage** : Haiku 5.5 via `claude -p` (abonnement, sans clé), ou modèle local pour un fonctionnement hors ligne.
+- **Plateformes** : Linux (X11 et Wayland diffèrent pour le raccourci global et la saisie), Windows ; Android/Termux à évaluer (micro via Termux:API).
+- **Mesures d'acceptation** : latence entre fin de parole et texte inséré, taux d'erreur sur le français, consommation de quota par dictée.
+
 ## Pistes évoquées, non retenues
 - **Décompiler et recompiler le binaire de Claude Code** pour en retirer les prompts : écarté, contraire aux conditions d'utilisation d'Anthropic. Alternative légitime : construire sa propre instance avec le Claude Agent SDK ou un harnais open source, avec des outils open source branchés en MCP (`2-tools/0-mcp/`) et chaque prompt d'outil sous forme de skill.
 - **Installation par npm** : dépréciée par Anthropic (voir [installation.md](installation.md)).
