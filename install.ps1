@@ -17,6 +17,13 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
   Refresh-Path
 }
 
+# --- Python (identifiants de sous-agents : agent-id.py) ---------------------------
+if (-not (Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' })) {
+  Say 'Installation de Python'
+  winget install --id Python.Python.3.13 -e --source winget --accept-package-agreements --accept-source-agreements
+  Refresh-Path
+}
+
 # --- Claude Code (installateur officiel) ----------------------------------------
 if (-not (Get-Command claude -ErrorAction SilentlyContinue) -and -not (Test-Path "$HOME\.local\bin\claude.exe")) {
   Say 'Installation de Claude Code'

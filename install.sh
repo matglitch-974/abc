@@ -30,12 +30,12 @@ SUDO=""
 [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1 && SUDO="sudo"
 
 say "Installation des paquets nécessaires"
-if   command -v apk     >/dev/null 2>&1; then $SUDO apk add --no-cache bash curl git jq ripgrep libgcc libstdc++
-elif command -v apt-get >/dev/null 2>&1; then $SUDO apt-get update -qq && $SUDO apt-get install -y -qq curl git jq
-elif command -v dnf     >/dev/null 2>&1; then $SUDO dnf install -y curl git jq
-elif command -v pacman  >/dev/null 2>&1; then $SUDO pacman -Sy --noconfirm --needed curl git jq
-elif command -v zypper  >/dev/null 2>&1; then $SUDO zypper --non-interactive install curl git jq
-else echo "Gestionnaire de paquets inconnu : installez curl, git et jq, puis relancez." >&2; exit 1
+if   command -v apk     >/dev/null 2>&1; then $SUDO apk add --no-cache bash curl git jq ripgrep libgcc libstdc++ python3
+elif command -v apt-get >/dev/null 2>&1; then $SUDO apt-get update -qq && $SUDO apt-get install -y -qq curl git jq python3
+elif command -v dnf     >/dev/null 2>&1; then $SUDO dnf install -y curl git jq python3
+elif command -v pacman  >/dev/null 2>&1; then $SUDO pacman -Sy --noconfirm --needed curl git jq python
+elif command -v zypper  >/dev/null 2>&1; then $SUDO zypper --non-interactive install curl git jq python3
+else echo "Gestionnaire de paquets inconnu : installez curl, git, jq et python3, puis relancez." >&2; exit 1
 fi
 
 if ! command -v claude >/dev/null 2>&1 && [ ! -x "$HOME/.local/bin/claude" ]; then

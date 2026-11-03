@@ -23,7 +23,7 @@ Deux étapes ne peuvent pas être automatisées :
 2. Au premier lancement de `claude`, **se connecter à son compte Anthropic**.
 
 ## Ce que fait l'installateur
-1. Installe les dépendances (Linux : curl, git, jq ; Alpine : + bash, ripgrep, libgcc, libstdc++ ; Windows : Git via winget).
+1. Installe les dépendances (Linux : curl, git, jq, python3 ; Alpine : + bash, ripgrep, libgcc, libstdc++ ; Windows : Git et Python via winget).
 2. Installe Claude Code avec l'installateur officiel d'Anthropic (`claude.ai/install.sh` ou `install.ps1`), s'il est absent.
 3. Clone ce dépôt dans `~/ai/2-tools/3-software/better-claude-instance/`.
 4. Crée `~/ai` et `~/project`, copie les fichiers de `skeleton/` sans jamais écraser un fichier existant.

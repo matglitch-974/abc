@@ -18,7 +18,7 @@ mkdir -p "$AI/0-persona/system-agents" "$AI/1-bench" "$AI/2-tools/0-mcp" \
     mkdir -p "$(dirname "$dst")"; cp "$SRC/skeleton/$f" "$dst"; echo "créé     : $dst"
   fi
 done
-chmod +x "$AI/2-tools/1-skills/bench/sector" "$AI/2-tools/1-skills/project/new-unit" "$HOOK"
+chmod +x "$AI/2-tools/1-skills/bench/sector" "$AI/2-tools/1-skills/bench/agent-id.py" "$AI/2-tools/1-skills/project/new-unit" "$HOOK"
 
 # --- Environnement -------------------------------------------------------------
 MUSL=false

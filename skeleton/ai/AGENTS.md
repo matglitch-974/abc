@@ -44,6 +44,11 @@ Pour l'activer : retirer les marques de commentaire et remplacer `<nom>` par le 
 - L'agent principal présente le travail des sous-agents comme le sien : il le vérifie et en assume la responsabilité.
 - `slave` ne lit pas ce fichier : toute règle utile à la tâche doit figurer dans la consigne de délégation.
 
+### Identifiant à 4 chiffres
+- Avant chaque lancement : `python3 ~/ai/2-tools/1-skills/bench/agent-id.py new` (Windows : `python`) réserve un code libre et affiche le nom complet, par exemple `slave-4821`.
+- Ce nom accompagne le sous-agent du lancement à l'arrêt : en tête de la `description` de l'appel (`slave-4821 : audit des liens`), dans la consigne (« Ton identifiant : slave-4821 ») et en tête de son rapport. L'agent principal désigne chaque sous-agent par ce nom, jamais par un numéro d'ordre.
+- À l'arrêt du sous-agent (rapport reçu, échec ou interruption) : `agent-id.py release slave-4821`. `agent-id.py list` affiche les sous-agents encore vivants.
+
 ## Amélioration continue
 
 Après chaque erreur, correction de l'utilisateur ou technique découverte :

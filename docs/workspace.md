@@ -11,6 +11,7 @@ Nom : *bench*, abréviation de *workbench* (établi). « Établi » a été éca
 - Lecture : tout sous-agent peut lire le secteur d'un autre ; interdire la lecture limiterait trop la collaboration.
 - Suppression : seul le créateur supprime son secteur (`sector release <nom>`), à la fin de son travail. Si le créateur n'est plus disponible et que son travail est certainement terminé, un autre sous-agent le supprime à sa place.
 - À la fin du travail de l'agent principal, `1-bench/` est vide.
+- Identifiants : chaque sous-agent porte un code à 4 chiffres (`slave-4821`) réservé par `agent-id.py` dans `1-bench/<code>.id`, de son lancement à son arrêt. Il coexiste avec le secteur : le code identifie l'agent, le secteur est son espace de travail.
 
 `mkdir` étant atomique, deux sous-agents lancés en même temps ne peuvent pas obtenir le même secteur.
 
