@@ -28,5 +28,8 @@ Installés par `bootstrap.sh` / `install.ps1`, tous gratuits, sans clé ni quota
 
 Écartés : Firecrawl, Tavily, Exa, Bright Data (clé requise, quotas gratuits limités). Les échecs d'installation ne bloquent pas l'instance (navigateurs absents sous Termux/musl, par exemple).
 
+### Sources dédiées
+- **`specula`** : synthèses publiques quotidiennes de La Note Sentinelle (specula.fr). Passe par l'API WordPress publique du site plutôt que par l'analyse des pages : une requête par appel, données structurées, et une rupture de format détectée (nombre de points clés extraits comparé au nombre annoncé). L'édition complète, payante et envoyée par e-mail, n'est pas récupérée ; les contenus restent à usage personnel (CGV).
+
 ## Réglages de génération (skill `sampling`)
 Claude ne peut pas régler sa température : l'échantillonnage a lieu côté serveur, avant toute réponse, et `temperature`/`top_p`/`top_k` sont refusés par les modèles actuels (et par la version d'API `2026-10-21` sur tous les modèles). Leviers réels : `effort` et modèle, exposés par `generate.py` (par défaut via `claude -p` et le compte connecté, Sonnet 5.5, sans clé API ; `--api` avec une clé). Le reste (registre, déterminisme apparent, style) relève d'une consigne de comportement, présentée comme telle. Un échantillonnage réel (glouton, logits visibles) exige un modèle à poids ouverts local (`~/ai/3-llm/`).
