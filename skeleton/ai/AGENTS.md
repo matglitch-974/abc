@@ -57,7 +57,7 @@ La session peut être fermée à tout moment : rien ne doit attendre la fin pour
 @~/ai/memory/INDEX.md
 @~/ai/memory/TODO.md
 
-- **Automatique** (hook `memory-hook.py`, sans LLM) : `journal/AAAA-MM-JJ.md` reçoit chaque message, chaque fichier modifié, chaque fin de tour et chaque compaction ; la section Projets de `TODO.md` est refaite au démarrage ; `realign.md` est réinjecté tous les 10 messages et après compaction. Ne jamais éditer `journal/`.
+- **Automatique** (hook `memory-hook.py`, sans LLM) : `journal/AAAA-MM-JJ.md` reçoit chaque message, chaque fichier modifié, chaque fin de tour et chaque compaction ; la section Projets de `TODO.md` est refaite au démarrage ; `realign.md` est réinjecté tous les 10 messages et après compaction ; une sauvegarde de `memory/` part dans `backup/` à chaque lancement (rotation tour de Hanoï, la première gardée à vie). Ne jamais éditer `journal/` ni `backup/`.
 - **À la charge de l'agent**, dès qu'une étape est terminée : un fait par fichier dans `memory/<type>/`, une ligne dans `INDEX.md`. Format et exclusions : skill `memory`.
 - Chaque correction de l'utilisateur devient un fichier `feedback/` : c'est l'alignement. Fusionner les feedbacks qui se recoupent en une règle plus courte ; une règle essentielle remonte dans `realign.md`.
 - Un souvenir décrit le passé : vérifier ce qu'il nomme (fichier, commande, état) avant d'agir dessus.

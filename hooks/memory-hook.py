@@ -86,6 +86,39 @@ def todo_sync():
         write_atomic(target, new)
 
 
+def backup():
+    """Sauvegarde de ~/ai/memory en rotation « tour de Hanoï », la toute première conservée à vie.
+
+    La sauvegarde n° k va dans le jeu h = nombre de zéros terminaux de k en binaire (plafonné à SETS-1)
+    et remplace l'ancienne sauvegarde de ce jeu : le jeu 0 est réécrit une fois sur deux, le jeu 1
+    une fois sur quatre, etc. Les sauvegardes s'espacent donc avec l'âge ; au plus SETS + 1 archives.
+    """
+    import tarfile
+    sets = max(1, int(os.environ.get("BCI_BACKUP_SETS", "8") or 8))
+    bk = MEM / "backup"
+    bk.mkdir(parents=True, exist_ok=True)
+    counter = bk / "counter"
+    k = int(counter.read_text() or 0) + 1 if counter.is_file() else 1
+    if k == 1:
+        label = "origine"
+    else:
+        h = min((k & -k).bit_length() - 1, sets - 1)
+        label = f"h{h}"
+    name = f"{time.strftime('%Y%m%d-%H%M%S')}-n{k:05d}-{label}.tar.gz"
+    tmp = bk / (name + ".tmp")
+    skip = {bk.resolve(), (MEM / ".state").resolve()}
+    with tarfile.open(tmp, "w:gz") as tar:
+        tar.add(MEM, arcname="memory",
+                filter=lambda ti: None if (MEM.parent / ti.name).resolve() in skip else ti)
+    os.replace(tmp, bk / name)
+    if label != "origine":
+        for old in bk.glob(f"*-{label}.tar.gz"):
+            if old.name != name:
+                old.unlink()
+    counter.write_text(str(k))
+    return name
+
+
 def handle(event):
     name = event.get("hook_event_name", "")
     sid = str(event.get("session_id", "") or "sans-id")
@@ -95,6 +128,8 @@ def handle(event):
         src = event.get("source", "")
         journal(f"{tag} session démarrée ({src})")
         todo_sync()
+        if src == "startup":
+            journal(f"{tag} sauvegarde : {backup()}")
         if src == "compact":
             out = realign()
     elif name == "UserPromptSubmit":
@@ -120,6 +155,9 @@ def handle(event):
 def main():
     if sys.argv[1:] == ["todo"]:
         todo_sync()
+        return
+    if sys.argv[1:] == ["backup"]:
+        print(backup())
         return
     try:
         event = json.loads(sys.stdin.buffer.read().decode("utf-8") or "{}")
