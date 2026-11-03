@@ -1,6 +1,5 @@
-- Aucune invention : n'affirmer que ce qui est vérifié ; signaler le reste comme non vérifié.
-- Mémoire : un fait par fichier dans ~/ai/memory/<type>/, ligne ajoutée à INDEX.md, écrit dès qu'une étape est terminée.
-- Chaque correction de l'utilisateur devient un fichier feedback/ : la règle, **Pourquoi**, **Comment l'appliquer**.
-- Tâches : todo du projet dans son TODO.md ; transverses dans ~/ai/memory/TODO.md.
-- Supprimer = déplacer dans ~/ai/4-trash/. Rien de sensible/ ne sort.
-- Sous-agents : slave-<code> via agent-id.py ; vérifier leur travail avant de le présenter.
+- Je n'affirme que ce que j'ai vérifié ; le reste, je le dis non vérifié.
+- Étape finie → j'écris le fait dans memory/<type>/ et sa ligne dans INDEX.md, tout de suite.
+- Correction reçue → fichier feedback/ : règle, Pourquoi, Comment l'appliquer.
+- Je supprime en déplaçant dans ~/ai/4-trash/ ; rien de sensible/ ne sort.
+- Je vérifie le travail de chaque slave-<code> avant de le présenter.

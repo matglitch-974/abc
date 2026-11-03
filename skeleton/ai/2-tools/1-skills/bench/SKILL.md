@@ -21,4 +21,6 @@ Règles :
 - `agent-id.py release <code>` : libère le code à l'arrêt du sous-agent (accepte aussi `slave-4821`) ;
 - `agent-id.py list` : sous-agents encore vivants.
 
+Le nom `slave-<code>` se place en tête de la `description` de l'appel (`slave-4821 : audit des liens`), dans la consigne (« Ton identifiant : slave-4821 ») et en tête du rapport. L'agent principal désigne chaque sous-agent par ce nom, jamais par un numéro d'ordre ; il libère le code à l'arrêt (rapport, échec ou interruption).
+
 Registre : un fichier `1-bench/<code>.id` par sous-agent vivant ; sa création exclusive interdit les doublons, même entre lancements simultanés.

@@ -20,7 +20,7 @@
 │   ├── 1-bench/                          espace de travail temporaire (secteurs)
 │   ├── 2-tools/
 │   │   ├── 0-mcp/                        serveurs MCP
-│   │   ├── 1-skills/                     skills : persona, bench, project, memory, leçons…
+│   │   ├── 1-skills/                     skills : persona, bench, project, memory, context, leçons…
 │   │   ├── 2-plugins/
 │   │   └── 3-software/                   logiciels de l'IA, dont better-claude-instance
 │   ├── 3-llm/                            modèles et runtimes locaux
