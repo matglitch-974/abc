@@ -2,4 +2,4 @@
 - Étape finie → j'écris le fait dans memory/<type>/ et sa ligne dans INDEX.md, tout de suite.
 - Correction reçue → fichier feedback/ : règle, Pourquoi, Comment l'appliquer.
 - Je supprime en déplaçant dans ~/ai/4-trash/ ; rien de sensible/ ne sort.
-- Je vérifie le travail de chaque slave-<code> avant de le présenter.
+- Je coordonne : je ne lis aucun fichier ; un slave exécute, un second contrôle, je ne lis que les rapports.

@@ -23,12 +23,14 @@ Deux étapes ne peuvent pas être automatisées :
 2. Au premier lancement de `claude`, **se connecter à son compte Anthropic**.
 
 ## Ce que fait l'installateur
-1. Installe les dépendances (Linux : curl, git, jq, python3 ; Alpine : + bash, ripgrep, libgcc, libstdc++ ; Windows : Git et Python via winget).
+1. Installe les dépendances (Linux : curl, git, jq, python3, Node.js ; Alpine : + bash, ripgrep, libgcc, libstdc++ ; Windows : Git, Python, Node.js, uv, restic via winget).
 2. Installe Claude Code avec l'installateur officiel d'Anthropic (`claude.ai/install.sh` ou `install.ps1`), s'il est absent.
 3. Clone ce dépôt dans `~/ai/2-tools/3-software/better-claude-instance/`.
 4. Crée `~/ai` et `~/project`, copie les fichiers de `skeleton/` sans jamais écraser un fichier existant.
-5. Relie `~/.claude/` (CLAUDE.md, skills, agents) et complète `settings.json` : agents intégrés désactivés, hook `guard-sensible`.
-6. Sauvegarde tout fichier remplacé en `*.bak-bci`.
+5. Sauvegarde complète avant la première installation (`install-avant`), et après (`install-apres`), conservées à vie (voir [memory.md](memory.md#sauvegardes-hooksbci-backuppy)).
+6. Déplace `~/.claude` et `~/.claude.json` dans `~/ai/2-tools/3-software/claude-code/`, fixe `CLAUDE_CONFIG_DIR`, y relie CLAUDE.md, skills, plugins, agents et `settings.json` (rangé dans `~/ai/memory/`), et complète les réglages : agents intégrés désactivés, hooks `guard-sensible` et mémoire.
+7. Installe restic (sauvegardes) et les outils web : Brave Search (clé à placer dans `~/ai/2-tools/0-mcp/sensible/brave-api-key`), fetch, Playwright, Scrapling, Crawl4AI.
+8. Sauvegarde tout fichier remplacé en `*.bak-bci`.
 
 Relancer la commande met à jour l'instance (`git pull`) sans toucher à vos fichiers.
 
@@ -50,7 +52,7 @@ Linux / Android (dans Alpine) :
 ```
 curl -fsSL https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/uninstall.sh | sh
 ```
-Retire les liens et réglages, restaure les sauvegardes, puis demande avant de supprimer `~/ai` et `~/project`. Claude Code lui-même reste installé. Claude Code peut aussi désinstaller l'organisation sur simple demande (voir `SETUP.md`).
+Remet la configuration dans `~/.claude` (liens remplacés par des copies), retire `CLAUDE_CONFIG_DIR` et les réglages ajoutés, restaure les `*.bak-bci`, puis demande avant de supprimer `~/ai` et `~/project`. Claude Code lui-même reste installé. Claude Code peut aussi désinstaller l'organisation sur simple demande (voir `SETUP.md`).
 
 ## Dépannage
 

@@ -4,7 +4,7 @@ Prompt de mise en place destiné à Claude Code. À suivre dès que l'utilisateu
 
 ## Déroulé
 1. Lire `docs/architecture.md` et `skeleton/ai/AGENTS.md` : c'est la structure de référence.
-2. Inspecter la machine : système, Claude Code déjà installé ou non, `~/.claude/` existant (CLAUDE.md, skills, agents, settings.json), dossiers `~/ai` et `~/project` existants.
+2. Inspecter la machine : système, Claude Code déjà installé ou non, `~/.claude/` et `~/.claude.json` existants (déplacés dans `~/ai/2-tools/3-software/claude-code/` à l'installation), dossiers `~/ai` et `~/project` existants.
 3. Présenter à l'utilisateur, étape par étape, ce qui va être créé, relié ou modifié, et ce qui existe déjà.
 4. Négocier : l'utilisateur peut garder, déplacer, renommer ou retirer n'importe quel élément (« modifie ça, laisse ça tel quel, déplace tout ceci là »). Noter chaque écart par rapport à la référence.
 5. Récapituler le plan final et attendre une confirmation explicite.
@@ -18,4 +18,4 @@ Prompt de mise en place destiné à Claude Code. À suivre dès que l'utilisateu
 - Aucun fichier existant n'est écrasé sans sauvegarde (`*.bak-bci`).
 
 ## Désinstallation
-Exécuter `uninstall.sh` ou `uninstall.ps1`, ou en reproduire les étapes à la main : retirer les liens de `~/.claude/`, restaurer les sauvegardes `*.bak-bci`, retirer les réglages ajoutés, puis demander avant de supprimer `~/ai` et `~/project`.
+Exécuter `uninstall.sh` ou `uninstall.ps1`, ou en reproduire les étapes à la main : remettre la configuration dans `~/.claude/`, retirer `CLAUDE_CONFIG_DIR`, restaurer les sauvegardes `*.bak-bci`, retirer les réglages ajoutés, puis demander avant de supprimer `~/ai` et `~/project`.

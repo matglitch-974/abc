@@ -5,6 +5,7 @@
   Une fermeture brutale ne perd donc rien de ce qui a déjà eu lieu.
 - Todos : au démarrage de session, la section « Projets » de ~/ai/memory/TODO.md est
   réécrite à partir des TODO.md de ~/project.
+- Sauvegarde : au démarrage, bci-backup.py quotidienne (une par jour, en arrière-plan).
 - Réalignement : ~/ai/memory/realign.md est réinjecté dans le contexte tous les N messages
   de l'utilisateur (BCI_REALIGN_EVERY, 10 par défaut) et après chaque compaction.
 
@@ -87,36 +88,13 @@ def todo_sync():
 
 
 def backup():
-    """Sauvegarde de ~/ai/memory en rotation « tour de Hanoï », la toute première conservée à vie.
-
-    La sauvegarde n° k va dans le jeu h = nombre de zéros terminaux de k en binaire (plafonné à SETS-1)
-    et remplace l'ancienne sauvegarde de ce jeu : le jeu 0 est réécrit une fois sur deux, le jeu 1
-    une fois sur quatre, etc. Les sauvegardes s'espacent donc avec l'âge ; au plus SETS + 1 archives.
-    """
-    import tarfile
-    sets = max(1, int(os.environ.get("BCI_BACKUP_SETS", "8") or 8))
-    bk = MEM / "backup"
-    bk.mkdir(parents=True, exist_ok=True)
-    counter = bk / "counter"
-    k = int(counter.read_text() or 0) + 1 if counter.is_file() else 1
-    if k == 1:
-        label = "origine"
-    else:
-        h = min((k & -k).bit_length() - 1, sets - 1)
-        label = f"h{h}"
-    name = f"{time.strftime('%Y%m%d-%H%M%S')}-n{k:05d}-{label}.tar.gz"
-    tmp = bk / (name + ".tmp")
-    skip = {bk.resolve(), (MEM / ".state").resolve()}
-    with tarfile.open(tmp, "w:gz") as tar:
-        tar.add(MEM, arcname="memory",
-                filter=lambda ti: None if (MEM.parent / ti.name).resolve() in skip else ti)
-    os.replace(tmp, bk / name)
-    if label != "origine":
-        for old in bk.glob(f"*-{label}.tar.gz"):
-            if old.name != name:
-                old.unlink()
-    counter.write_text(str(k))
-    return name
+    """Sauvegarde quotidienne (bci-backup.py), détachée pour ne pas retarder le démarrage de la session."""
+    import subprocess
+    script = Path(__file__).resolve().parent / "bci-backup.py"
+    kw = {"start_new_session": True} if os.name != "nt" else {"creationflags": 0x00000008}  # DETACHED_PROCESS
+    subprocess.Popen([sys.executable, str(script), "quotidienne", "--if-needed"],
+                     stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kw)
+    return "lancée (quotidienne, si pas encore faite aujourd'hui)"
 
 
 def handle(event):
@@ -130,6 +108,7 @@ def handle(event):
         todo_sync()
         if src == "startup":
             journal(f"{tag} sauvegarde : {backup()}")
+            out = "Début de session : reconnaissance des outils (skill `mission`) avant la première tâche.\n"
         if src == "compact":
             out = realign()
     elif name == "UserPromptSubmit":
@@ -155,9 +134,6 @@ def handle(event):
 def main():
     if sys.argv[1:] == ["todo"]:
         todo_sync()
-        return
-    if sys.argv[1:] == ["backup"]:
-        print(backup())
         return
     try:
         event = json.loads(sys.stdin.buffer.read().decode("utf-8") or "{}")

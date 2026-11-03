@@ -31,13 +31,21 @@ SUDO=""
 [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1 && SUDO="sudo"
 
 say "Installation des paquets nécessaires"
-if   command -v apk     >/dev/null 2>&1; then $SUDO apk add --no-cache bash curl git jq ripgrep libgcc libstdc++ python3
-elif command -v apt-get >/dev/null 2>&1; then $SUDO apt-get update -qq && $SUDO apt-get install -y -qq curl git jq python3
-elif command -v dnf     >/dev/null 2>&1; then $SUDO dnf install -y curl git jq python3
-elif command -v pacman  >/dev/null 2>&1; then $SUDO pacman -Sy --noconfirm --needed curl git jq python
-elif command -v zypper  >/dev/null 2>&1; then $SUDO zypper --non-interactive install curl git jq python3
-else echo "Gestionnaire de paquets inconnu : installez curl, git, jq et python3, puis relancez." >&2; exit 1
+if   command -v apk     >/dev/null 2>&1; then $SUDO apk add --no-cache bash curl git jq ripgrep libgcc libstdc++ python3 nodejs npm
+elif command -v apt-get >/dev/null 2>&1; then $SUDO apt-get update -qq && $SUDO apt-get install -y -qq curl git jq python3 nodejs npm
+elif command -v dnf     >/dev/null 2>&1; then $SUDO dnf install -y curl git jq python3 nodejs npm
+elif command -v pacman  >/dev/null 2>&1; then $SUDO pacman -Sy --noconfirm --needed curl git jq python nodejs npm
+elif command -v zypper  >/dev/null 2>&1; then $SUDO zypper --non-interactive install curl git jq python3 nodejs npm
+else echo "Gestionnaire de paquets inconnu : installez curl, git, jq, python3 et nodejs, puis relancez." >&2; exit 1
 fi
+
+# restic : sauvegardes dédupliquées (>= 0.17 ; sinon bci-backup.py se replie sur tar.xz). Non bloquant.
+{ if   command -v apk     >/dev/null 2>&1; then $SUDO apk add --no-cache restic
+  elif command -v apt-get >/dev/null 2>&1; then $SUDO apt-get install -y -qq restic
+  elif command -v dnf     >/dev/null 2>&1; then $SUDO dnf install -y restic
+  elif command -v pacman  >/dev/null 2>&1; then $SUDO pacman -S --noconfirm --needed restic
+  elif command -v zypper  >/dev/null 2>&1; then $SUDO zypper --non-interactive install restic
+  fi; } || echo "ATTENTION : restic non installé (sauvegardes en tar.xz)" >&2
 
 if ! command -v claude >/dev/null 2>&1 && [ ! -x "$HOME/.local/bin/claude" ]; then
   say "Installation de Claude Code (installateur officiel)"
