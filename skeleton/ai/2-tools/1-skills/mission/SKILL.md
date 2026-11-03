@@ -9,7 +9,7 @@ Consigne type pour `slave` (skill `bench`), à compléter :
 ```
 Ton identifiant : slave-<code>. Objectif : <objectif>. Mots-clés : <mots>.
 1. python3 ~/ai/2-tools/1-skills/mission/tool-scan.py local <mots>
-2. python3 ~/ai/2-tools/1-skills/mission/tool-scan.py online <mots> (2-3 jeux de mots-clés) ; Brave Search (MCP brave) : forums, comparatifs récents.
+2. python3 ~/ai/2-tools/1-skills/mission/tool-scan.py online <mots> (2-3 jeux de mots-clés) ; skill `search` : forums, comparatifs récents.
 3. Retenir, pour chaque besoin, le meilleur outil : existant local d'abord ; sinon qualité et maintenance (màj < 1 an, non archivé, étoiles) > open source > licence permissive > sans clé.
 4. Installer chaque candidat retenu absent en local :
    python3 ~/ai/2-tools/1-skills/mission/tool-install.py mcp <nom> <commande…>   (npx/uvx de préférence)

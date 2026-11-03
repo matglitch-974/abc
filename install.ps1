@@ -114,17 +114,26 @@ foreach ($ev in 'SessionStart','UserPromptSubmit','PostToolUse','PreCompact','St
 [IO.File]::WriteAllText($S, ($cfg | ConvertTo-Json -Depth 20))   # UTF-8 sans BOM
 Write-Host "réglages : $S"
 
-# --- Outils : restic, recherche web (Brave Search uniquement, clé dans 2-tools\0-mcp\sensible\brave-api-key) ; non bloquants
+# --- Outils : restic, recherche web (SearXNG local, sans clé) ; non bloquants
 Say 'Outils de recherche web et de sauvegarde'
 if (-not (Get-Command restic -ErrorAction SilentlyContinue)) { winget install --id restic.restic -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
 if (-not (Get-Command npx -ErrorAction SilentlyContinue)) { winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
 if (-not (Get-Command uv -ErrorAction SilentlyContinue)) { winget install --id astral-sh.uv -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
 $env:Path = "$HOME\.local\bin;$env:Path"
+$SXD = "$AI\2-tools\3-software\searxng"
+if (Get-Command uv -ErrorAction SilentlyContinue) {
+  if (Test-Path "$SXD\.git") { git -C $SXD pull -q --ff-only } else { git clone -q --depth 1 https://github.com/searxng/searxng.git $SXD }
+  if (-not (Test-Path "$SXD\.venv")) { uv venv -q "$SXD\.venv" }
+  $env:VIRTUAL_ENV = "$SXD\.venv"
+  uv pip install -q setuptools wheel -r "$SXD\requirements.txt"
+  if ($LASTEXITCODE -eq 0) { uv pip install -q --no-build-isolation -e $SXD }
+  if ($LASTEXITCODE -ne 0) { Write-Warning 'SearXNG non installé (recherche web indisponible)' }
+  Remove-Item Env:VIRTUAL_ENV
+}
 if (Get-Command claude -ErrorAction SilentlyContinue) {
-  claude mcp remove -s user duckduckgo *> $null   # remplacé par Brave Search
-  $BraveKey = "$AI\2-tools\0-mcp\sensible\brave-api-key"
-  claude mcp get brave *> $null
-  if ($LASTEXITCODE -ne 0) { claude mcp add -s user brave -e "BRAVE_API_KEY_FILE=$BraveKey" -- npx -y '@brave/brave-search-mcp-server'; if ($LASTEXITCODE -ne 0) { Write-Warning 'MCP brave non installé' } }
+  foreach ($old in 'duckduckgo','brave') { claude mcp remove -s user $old *> $null }   # remplacés par SearXNG
+  claude mcp get searxng *> $null
+  if ($LASTEXITCODE -ne 0) { claude mcp add -s user searxng -e 'SEARXNG_URL=http://127.0.0.1:8888' -- npx -y mcp-searxng; if ($LASTEXITCODE -ne 0) { Write-Warning 'MCP searxng non installé' } }
   foreach ($m in @(@('fetch','uvx','mcp-server-fetch'), @('playwright','npx','-y','@playwright/mcp@latest'))) {
     claude mcp get $m[0] *> $null
     if ($LASTEXITCODE -ne 0) { claude mcp add -s user $m[0] -- @($m[1..($m.Count-1)]); if ($LASTEXITCODE -ne 0) { Write-Warning "MCP $($m[0]) non installé" } }
@@ -142,5 +151,4 @@ if ((Get-Command uv -ErrorAction SilentlyContinue) -and -not (Get-Command crwl -
 
 # --- Sauvegarde après installation ---------------------------------------------------
 & $Py $Backup install-apres
-Write-Host "Clé Brave Search à placer dans : $AI\2-tools\0-mcp\sensible\brave-api-key"
 Say 'Terminé. Ouvrez un nouveau terminal, puis tapez : claude'

@@ -29,7 +29,7 @@ Deux étapes ne peuvent pas être automatisées :
 4. Crée `~/ai` et `~/project`, copie les fichiers de `skeleton/` sans jamais écraser un fichier existant.
 5. Sauvegarde complète avant la première installation (`install-avant`), et après (`install-apres`), conservées à vie (voir [memory.md](memory.md#sauvegardes-hooksbci-backuppy)).
 6. Déplace `~/.claude` et `~/.claude.json` dans `~/ai/2-tools/3-software/claude-code/`, fixe `CLAUDE_CONFIG_DIR`, y relie CLAUDE.md, skills, plugins, agents et `settings.json` (rangé dans `~/ai/memory/`), et complète les réglages : agents intégrés désactivés, hooks `guard-sensible` et mémoire.
-7. Installe restic (sauvegardes) et les outils web : Brave Search (clé à placer dans `~/ai/2-tools/0-mcp/sensible/brave-api-key`), fetch, Playwright, Scrapling, Crawl4AI.
+7. Installe restic (sauvegardes) et les outils web : SearXNG (métamoteur local, sans clé) et son MCP, fetch, Playwright, Scrapling, Crawl4AI.
 8. Sauvegarde tout fichier remplacé en `*.bak-bci`.
 
 Relancer la commande met à jour l'instance (`git pull`) sans toucher à vos fichiers.

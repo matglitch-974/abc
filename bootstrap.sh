@@ -112,19 +112,29 @@ link "$AI/2-tools/2-plugins"         "$CC/plugins"
 link "$AI/0-persona/system-agents"   "$CC/agents/system-agents"
 link "$S"                            "$CC/settings.json"
 
-# --- Outils de recherche web --------------------------------------------------------
-# Recherche : Brave Search uniquement (clé dans 2-tools/0-mcp/sensible/brave-api-key). Le reste : gratuit, sans clé.
+# --- Outils de recherche web (gratuits, sans clé) --------------------------------------
+# Recherche : SearXNG local (métamoteur), skill search ; démarré à la demande par search.py.
 # Échecs non bloquants : un outil manquant n'empêche pas l'instance de fonctionner.
 command -v uv >/dev/null 2>&1 || [ -x "$HOME/.local/bin/uv" ] || curl -LsSf https://astral.sh/uv/install.sh | sh || true
 export PATH="$HOME/.local/bin:$PATH"
+SXD="$AI/2-tools/3-software/searxng"
+if command -v uv >/dev/null 2>&1; then
+  { if [ -d "$SXD/.git" ]; then git -C "$SXD" pull -q --ff-only
+    else git clone -q --depth 1 https://github.com/searxng/searxng.git "$SXD"; fi
+    [ -x "$SXD/.venv/bin/python" ] || uv venv -q "$SXD/.venv"
+    VIRTUAL_ENV="$SXD/.venv" uv pip install -q setuptools wheel -r "$SXD/requirements.txt" \
+      && VIRTUAL_ENV="$SXD/.venv" uv pip install -q --no-build-isolation -e "$SXD"
+  } || echo "ATTENTION : SearXNG non installé (recherche web indisponible)" >&2
+fi
+chmod +x "$AI/2-tools/1-skills/search/search.py" 2>/dev/null || true
 if command -v claude >/dev/null 2>&1; then
   addmcp() { claude mcp get "$1" >/dev/null 2>&1 || claude mcp add -s user "$@" || echo "ATTENTION : MCP $1 non installé" >&2; }
   addmcp fetch -- uvx mcp-server-fetch
-  claude mcp remove -s user duckduckgo >/dev/null 2>&1 || true   # remplacé par Brave Search
+  for old in duckduckgo brave; do claude mcp remove -s user "$old" >/dev/null 2>&1 || true; done   # remplacés par SearXNG
   if command -v npx >/dev/null 2>&1; then
-    addmcp brave -e BRAVE_API_KEY_FILE="$AI/2-tools/0-mcp/sensible/brave-api-key" -- npx -y @brave/brave-search-mcp-server
+    addmcp searxng -e SEARXNG_URL=http://127.0.0.1:8888 -- npx -y mcp-searxng
     addmcp playwright -- npx -y @playwright/mcp@latest
-  else echo "ATTENTION : Node.js absent, MCP brave et playwright non installés" >&2; fi
+  else echo "ATTENTION : Node.js absent, MCP searxng et playwright non installés" >&2; fi
 fi
 if command -v uv >/dev/null 2>&1 && ! command -v scrapling >/dev/null 2>&1; then
   { uv tool install -q "scrapling[ai,fetchers]" && scrapling install; } || echo "ATTENTION : Scrapling non installé" >&2
@@ -136,4 +146,3 @@ fi
 
 # --- Sauvegarde après installation -------------------------------------------------
 python3 "$SRC/hooks/bci-backup.py" install-apres || true
-echo "Clé Brave Search à placer dans : $AI/2-tools/0-mcp/sensible/brave-api-key"
