@@ -41,6 +41,7 @@ Say 'Création de ~/ai et ~/project'
 '0-persona\system-agents','1-bench','2-tools\0-mcp','2-tools\1-skills','2-tools\2-plugins','2-tools\3-software','3-llm','4-trash' |
   ForEach-Object { New-Item -ItemType Directory -Force (Join-Path $AI $_) | Out-Null }
 New-Item -ItemType Directory -Force (Join-Path $HOME 'project') | Out-Null
+'user','feedback','project','reference','journal' | ForEach-Object { New-Item -ItemType Directory -Force (Join-Path $AI "memory\$_") | Out-Null }
 
 $Skel = Join-Path $Dest 'skeleton'
 Get-ChildItem $Skel -Recurse -File | ForEach-Object {
@@ -65,10 +66,13 @@ foreach ($pair in @(@("$CL\skills", "$AI\2-tools\1-skills"), @("$CL\agents\syste
   New-Item -ItemType Junction -Path $link -Target $target | Out-Null; Write-Host "lien     : $link -> $target"
 }
 
-# --- settings.json : agents intégrés désactivés + hook sensible/ ----------------
+# --- settings.json : agents intégrés désactivés + hooks sensible/ et mémoire -----
 $Bash = Join-Path (Split-Path (Split-Path (Get-Command git).Source)) 'bin\bash.exe'
 $Hook = (Join-Path $Dest 'hooks\guard-sensible.sh') -replace '\\','/'
 $HookCmd = "`"$($Bash -replace '\\','/')`" `"$Hook`""
+$Py = (Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' } | Select-Object -First 1).Source
+$MemHook = (Join-Path $Dest 'hooks\memory-hook.py') -replace '\\','/'
+$MemCmd = "`"$($Py -replace '\\','/')`" `"$MemHook`""
 $Deny = 'Agent(Explore)','Agent(Plan)','Agent(general-purpose)','Agent(statusline-setup)','Agent(claude-code-guide)'
 
 $S = "$CL\settings.json"
@@ -79,6 +83,12 @@ if (-not $cfg.hooks) { $cfg | Add-Member hooks ([pscustomobject]@{}) }
 $pre = @(@($cfg.hooks.PreToolUse) | Where-Object { $_ -and -not ($_.hooks[0].command -like '*guard-sensible*') })
 $pre += [pscustomobject]@{ matcher = 'Bash'; hooks = @([pscustomobject]@{ type = 'command'; command = $HookCmd }) }
 $cfg.hooks | Add-Member PreToolUse $pre -Force
+$mem = [pscustomobject]@{ type = 'command'; command = $MemCmd }
+foreach ($ev in 'SessionStart','UserPromptSubmit','PostToolUse','PreCompact','Stop','SessionEnd') {
+  $list = @(@($cfg.hooks.$ev) | Where-Object { $_ -and -not ($_.hooks[0].command -like '*memory-hook*') })
+  $entry = if ($ev -eq 'PostToolUse') { [pscustomobject]@{ matcher = 'Write|Edit|MultiEdit|NotebookEdit'; hooks = @($mem) } } else { [pscustomobject]@{ hooks = @($mem) } }
+  $cfg.hooks | Add-Member $ev @($list + $entry) -Force
+}
 [IO.File]::WriteAllText($S, ($cfg | ConvertTo-Json -Depth 20))   # UTF-8 sans BOM
 Write-Host "réglages : $S"
 

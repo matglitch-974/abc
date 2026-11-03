@@ -14,7 +14,9 @@ if ((Test-Path $S) -and -not (Test-Path "$S.bak-bci")) {
   # Réglages créés par l'installation : retirer uniquement ce qu'elle a ajouté.
   $cfg = Get-Content $S -Raw | ConvertFrom-Json
   if ($cfg.permissions.deny) { $cfg.permissions.deny = @($cfg.permissions.deny | Where-Object { $_ -notlike 'Agent(*' }) }
-  if ($cfg.hooks.PreToolUse) { $cfg.hooks.PreToolUse = @($cfg.hooks.PreToolUse | Where-Object { -not ($_.hooks[0].command -like '*guard-sensible*') }) }
+  if ($cfg.hooks) { foreach ($ev in @($cfg.hooks.PSObject.Properties.Name)) {
+    $cfg.hooks.$ev = @($cfg.hooks.$ev | Where-Object { -not ($_.hooks[0].command -like '*guard-sensible*' -or $_.hooks[0].command -like '*memory-hook*') })
+  } }
   [IO.File]::WriteAllText($S, ($cfg | ConvertTo-Json -Depth 20)); Write-Host "réglages nettoyés : $S"
 }
 foreach ($p in $ClaudeMd, "$CL\skills", $S) {

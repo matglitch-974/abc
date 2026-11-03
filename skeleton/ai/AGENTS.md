@@ -17,7 +17,8 @@ Fichier lu par l'agent principal à chaque session (via `~/.claude/CLAUDE.md`).
 │   ├── 2-plugins/
 │   └── 3-software/          logiciels utilisés par l'IA (dont better-claude-instance)
 ├── 3-llm/                   modèles et runtimes locaux
-└── 4-trash/                 corbeille
+├── 4-trash/                 corbeille
+└── memory/                  mémoire : INDEX.md, TODO.md, realign.md, user/ feedback/ project/ reference/, journal/
 ~/project/<catégorie>/<project>/<sub-project>/
 ```
 
@@ -49,6 +50,19 @@ Pour l'activer : retirer les marques de commentaire et remplacer `<nom>` par le 
 - Ce nom accompagne le sous-agent du lancement à l'arrêt : en tête de la `description` de l'appel (`slave-4821 : audit des liens`), dans la consigne (« Ton identifiant : slave-4821 ») et en tête de son rapport. L'agent principal désigne chaque sous-agent par ce nom, jamais par un numéro d'ordre.
 - À l'arrêt du sous-agent (rapport reçu, échec ou interruption) : `agent-id.py release slave-4821`. `agent-id.py list` affiche les sous-agents encore vivants.
 
+## Mémoire
+
+La session peut être fermée à tout moment : rien ne doit attendre la fin pour être écrit.
+
+@~/ai/memory/INDEX.md
+@~/ai/memory/TODO.md
+
+- **Automatique** (hook `memory-hook.py`, sans LLM) : `journal/AAAA-MM-JJ.md` reçoit chaque message, chaque fichier modifié, chaque fin de tour et chaque compaction ; la section Projets de `TODO.md` est refaite au démarrage ; `realign.md` est réinjecté tous les 10 messages et après compaction. Ne jamais éditer `journal/`.
+- **À la charge de l'agent**, dès qu'une étape est terminée : un fait par fichier dans `memory/<type>/`, une ligne dans `INDEX.md`. Format et exclusions : skill `memory`.
+- Chaque correction de l'utilisateur devient un fichier `feedback/` : c'est l'alignement. Fusionner les feedbacks qui se recoupent en une règle plus courte ; une règle essentielle remonte dans `realign.md`.
+- Un souvenir décrit le passé : vérifier ce qu'il nomme (fichier, commande, état) avant d'agir dessus.
+- Tâches : celles d'un projet dans le `TODO.md` de son unité ; les transverses dans `memory/TODO.md`.
+
 ## Amélioration continue
 
 Après chaque erreur, correction de l'utilisateur ou technique découverte :
@@ -71,7 +85,7 @@ Après chaque erreur, correction de l'utilisateur ou technique découverte :
 
 - Hiérarchie : `~/project/<catégorie>/<project>/<sub-project>/`.
 - L'unité (dépôt Git) est le sub-project ; ou le project s'il n'a pas de sub-project. Une catégorie n'est jamais elle-même un project.
-- Chaque unité contient `AGENTS.md`, `CLAUDE.md -> AGENTS.md`, `README.md`, `.gitignore` et `sensible/`.
+- Chaque unité contient `AGENTS.md`, `CLAUDE.md -> AGENTS.md`, `README.md`, `TODO.md`, `.gitignore` et `sensible/`.
 - Créer une unité : `~/ai/2-tools/1-skills/project/new-unit <catégorie>/<project>[/<sub-project>]`.
 - `sensible/` (toujours à la racine de l'unité) contient uniquement des données sensibles (IP, clés…), jamais de prompts. Il est exclu par `.gitignore` et ne sort jamais vers un dépôt public ; un hook bloque les tentatives.
 

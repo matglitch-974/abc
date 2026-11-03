@@ -29,7 +29,8 @@ Au premier lancement de `claude`, connectez-vous à votre compte Anthropic. Pour
 ├── 1-bench/           espace de travail temporaire, un secteur par sous-agent
 ├── 2-tools/           0-mcp, 1-skills, 2-plugins, 3-software
 ├── 3-llm/             modèles locaux
-└── 4-trash/           corbeille
+├── 4-trash/           corbeille
+└── memory/           mémoire écrite en continu : INDEX.md, TODO.md, realign.md, journal/
 ~/project/<catégorie>/<project>/<sub-project>/   avec sensible/ jamais publié
 ```
 
@@ -37,6 +38,7 @@ Au premier lancement de `claude`, connectez-vous à votre compte Anthropic. Pour
 - [Architecture](docs/architecture.md) : la structure et la raison de chaque choix
 - [Installation](docs/installation.md) : plateformes, fonctionnement, désinstallation, dépannage
 - [Personas et agents](docs/agents.md) : persona principal, `slave`, amélioration continue
+- [Mémoire](docs/memory.md) : index, todos, journal automatique, réalignement
 - [Espace de travail](docs/workspace.md) : secteurs de `1-bench`, corbeille
 - [Projets](docs/projects.md) : hiérarchie, unité, `sensible/`, protections
 - [Nommage et langue](docs/naming.md)

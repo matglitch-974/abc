@@ -16,7 +16,8 @@ if [ -e "$S.bak-bci" ]; then
   mv "$S.bak-bci" "$S"; echo "réglages restaurés : $S"
 elif [ -e "$S" ] && command -v jq >/dev/null 2>&1; then
   jq '.permissions.deny |= map(select(startswith("Agent(") | not))
-      | .hooks.PreToolUse |= map(select((.hooks[0].command // "") | contains("guard-sensible") | not))' \
+      | .hooks |= with_entries(.value |= map(select((.hooks[0].command // "")
+          | (contains("guard-sensible") or contains("memory-hook")) | not)))' \
      "$S" > "$S.tmp" && mv "$S.tmp" "$S" && echo "réglages nettoyés : $S"
 fi
 

@@ -11,6 +11,7 @@ HOOK="$SRC/hooks/guard-sensible.sh"
 mkdir -p "$AI/0-persona/system-agents" "$AI/1-bench" "$AI/2-tools/0-mcp" \
          "$AI/2-tools/1-skills" "$AI/2-tools/2-plugins" "$AI/2-tools/3-software" \
          "$AI/3-llm" "$AI/4-trash" "$HOME/project"
+for t in user feedback project reference journal; do mkdir -p "$AI/memory/$t"; done
 
 ( cd "$SRC/skeleton" && find . -type f ) | while read -r f; do
   dst="$HOME/${f#./}"
@@ -18,7 +19,7 @@ mkdir -p "$AI/0-persona/system-agents" "$AI/1-bench" "$AI/2-tools/0-mcp" \
     mkdir -p "$(dirname "$dst")"; cp "$SRC/skeleton/$f" "$dst"; echo "créé     : $dst"
   fi
 done
-chmod +x "$AI/2-tools/1-skills/bench/sector" "$AI/2-tools/1-skills/bench/agent-id.py" "$AI/2-tools/1-skills/project/new-unit" "$HOOK"
+chmod +x "$SRC/hooks/memory-hook.py" "$AI/2-tools/1-skills/bench/sector" "$AI/2-tools/1-skills/bench/agent-id.py" "$AI/2-tools/1-skills/project/new-unit" "$HOOK"
 
 # --- Environnement -------------------------------------------------------------
 MUSL=false
@@ -42,10 +43,14 @@ link "$AI/AGENTS.md"                 "$CL/CLAUDE.md"
 link "$AI/2-tools/1-skills"          "$CL/skills"
 link "$AI/0-persona/system-agents"   "$CL/agents/system-agents"
 
-# --- settings.json : agents intégrés désactivés + hook sensible/ --------------
+# --- settings.json : agents intégrés désactivés + hooks sensible/ et mémoire ----
+M='{"type":"command","command":"python3 \"'"$SRC"'/hooks/memory-hook.py\""}'
 ADD=$(cat <<EOF
 {"permissions":{"deny":["Agent(Explore)","Agent(Plan)","Agent(general-purpose)","Agent(statusline-setup)","Agent(claude-code-guide)"]},
- "hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"sh \"$HOOK\""}]}]}}
+ "hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"sh \"$HOOK\""}]}],
+  "SessionStart":[{"hooks":[$M]}], "UserPromptSubmit":[{"hooks":[$M]}],
+  "PostToolUse":[{"matcher":"Write|Edit|MultiEdit|NotebookEdit","hooks":[$M]}],
+  "PreCompact":[{"hooks":[$M]}], "Stop":[{"hooks":[$M]}], "SessionEnd":[{"hooks":[$M]}]}}
 EOF
 )
 S="$CL/settings.json"
@@ -56,9 +61,10 @@ elif command -v jq >/dev/null 2>&1; then
   [ -e "$S.bak-bci" ] || cp "$S" "$S.bak-bci"
   jq --argjson add "$ADD" --argjson musl "$MUSL" '
     .permissions.deny = (((.permissions.deny // []) + $add.permissions.deny) | unique)
-    | .hooks.PreToolUse = (((.hooks.PreToolUse // [])
-        | map(select((.hooks[0].command // "") | contains("guard-sensible") | not)))
-        + $add.hooks.PreToolUse)
+    | .hooks = (reduce ($add.hooks | keys[]) as $k (.hooks // {};
+        .[$k] = (((.[$k] // []) | map(select((.hooks[0].command // "")
+                   | (contains("guard-sensible") or contains("memory-hook")) | not)))
+                 + $add.hooks[$k])))
     | if $musl then .env.USE_BUILTIN_RIPGREP = "0" else . end' "$S" > "$S.tmp" && mv "$S.tmp" "$S"
 else
   echo "ATTENTION : jq absent, $S existant non modifié. Ajoutez-y à la main : $ADD" >&2
