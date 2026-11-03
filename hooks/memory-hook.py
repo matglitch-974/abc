@@ -6,6 +6,8 @@
 - Todos : au démarrage de session, la section « Projets » de ~/ai/memory/TODO.md est
   réécrite à partir des TODO.md de ~/project.
 - Sauvegarde : au démarrage, bci-backup.py quotidienne (une par jour, en arrière-plan).
+- Ancien ~/.claude : s'il était encore tenu par une session lors de l'installation, il est rangé
+  dans ~/ai/4-trash au démarrage suivant (toute session le recréant est rangée de même).
 - Réalignement : ~/ai/memory/realign.md est réinjecté dans le contexte tous les N messages
   de l'utilisateur (BCI_REALIGN_EVERY, 10 par défaut) et après chaque compaction.
 
@@ -97,6 +99,24 @@ def backup():
     return "lancée (quotidienne, si pas encore faite aujourd'hui)"
 
 
+def retire_old():
+    """Range ~/.claude et ~/.claude.json laissés en cache par une session ouverte pendant l'installation."""
+    cc = AI / "2-tools" / "3-software" / "claude-code"
+    if Path(os.environ.get("CLAUDE_CONFIG_DIR") or "/").resolve() != cc.resolve():
+        return ""
+    stamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+    done = []
+    for name, label in ((".claude", "claude-ancien"), (".claude.json", "claude.json-ancien")):
+        old = Path.home() / name
+        if old.exists() and not old.is_symlink():
+            try:
+                old.rename(AI / "4-trash" / f"{label}_{stamp}")
+                done.append(name)
+            except OSError:
+                pass   # encore tenu : nouvel essai au prochain démarrage
+    return ", ".join(done)
+
+
 def handle(event):
     name = event.get("hook_event_name", "")
     sid = str(event.get("session_id", "") or "sans-id")
@@ -108,6 +128,9 @@ def handle(event):
         todo_sync()
         if src == "startup":
             journal(f"{tag} sauvegarde : {backup()}")
+            retired = retire_old()
+            if retired:
+                journal(f"{tag} rangé dans 4-trash : {retired}")
             out = "Début de session : reconnaissance des outils (skill `mission`) avant la première tâche.\n"
         if src == "compact":
             out = realign()

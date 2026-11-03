@@ -1,5 +1,6 @@
 # Better Claude Instance — installation Windows 10 / 11 (PowerShell).
-#   irm https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/install.ps1 | iex
+#   irm matglitch-974.github.io/BCI.ps1 | iex
+#   (secours : irm https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/install.ps1 | iex)
 $ErrorActionPreference = 'Stop'
 $Repo   = 'https://github.com/matglitch-974/better-claude-instance'
 $Branch = if ($env:BCI_BRANCH) { $env:BCI_BRANCH } else { 'main' }
@@ -60,20 +61,37 @@ Get-ChildItem $Skel -Recurse -File | ForEach-Object {
 # --- Configuration de Claude Code dans ~/ai (CLAUDE_CONFIG_DIR) ----------------------
 [Environment]::SetEnvironmentVariable('CLAUDE_CONFIG_DIR', $CC, 'User'); $env:CLAUDE_CONFIG_DIR = $CC
 $Stamp = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
+# Migration par copie : une session Claude ouverte garde des fichiers de ~/.claude verrouillés.
+# Les fichiers illisibles sont sautés (ce ne sont que des caches de session) ; l'original est ensuite
+# rangé dans 4-trash. S'il est encore tenu, il reste en cache temporaire jusqu'au prochain démarrage
+# d'une session BCI (memory-hook.py) ou au prochain `bci install`, qui le rangent à leur tour.
+function Copy-Soft($from, $to) {
+  if (Test-Path $to) { return }
+  Copy-Item $from $to -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
+  if ($err) { Write-Host "sauté    : $($err.Count) fichier(s) en cours d'utilisation dans $from" }
+}
+function Retire($p, $label) {
+  if (-not (Test-Path $p)) { return }
+  # Renommage atomique : Move-Item copierait puis supprimerait élément par élément (déplacement partiel).
+  $dst = "$AI\4-trash\$label`_$Stamp"
+  try { if (Test-Path $p -PathType Container) { [IO.Directory]::Move($p, $dst) } else { [IO.File]::Move($p, $dst) }; Write-Host "rangé    : $p -> 4-trash" }
+  catch { Write-Host "en cache : $p est encore utilisé par une session ouverte ; rangé au prochain démarrage de BCI" }
+}
 if ((Test-Path $OLD) -and -not (Get-Item $OLD -Force).LinkType) {
   Get-ChildItem $OLD -Force | ForEach-Object {
     $item = $_; $n = $item.Name; $f = $item.FullName           # dans switch, $_ désigne la valeur testée
     if ($item.LinkType) { return }                               # anciens liens BCI : recréés plus bas
     switch ($n) {
-      'plugins' { if (-not (Get-ChildItem "$AI\2-tools\2-plugins" -Force)) { Remove-Item "$AI\2-tools\2-plugins"; Move-Item $f "$AI\2-tools\2-plugins" } else { Move-Item $f "$CC\plugins.bak-bci" } }
-      { $_ -in 'CLAUDE.md','skills' } { if (-not (Test-Path "$CC\$n.bak-bci")) { Move-Item $f "$CC\$n.bak-bci" } }
-      default { if (-not (Test-Path "$CC\$n")) { Move-Item $f "$CC\$n" } }
+      'plugins' { if (-not (Get-ChildItem "$AI\2-tools\2-plugins" -Force)) { Remove-Item "$AI\2-tools\2-plugins"; Copy-Soft $f "$AI\2-tools\2-plugins" } else { Copy-Soft $f "$CC\plugins.bak-bci" } }
+      { $_ -in 'CLAUDE.md','skills' } { Copy-Soft $f "$CC\$n.bak-bci" }
+      default { Copy-Soft $f "$CC\$n" }
     }
   }
-  Move-Item $OLD "$AI\4-trash\claude-ancien_$Stamp"; Write-Host "migré    : ~/.claude -> $CC (restes dans 4-trash)"
+  Write-Host "migré    : ~/.claude -> $CC"
+  Retire $OLD 'claude-ancien'
 }
 $OldJson = Join-Path $HOME '.claude.json'
-if (Test-Path $OldJson) { if (Test-Path "$CC\.claude.json") { Move-Item $OldJson "$AI\4-trash\claude.json-ancien_$Stamp" } else { Move-Item $OldJson "$CC\.claude.json" } }
+if (Test-Path $OldJson) { Copy-Soft $OldJson "$CC\.claude.json"; Retire $OldJson 'claude.json-ancien' }
 
 # Windows : les liens symboliques de fichiers exigent des droits admin.
 # CLAUDE.md importe donc AGENTS.md ; settings.json reste un vrai fichier dans $CC ; les dossiers sont des jonctions.

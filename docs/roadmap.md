@@ -10,10 +10,8 @@ Le dossier personnel devient un dépôt privé, synchronisé entre les machines 
 ```
 Limite : GitHub refuse les fichiers de plus de 100 Mo et un dépôt doit rester sous quelques gigaoctets. `os/` sera donc exclu de Git et synchronisé autrement (rsync via SSH, disque externe) ; seul l'inventaire de son contenu peut être suivi.
 
-## Commandes d'installation plus courtes
-Les commandes actuelles passent par `raw.githubusercontent.com`. Pistes :
-- renommer le dépôt en `better-claude-instance` (dans GitHub : Settings → General → Repository name ; les anciens liens sont redirigés) ;
-- publier des alias courts depuis un site GitHub Pages personnel ou un dépôt dédié au nom très court, par exemple `irm <utilisateur>.github.io/w | iex` et `curl -sL <utilisateur>.github.io/l | sh`.
+## Tous les modèles de langage
+Faire tourner l'instance avec n'importe quel modèle, pas seulement Claude : ChatGPT (Codex), Grok, DeepSeek, modèles locaux ; par API, en local ou au quota d'un abonnement. Les règles (`AGENTS.md`), la mémoire, les skills et les projets restent communs ; seul le moteur change.
 
 ## Second cerveau
 Relier l'instance à une base de connaissances persistante, au-delà des skills de leçons.

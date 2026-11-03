@@ -9,11 +9,19 @@ Une instance de Claude Code rangée, portable et prête à l'emploi : règles de
 ### Windows
 Dans PowerShell :
 ```
+irm matglitch-974.github.io/BCI.ps1 | iex
+```
+Commande de secours (adresse complète, si `matglitch-974.github.io` est inaccessible) :
+```
 irm https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/install.ps1 | iex
 ```
 
 ### Linux / Android (Termux)
 Dans un terminal, ou dans l'application Termux installée depuis F-Droid :
+```
+curl -sL matglitch-974.github.io/BCI | sh
+```
+Commande de secours (adresse complète, si `matglitch-974.github.io` est inaccessible) :
 ```
 curl -fsSL https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/install.sh | sh
 ```

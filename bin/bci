@@ -36,7 +36,7 @@ case "${1:-}" in
     printf 'Claude Code  %s\n' "$(claude --version 2>/dev/null || echo absent)"
     printf 'config       %s %s\n' "${CLAUDE_CONFIG_DIR:-NON DÉFINIE}" \
       "$([ "${CLAUDE_CONFIG_DIR:-}" = "$AI/2-tools/3-software/claude-code" ] && echo '(ok)' || echo '(ouvrir un nouveau terminal)')"
-    [ -e "$HOME/.claude" ] && echo "ATTENTION    ~/.claude existe : CLAUDE_CONFIG_DIR manquait au lancement de claude"
+    [ -e "$HOME/.claude" ] && echo "ATTENTION    ~/.claude existe : cache laissé par une session hors BCI, rangé dans 4-trash au prochain démarrage de claude"
     printf 'recherche    %s\n' "$("$PY" "$AI/2-tools/1-skills/search/search.py" status 2>/dev/null || echo 'SearXNG absent')"
     printf 'sauvegardes  %s\n' "$("$PY" "$DEST/hooks/bci-backup.py" list 2>/dev/null | wc -l | tr -d ' ') ($AI/2-tools/logs/backup-bci)"
     if command -v restic >/dev/null 2>&1; then printf 'restic       %s\n' "$(restic version | cut -d' ' -f2)"

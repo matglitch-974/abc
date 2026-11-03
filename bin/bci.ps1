@@ -15,7 +15,7 @@ switch ($Cmd) {
     git -C $Dest log -1 --format='BCI          %h (%cs)'
     Write-Host "Claude Code  $(claude --version 2>$null)"
     Write-Host "config       $env:CLAUDE_CONFIG_DIR"
-    if (Test-Path "$HOME\.claude") { Write-Host 'ATTENTION    ~/.claude existe : CLAUDE_CONFIG_DIR manquait au lancement de claude' }
+    if (Test-Path "$HOME\.claude") { Write-Host 'ATTENTION    ~/.claude existe : cache laissé par une session hors BCI, rangé dans 4-trash au prochain démarrage de claude' }
     Write-Host "recherche    $(& $Py "$AI\2-tools\1-skills\search\search.py" status)"
     Write-Host "sauvegardes  $((& $Py "$Dest\hooks\bci-backup.py" list | Measure-Object).Count)"; break }
   default {
