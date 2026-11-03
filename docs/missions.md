@@ -45,6 +45,28 @@ Installés par `bootstrap.sh` / `install.ps1` ; tous gratuits et sans clé :
   (idem pour `torch`). Non testé : Tor absent de l'environnement de développement.
 - Non activés délibérément : Anna's Archive et Library Genesis (bibliothèques pirates).
 
+### Anonymat et bypass CAPTCHA
+
+Trois niveaux configurables à la création de `searxng-settings.yml` (jamais réécrit ensuite) :
+
+| Niveau | Prérequis | Effet |
+|--------|-----------|-------|
+| **FlareSolverr** | port 8191 ouvert | proxy global `http://localhost:8191` ; résout Cloudflare/JS via navigateur headless ; `SearxEngineCaptcha` → 60 s |
+| **Tor** | `--tor` / `BCI_TOR=1` / port 9050 | proxy global `socks5h://127.0.0.1:9050` ; réduit les bans IP ; augmente les CAPTCHA Google |
+| **FlareSolverr + Tor** | les deux | FlareSolverr sur le clearnet, Tor pour Ahmia/Torch uniquement |
+
+`suspended_times` injectés par défaut dans les réglages générés :
+
+```yaml
+search:
+  suspended_times:
+    SearxEngineAccessDenied: 86400
+    SearxEngineTooManyRequests: 3600
+    SearxEngineCaptcha: 60      # 3600 sans résolveur actif
+```
+
+Mesures de référence (sans bypass, IP de centre de données) : 52–78 résultats/requête, Google et Qwant bloqués (403/CAPTCHA), Yahoo/DuckDuckGo/Brave/Bing/Yandex opérationnels. Depuis une IP domestique, les blocages sont moins fréquents (non mesuré ; référence `docs/missions.md` §SearXNG). Mesures avec FlareSolverr ou Tor : non disponibles (environnement de développement sans ces services).
+
 ### Sources dédiées
 - **`specula`** : synthèses publiques quotidiennes de La Note Sentinelle (specula.fr). Passe par l'API WordPress publique du site plutôt que par l'analyse des pages : une requête par appel, données structurées, et une rupture de format détectée (nombre de points clés extraits comparé au nombre annoncé). L'édition complète, payante et envoyée par e-mail, n'est pas récupérée ; les contenus restent à usage personnel (CGV).
 
