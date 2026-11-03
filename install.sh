@@ -22,7 +22,10 @@ if [ ! -f /etc/alpine-release ] && { [ -n "${TERMUX_VERSION:-}" ] || [ -d /data/
   proot-distro login alpine -- sh -c "apk add --no-cache curl && curl -fsSL '$RAW/install.sh' | BCI_BRANCH='$BRANCH' sh"
   grep -q "alias claude=" "$HOME/.bashrc" 2>/dev/null || \
     echo "alias claude='proot-distro login alpine -- sh -lc claude'" >> "$HOME/.bashrc"
-  say "Terminé. Fermez puis rouvrez Termux, puis tapez : claude"
+  # bci côté Termux : exécutée dans Alpine, arguments transmis tels quels
+  printf '#!/bin/sh\nexec proot-distro login alpine -- sh -lc '"'"'bci "$@"'"'"' bci "$@"\n' > "$PREFIX/bin/bci"
+  chmod +x "$PREFIX/bin/bci"
+  say "Terminé. Fermez puis rouvrez Termux, puis tapez : claude   (mises à jour : bci install)"
   exit 0
 fi
 
@@ -61,4 +64,4 @@ else
 fi
 
 sh "$DEST/bootstrap.sh"
-say "Terminé. Ouvrez un nouveau terminal, puis tapez : claude"
+say "Terminé. Ouvrez un nouveau terminal, puis tapez : claude   (mises à jour : bci install)"

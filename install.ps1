@@ -149,6 +149,13 @@ if ((Get-Command uv -ErrorAction SilentlyContinue) -and -not (Get-Command crwl -
   uv tool install -q crawl4ai; if ($LASTEXITCODE -eq 0) { crawl4ai-setup } else { Write-Warning 'Crawl4AI non installé' }
 }
 
+# --- Commande bci (dans ~/.local/bin, ajouté au PATH utilisateur si absent) ---------------
+$Bin = "$HOME\.local\bin"
+New-Item -ItemType Directory -Force $Bin | Out-Null
+Copy-Item "$Dest\bin\bci.cmd" "$Bin\bci.cmd" -Force
+$UserPath = [Environment]::GetEnvironmentVariable('Path','User')
+if (($UserPath -split ';') -notcontains $Bin) { [Environment]::SetEnvironmentVariable('Path', "$UserPath;$Bin", 'User') }
+
 # --- Sauvegarde après installation ---------------------------------------------------
 & $Py $Backup install-apres
-Say 'Terminé. Ouvrez un nouveau terminal, puis tapez : claude'
+Say 'Terminé. Ouvrez un nouveau terminal, puis tapez : claude   (mises à jour : bci install)'

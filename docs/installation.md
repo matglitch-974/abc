@@ -34,6 +34,18 @@ Deux étapes ne peuvent pas être automatisées :
 
 Relancer la commande met à jour l'instance (`git pull`) sans toucher à vos fichiers.
 
+## Commande `bci`
+Installée avec BCI (`~/.local/bin/bci` ; Windows : `bci.cmd` ; Termux : `$PREFIX/bin/bci`, qui l'exécute dans Alpine). La toute première installation passe forcément par la commande ci-dessus : avant elle, `bci` n'existe pas.
+
+| Commande | Effet |
+|---|---|
+| `bci install` (ou `bci update`) | met à jour depuis GitHub puis réinstalle ; aucun fichier personnel écrasé |
+| `bci uninstall` | désinstalle, après deux confirmations (oui, puis le mot `desinstaller`) et un avertissement en rouge ; de même avant de supprimer `~/ai` ou `~/project` |
+| `bci status` | versions, `CLAUDE_CONFIG_DIR`, SearXNG, nombre de sauvegardes, restic |
+| `bci backup` / `bci backup list` | sauvegarde immédiate / liste |
+| `bci search "requête"` | recherche web (skill `search`) |
+| `bci version` | commit installé |
+
 ## Pourquoi pas npm
 L'installation par npm est dépréciée par Anthropic au profit de l'installateur natif, et npm n'est pas présent par défaut sous Windows.
 
@@ -44,6 +56,7 @@ Claude Code ne fournit pas de binaire pour Android. Il fournit en revanche un bi
 Pour adapter l'installation à ses besoins : installer Claude Code, cloner ce dépôt, lancer `claude` dans le dossier et demander, en n'importe quels termes, de l'installer ou de l'adapter. Le fichier `AGENTS.md` du dépôt renvoie vers `SETUP.md`, qui fait présenter chaque étape, accepter les modifications (« modifie ça, laisse ça, déplace ceci là »), confirmer le plan, puis l'appliquer.
 
 ## Désinstallation
+`bci uninstall`, ou :
 Windows :
 ```
 irm https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/uninstall.ps1 | iex
