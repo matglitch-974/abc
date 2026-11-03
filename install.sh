@@ -17,7 +17,8 @@ if [ ! -f /etc/alpine-release ] && { [ -n "${TERMUX_VERSION:-}" ] || [ -d /data/
   say "Termux détecté : installation d'Alpine Linux"
   pkg install -y proot-distro
   rm -rf "$HOME/.claude/downloads"   # restes d'un essai natif (binaire incompatible avec Android)
-  [ -d "$PREFIX/var/lib/proot-distro/installed-rootfs/alpine" ] || proot-distro install alpine
+  # Test par entrée réelle : l'emplacement des conteneurs change selon la version de proot-distro.
+  proot-distro login alpine -- true >/dev/null 2>&1 || proot-distro install alpine
   proot-distro login alpine -- sh -c "apk add --no-cache curl && curl -fsSL '$RAW/install.sh' | BCI_BRANCH='$BRANCH' sh"
   grep -q "alias claude=" "$HOME/.bashrc" 2>/dev/null || \
     echo "alias claude='proot-distro login alpine -- sh -lc claude'" >> "$HOME/.bashrc"
