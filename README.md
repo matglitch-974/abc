@@ -39,6 +39,7 @@ Au premier lancement de `claude`, connectez-vous à votre compte Anthropic. Pour
 - [Installation](docs/installation.md) : plateformes, fonctionnement, désinstallation, dépannage
 - [Personas et agents](docs/agents.md) : persona principal, `slave`, amélioration continue
 - [Mémoire](docs/memory.md) : index, todos, journal automatique, réalignement
+- [Missions et recherche web](docs/missions.md) : reconnaissance d'outils, arbre de tâches, scraping, réglages de génération
 - [Espace de travail](docs/workspace.md) : secteurs de `1-bench`, corbeille
 - [Projets](docs/projects.md) : hiérarchie, unité, `sensible/`, protections
 - [Nommage et langue](docs/naming.md)

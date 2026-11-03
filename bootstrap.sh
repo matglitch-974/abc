@@ -19,7 +19,8 @@ for t in user feedback project reference journal; do mkdir -p "$AI/memory/$t"; d
     mkdir -p "$(dirname "$dst")"; cp "$SRC/skeleton/$f" "$dst"; echo "créé     : $dst"
   fi
 done
-chmod +x "$SRC/hooks/memory-hook.py" "$AI/2-tools/1-skills/bench/sector" "$AI/2-tools/1-skills/bench/agent-id.py" "$AI/2-tools/1-skills/project/new-unit" "$HOOK"
+chmod +x "$SRC/hooks/memory-hook.py" "$AI/2-tools/1-skills/bench/sector" "$AI/2-tools/1-skills/bench/agent-id.py" "$AI/2-tools/1-skills/project/new-unit" "$HOOK" \
+  "$AI/2-tools/1-skills/mission/tool-scan.py" "$AI/2-tools/1-skills/mission/tool-install.py"
 
 # --- Environnement -------------------------------------------------------------
 MUSL=false
@@ -70,3 +71,22 @@ else
   echo "ATTENTION : jq absent, $S existant non modifié. Ajoutez-y à la main : $ADD" >&2
 fi
 echo "réglages : $S"
+
+# --- Outils de recherche web (gratuits, sans clé) ---------------------------------
+# Échecs non bloquants : un outil manquant n'empêche pas l'instance de fonctionner.
+command -v uv >/dev/null 2>&1 || [ -x "$HOME/.local/bin/uv" ] || curl -LsSf https://astral.sh/uv/install.sh | sh || true
+export PATH="$HOME/.local/bin:$PATH"
+if command -v claude >/dev/null 2>&1; then
+  addmcp() { claude mcp get "$1" >/dev/null 2>&1 || claude mcp add -s user "$@" || echo "ATTENTION : MCP $1 non installé" >&2; }
+  addmcp fetch -- uvx mcp-server-fetch
+  addmcp duckduckgo -- uvx duckduckgo-mcp-server
+  if command -v npx >/dev/null 2>&1; then addmcp playwright -- npx -y @playwright/mcp@latest
+  else echo "ATTENTION : Node.js absent, MCP playwright non installé" >&2; fi
+fi
+if command -v uv >/dev/null 2>&1 && ! command -v scrapling >/dev/null 2>&1; then
+  { uv tool install -q "scrapling[ai,fetchers]" && scrapling install; } || echo "ATTENTION : Scrapling non installé" >&2
+fi
+command -v claude >/dev/null 2>&1 && command -v scrapling >/dev/null 2>&1 && addmcp scrapling -- scrapling mcp
+if command -v uv >/dev/null 2>&1 && ! command -v crwl >/dev/null 2>&1; then
+  { uv tool install -q crawl4ai && crawl4ai-setup; } || echo "ATTENTION : Crawl4AI non installé (navigateur requis)" >&2
+fi

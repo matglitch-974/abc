@@ -92,4 +92,25 @@ foreach ($ev in 'SessionStart','UserPromptSubmit','PostToolUse','PreCompact','St
 [IO.File]::WriteAllText($S, ($cfg | ConvertTo-Json -Depth 20))   # UTF-8 sans BOM
 Write-Host "réglages : $S"
 
+# --- Outils de recherche web (gratuits, sans clé) ; échecs non bloquants ---------
+Say 'Outils de recherche web'
+if (-not (Get-Command npx -ErrorAction SilentlyContinue)) { winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
+if (-not (Get-Command uv -ErrorAction SilentlyContinue)) { winget install --id astral-sh.uv -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
+$env:Path = "$HOME\.local\bin;$env:Path"
+if (Get-Command claude -ErrorAction SilentlyContinue) {
+  foreach ($m in @(@('fetch','uvx','mcp-server-fetch'), @('duckduckgo','uvx','duckduckgo-mcp-server'), @('playwright','npx','-y','@playwright/mcp@latest'))) {
+    claude mcp get $m[0] *> $null
+    if ($LASTEXITCODE -ne 0) { claude mcp add -s user $m[0] -- @($m[1..($m.Count-1)]); if ($LASTEXITCODE -ne 0) { Write-Warning "MCP $($m[0]) non installé" } }
+  }
+}
+if ((Get-Command uv -ErrorAction SilentlyContinue) -and -not (Get-Command scrapling -ErrorAction SilentlyContinue)) {
+  uv tool install -q 'scrapling[ai,fetchers]'; if ($LASTEXITCODE -eq 0) { scrapling install } else { Write-Warning 'Scrapling non installé' }
+}
+if ((Get-Command claude -ErrorAction SilentlyContinue) -and (Get-Command scrapling -ErrorAction SilentlyContinue)) {
+  claude mcp get scrapling *> $null; if ($LASTEXITCODE -ne 0) { claude mcp add -s user scrapling -- scrapling mcp }
+}
+if ((Get-Command uv -ErrorAction SilentlyContinue) -and -not (Get-Command crwl -ErrorAction SilentlyContinue)) {
+  uv tool install -q crawl4ai; if ($LASTEXITCODE -eq 0) { crawl4ai-setup } else { Write-Warning 'Crawl4AI non installé' }
+}
+
 Say 'Terminé. Ouvrez un nouveau terminal, puis tapez : claude'

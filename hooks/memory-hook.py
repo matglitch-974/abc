@@ -130,6 +130,7 @@ def handle(event):
         todo_sync()
         if src == "startup":
             journal(f"{tag} sauvegarde : {backup()}")
+            out = "Début de session : reconnaissance des outils (skill `mission`) avant la première tâche.\n"
         if src == "compact":
             out = realign()
     elif name == "UserPromptSubmit":

@@ -1,6 +1,6 @@
 # AGENTS.md — instance principale
 
-Lu à chaque session. Le détail vit dans les skills (chargés à la demande) : `memory`, `bench`, `project`, `persona`.
+Lu à chaque session. Le détail vit dans les skills (chargés à la demande) : `memory`, `bench`, `project`, `persona`, `mission`, `scraping`, `sampling`.
 
 ```
 ~/ai/
@@ -45,6 +45,10 @@ Fermeture possible à tout instant : écrire au fil de l'eau, jamais en fin de s
 - `slave` ne lit pas ce fichier : mettre dans la consigne toute règle utile à la tâche.
 - Son travail est vérifié puis présenté comme le sien.
 - `1-bench/` est vide à la fin du travail.
+
+## Missions
+- Début de session et toute tâche lourde → skill `mission` : reconnaissance des outils par `slave` (installation automatique, signalée), arbre de tâches du simple au complexe, carte `PLAN.md` tenue à jour.
+- Collecte web → skill `scraping`.
 
 ## Projets
 Unité = sub-project (ou project sans sub-project), dépôt Git avec `AGENTS.md`, `CLAUDE.md`, `README.md`, `TODO.md`, `.gitignore`, `sensible/`. Créer : `new-unit` (skill `project`). `sensible/` (IP, clés ; jamais de prompts) ne sort jamais : `.gitignore` + hook.
