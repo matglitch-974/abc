@@ -12,11 +12,12 @@
 │   │       └── slave.md                  l'unique sous-agent
 │   ├── 1-bench/                          espace de travail temporaire (secteurs)
 │   ├── 2-tools/
-│   │   ├── 0-mcp/                        serveurs MCP ; sensible/ (clés, ex. Brave Search)
-│   │   ├── 1-skills/                     skills : persona, bench, project, memory, context, mission, scraping, sampling, specula, leçons…
+│   │   ├── 0-mcp/                        serveurs MCP ; sensible/ (clés éventuelles)
+│   │   ├── 1-skills/                     skills : persona, bench, project, memory, context, mission, search, scraping, sampling, specula, leçons…
 │   │   ├── 2-plugins/                    plugins de Claude Code
 │   │   ├── 3-software/                   logiciels de l'IA
 │   │   │   ├── better-claude-instance/   ce dépôt
+│   │   │   ├── searxng/                  métamoteur local (skill search) ; réglages : searxng-settings.yml
 │   │   │   └── claude-code/              configuration de Claude Code (CLAUDE_CONFIG_DIR) : historiques, caches, .claude.json
 │   │   │       ├── CLAUDE.md  ───────▶ ~/ai/AGENTS.md
 │   │   │       ├── skills     ───────▶ ~/ai/2-tools/1-skills/

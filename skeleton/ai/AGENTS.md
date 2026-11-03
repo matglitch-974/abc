@@ -1,6 +1,6 @@
 # AGENTS.md — instance principale
 
-Lu à chaque session. Le détail vit dans les skills (chargés à la demande) : `memory`, `bench`, `project`, `persona`, `mission`, `scraping`, `sampling`.
+Lu à chaque session. Le détail vit dans les skills (chargés à la demande) : `memory`, `bench`, `project`, `persona`, `mission`, `search`, `scraping`, `sampling`, `specula`.
 
 ```
 ~/ai/
@@ -52,7 +52,7 @@ Début de session (obligatoire dans une unité de code) et toute tâche lourde ;
 1. Reconnaissance par `slave` : outils locaux, puis en ligne (`tool-scan.py`) ; installation automatique des meilleurs (`tool-install.py`), signalée. Consigne type : skill `mission`.
 2. Décomposition en tâches atomiques vérifiables, prérequis d'abord, de la plus simple à la plus complexe ; indépendantes → `slave` en parallèle.
 3. Carte `PLAN.md` à la racine de l'unité, tenue à jour, sans prose : `T3 [ ] tâche | <- T1,T2 | @outil | ok: preuve` (états `[ ] [~] [x] [!]`).
-- Recherche web : Brave Search uniquement (MCP `brave`, réponse IA : `brave_summarizer`) ; collecte : skill `scraping`.
+- Recherche web : SearXNG local uniquement (skill `search`, sans clé) ; collecte : skill `scraping`.
 
 ## Projets
 Unité = sub-project (ou project sans sub-project), dépôt Git avec `AGENTS.md`, `CLAUDE.md`, `README.md`, `TODO.md`, `.gitignore`, `sensible/`. Créer : `new-unit` (skill `project`). `sensible/` (IP, clés ; jamais de prompts) ne sort jamais : `.gitignore` + hooks (commande, `pre-push`).

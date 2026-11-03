@@ -18,17 +18,32 @@ Inspiré de Dr. Stone : partir de l'objectif, remonter jusqu'aux prérequis él�
 - **Format de `PLAN.md`** : choisi pour être relu par un LLM au moindre coût (identifiants courts, dépendances `<-`, états `[ ] [~] [x] [!]`), y compris après une compaction.
 
 ## Recherche web (skill `scraping`)
-Installés par `bootstrap.sh` / `install.ps1` ; tous gratuits et sans clé, sauf Brave Search (choix de l'utilisateur, à la place de DuckDuckGo) :
+Installés par `bootstrap.sh` / `install.ps1` ; tous gratuits et sans clé :
 
 | Outil | Licence | Rôle |
 |---|---|---|
 | `fetch` (`mcp-server-fetch`, MCP officiel) | MIT | page statique → Markdown |
-| `brave` (`@brave/brave-search-mcp-server`, officiel) | MIT | **seul moteur de recherche** : web, actualités, contexte LLM, réponse IA (`brave_summarizer`) ; clé API requise (`BRAVE_API_KEY_FILE` → `~/ai/2-tools/0-mcp/sensible/brave-api-key`) |
+| SearXNG (`searxng/searxng`, local) + MCP `searxng` (`mcp-searxng`) | AGPL-3.0 / MIT | **seul moteur de recherche** : métamoteur (Google, Bing, Brave, DuckDuckGo, Yahoo, Yandex, bases scientifiques… ; 353 moteurs déclarés), sortie JSON ; skill `search` |
 | `playwright` (`@playwright/mcp`, Microsoft) | Apache-2.0 | navigateur réel, interaction |
 | `scrapling` (`scrapling[ai,fetchers]`) | BSD-3-Clause | navigateur furtif, sites protégés |
 | `crwl` (Crawl4AI, CLI) | Apache-2.0 | exploration de sites entiers |
 
-Écartés : DuckDuckGo (remplacé par Brave Search), Firecrawl, Tavily, Exa, Bright Data (clé requise, quotas gratuits limités). Les échecs d'installation ne bloquent pas l'instance (navigateurs absents sous Termux/musl, par exemple).
+Écartés : DuckDuckGo seul et l'API Brave Search (SearXNG les interroge déjà sans clé ; l'API Brave exige une clé), Firecrawl, Tavily, Exa, Bright Data (clé requise, quotas gratuits limités). Les échecs d'installation ne bloquent pas l'instance (navigateurs absents sous Termux/musl, par exemple).
+
+### SearXNG
+- Exigence : résultats de tous les moteurs, sans clé ni argent, exploitables par une IA, deep web en prime. SearXNG est le seul outil libre qui coche tout : il interroge les moteurs en parallèle, fusionne et dédoublonne, et répond en JSON.
+- Installé dans `~/ai/2-tools/3-software/searxng/` (clone Git + environnement Python via uv, sans Docker) ; écoute sur `127.0.0.1:8888` seulement ; démarré à la demande par `search.py` (journal : `2-tools/logs/searxng.log`).
+- Réglages `~/ai/2-tools/3-software/searxng-settings.yml`, créés au premier lancement (clé secrète aléatoire, JSON activé, moteurs désactivés par défaut réactivés : Bing, Google, Qwant, Yahoo, Yandex, Wiby, Crossref, OpenAlex).
+- Mesuré (environnement de développement, adresse IP de centre de données) : 52 à 78 résultats par requête, issus de Yahoo, DuckDuckGo, Brave, Yandex, Bing, Google CSE, Semantic Scholar, Crossref, PubMed ; Google et Qwant y étaient bloqués (403, CAPTCHA). Depuis une connexion domestique, les blocages sont en général moins fréquents (non mesuré).
+- Tor : seuls Ahmia et Torch passent par le proxy, le reste reste rapide. Modèle à ajouter sous `engines:` si Tor est installé après coup :
+  ```yaml
+  - name: ahmia
+    using_tor_proxy: true
+    proxies:
+      all://: "socks5h://127.0.0.1:9050"
+  ```
+  (idem pour `torch`). Non testé : Tor absent de l'environnement de développement.
+- Non activés délibérément : Anna's Archive et Library Genesis (bibliothèques pirates).
 
 ### Sources dédiées
 - **`specula`** : synthèses publiques quotidiennes de La Note Sentinelle (specula.fr). Passe par l'API WordPress publique du site plutôt que par l'analyse des pages : une requête par appel, données structurées, et une rupture de format détectée (nombre de points clés extraits comparé au nombre annoncé). L'édition complète, payante et envoyée par e-mail, n'est pas récupérée ; les contenus restent à usage personnel (CGV).
