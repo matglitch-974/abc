@@ -30,7 +30,7 @@ bci status             état : versions, configuration, recherche, sauvegardes
 bci backup [list]      sauvegarde immédiate, ou liste des sauvegardes
 bci search "requête"   recherche web (SearXNG local) ; options : bci search -h
 bci keys open|close|status   coffre chiffré de 2-tools/4-keys-code (restic)
-bci import [skills|secrets|llm]   réimporte l'existant (copies ; idempotent)
+bci import [skills|agents|secrets|llm]   réimporte l'existant (copies ; idempotent)
 bci version            version installée
 '@ | Write-Host }
 }

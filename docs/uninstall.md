@@ -18,8 +18,8 @@ La désinstallation est interactive : un avertissement en rouge, une question `[
 
 ## Ce qu'elle fait
 1. **Configuration remise dans `~/.claude`** — seulement si `~/.claude` n'existe pas déjà :
-   - Linux : `claude-code/` est renommé en `~/.claude` ; les liens `CLAUDE.md`, `skills`, `agents/system-agents` sont retirés ; `plugins` et `settings.json` (liens) sont remplacés par des copies réelles ;
-   - Windows : les jonctions `skills`, `agents/system-agents` sont retirées, `plugins` remplacé par une copie ; `CLAUDE.md` est retiré s'il ne contient que l'import de `~/ai/AGENTS.md` ; puis `claude-code/` est déplacé en `~/.claude` ;
+   - Linux : `claude-code/` est renommé en `~/.claude` ; `CLAUDE.md`, `skills`, `agents/system-agents` sont retirés s'ils sont des liens symboliques (un `CLAUDE.md` devenu fichier ordinaire est gardé) ; `plugins` et `settings.json` (liens) sont remplacés par des copies réelles ;
+   - Windows : les jonctions `skills`, `agents/system-agents` sont retirées, `plugins` remplacé par une copie ; `CLAUDE.md` est retiré dès qu'il contient l'import `@~/ai/AGENTS.md`, même s'il contient aussi d'autres lignes ; puis `claude-code/` est déplacé en `~/.claude` ;
    - `.claude.json` revient dans `~/` (s'il n'y est pas déjà) ; les `*.bak-bci` sont restaurés à leur nom d'origine.
 2. **Variable `CLAUDE_CONFIG_DIR` retirée** (lignes de `~/.profile`, `~/.bashrc`, `~/.zshrc` ; variable utilisateur sous Windows) et commande `bci` retirée de `~/.local/bin`.
 3. **Réglages nettoyés** dans `~/.claude/settings.json` : entrées `Agent(…)` de `permissions.deny` et hooks `guard-sensible` / `memory-hook` retirés (sous Linux, il faut `jq`).
@@ -32,6 +32,7 @@ La désinstallation est interactive : un avertissement en rouge, une question `[
 ## Ce qu'elle ne fait pas
 - Claude Code reste installé, ainsi que Git, Python, uv, Node.js, restic, SearXNG, Scrapling, Crawl4AI.
 - Les serveurs MCP ajoutés (`fetch`, `searxng`, `playwright`, `scrapling`) restent déclarés.
+- Les serveurs MCP `duckduckgo` et `brave` retirés à l'installation ne sont pas restaurés.
 - Toutes les entrées `Agent(…)` de `permissions.deny` sont retirées, y compris celles que vous auriez ajoutées vous-même.
 - Les copies faites par l'import (skills, secrets, configs d'autres LLM) restent dans `~/ai` tant que vous ne le supprimez pas ; les originaux n'ont jamais été touchés.
 - Sous Termux, l'alias `claude` de `~/.bashrc` et `$PREFIX/bin/bci` restent côté Termux.

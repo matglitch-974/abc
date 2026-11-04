@@ -17,7 +17,7 @@ Lancé par l'installateur (`bci-import.py all`) et à la demande (`bci import se
 Droits restreints au propriétaire (700 / 600) hors Windows. L'import n'affiche que les **noms** des variables, jamais leurs valeurs.
 
 ## Chiffrement : `hooks/bci-keys.py` (commande `bci keys`)
-Le chiffrement est facultatif ; il exige restic ≥ 0.17. L'installateur le propose une fois (`BCI_ENCRYPT_KEYS=oui|non` évite la question).
+Le chiffrement est facultatif ; il exige restic. `bci-keys.py` vérifie seulement que restic est présent, pas sa version ; le seuil 0.17 est contrôlé par `bci-backup.py` pour les sauvegardes. L'installateur le propose une fois (`BCI_ENCRYPT_KEYS=oui|non` évite la question).
 
 | Commande | Effet |
 |---|---|

@@ -7,7 +7,7 @@ Ce que fait chaque script, tel qu'il est écrit. Le dépôt est cloné dans `~/a
 ### `install.ps1` (Windows 10 / 11)
 1. Installe ce qui manque : Git (winget ; sans winget, arrêt avec un message), uv (winget, sinon script officiel d'Astral), Python 3.13 (winget, sinon `uv python install`), Claude Code (installateur officiel `claude.ai/install.ps1`).
 2. Clone ou met à jour (`git pull --ff-only`) le dépôt ; `BCI_BRANCH` choisit la branche.
-3. Sauvegarde `install-avant` si `~/ai` ou `~/.claude` existe (première installation seulement).
+3. Sauvegarde `install-avant` (première installation seulement ; toujours faite alors, car le clone vient de créer `~/ai`).
 4. Crée l'arborescence de `~/ai` et `~/project`, copie `skeleton/` sans rien écraser.
 5. Importe l'existant (`bci-import.py all`).
 6. Fixe `CLAUDE_CONFIG_DIR` (variable utilisateur), copie `~/.claude` élément par élément dans `claude-code/` (fichiers verrouillés sautés ; `CLAUDE.md` et `skills` en `*.bak-bci`), puis range l'original et `~/.claude.json` dans `4-trash` par renommage atomique ; encore tenus par une session, ils restent en place jusqu'au rangement par le hook mémoire. Si des sessions `claude` tournent, `~/.claude/.credentials.json` leur est laissé.
@@ -24,7 +24,7 @@ Ce que fait chaque script, tel qu'il est écrit. Le dépôt est cloné dans `~/a
 Même déroulé que les étapes 3 à 10 de `install.ps1`, avec ces différences :
 - `~/.claude` est **déplacé** élément par élément (pas copié) ; `settings.json` va dans `~/ai/memory/settings.json` ; `plugins` dans `~/ai/2-tools/2-plugins` s'il est vide ;
 - les liens sont symboliques : `CLAUDE.md` → `~/ai/AGENTS.md`, `settings.json` → `~/ai/memory/settings.json` ;
-- `CLAUDE_CONFIG_DIR` et `~/.local/bin` dans le PATH sont ajoutés à `~/.profile` (et `~/.bashrc`, `~/.zshrc` s'ils existent) ; sous musl (Alpine), `USE_BUILTIN_RIPGREP=0` ;
+- `~/.local/bin` est ajouté au PATH dans `~/.profile` seulement ; `CLAUDE_CONFIG_DIR` est ajouté à `~/.profile`, et à `~/.bashrc` et `~/.zshrc` s'ils existent ; sous musl (Alpine), `USE_BUILTIN_RIPGREP=0` ;
 - la fusion de `settings.json` exige `jq` ; sans lui, le fichier existant n'est pas modifié (avertissement) ;
 - `bci` est un lien `~/.local/bin/bci` → `bin/bci` ; uv est installé par le script officiel s'il manque.
 
@@ -47,9 +47,9 @@ Voir [uninstall.md](uninstall.md).
 ### `bci-import.py`
 - `skills` : chaque dossier de `~/.claude/skills` contenant `SKILL.md` est copié dans `~/ai/2-tools/1-skills/` ; nom déjà pris par un skill différent : `<nom>1`, `<nom>2`…, champ `name` corrigé, ligne ajoutée à `memory/TODO.md`. Une empreinte (`.bci-import`) évite tout réimport.
 - `agents` : chaque `.md` de `~/.claude/agents` est copié dans `~/ai/0-persona/` (sélection par `@nom`), même règle de conflit ; les liens BCI sont ignorés.
-- `secrets` : voir [keys.md](keys.md).
-- `llm` : configs de Ollama, Grok, Codex, Gemini, Qwen, LM Studio, opencode, Continue, aider, Kimi, DeepSeek, Crush, Goose copiées dans `~/ai/3-llm/<outil>/` (fichiers de plus de 100 Mo laissés en place, secrets envoyés dans `4-keys-code/llm/`) ; modèles Ollama **déplacés** une fois vers `BCI_MODELS_DIR` (défaut `~/ai/3-llm/models`), `OLLAMA_MODELS` y pointe ; inventaire dans `~/ai/3-llm/llms.md`.
-- `all` : les quatre, plus l'ancien `2-tools/0-mcp/sensible` versé dans `4-keys-code/mcp`.
+- `secrets` : voir [keys.md](keys.md). Verse aussi l'ancien `2-tools/0-mcp/sensible` dans `4-keys-code/mcp` (l'original part dans `4-trash` ; vide, il est supprimé), donc aussi avec `bci import secrets`.
+- `llm` : configs de Ollama, Grok, Codex, Gemini, Qwen, LM Studio, opencode, Continue, aider, Kimi, DeepSeek, Crush, Goose copiées dans `~/ai/3-llm/<outil>/` (fichiers de plus de 100 Mo laissés en place, secrets envoyés dans `4-keys-code/llm/`) ; modèles Ollama **déplacés** une fois vers `$BCI_MODELS_DIR/ollama` (défaut `~/ai/3-llm/models/ollama`), `OLLAMA_MODELS` y pointe ; inventaire dans `~/ai/3-llm/llms.md`.
+- `all` : les quatre, dans cet ordre.
 
 ## Scripts de l'instance (`skeleton/ai/2-tools/1-skills/`)
 

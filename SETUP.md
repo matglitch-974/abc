@@ -68,7 +68,11 @@ Laisse l'utilisateur garder, déplacer, renommer ou retirer n'importe quel élé
   ```
   Sous Linux, l'installation des paquets passe par `sudo` : si un mot de passe est demandé, l'utilisateur lance la commande lui-même. Sous Termux, `install.sh` se relance dans Alpine sans transmettre `BCI_ENCRYPT_KEYS` : la question du chiffrement peut y être posée au terminal.
 
-**Avec écarts** : reproduis les étapes de l'installateur à la main, dans le même ordre (sauvegarde `install-avant`, arborescence, skeleton, import, migration de `~/.claude`, liens, réglages, outils, sauvegarde `install-apres`), en sautant ou modifiant ce que l'utilisateur a refusé. Les étapes d'import sont séparables : `python3 hooks/bci-import.py skills|agents|secrets|llm`. Un élément de `~/.claude` qu'on ne veut pas migrer est déplacé ailleurs **avant** la migration, jamais supprimé.
+**Avec écarts** : reproduis les étapes de l'installateur à la main, dans l'ordre du script de la plateforme, en sautant ou modifiant ce que l'utilisateur a refusé :
+- Windows (`install.ps1`) : sauvegarde `install-avant`, arborescence et skeleton, import, `CLAUDE_CONFIG_DIR` et migration de `~/.claude`, liens, réglages, outils, commande `bci`, chiffrement proposé, sauvegarde `install-apres` ;
+- Linux (`bootstrap.sh`) : sauvegarde `install-avant`, arborescence et skeleton, commande `bci`, environnement (`PATH`, `CLAUDE_CONFIG_DIR`), import, migration de `~/.claude`, réglages, liens, outils, chiffrement proposé, sauvegarde `install-apres`.
+
+Les étapes d'import sont séparables : `python3 hooks/bci-import.py skills|agents|secrets|llm`. Un élément de `~/.claude` qu'on ne veut pas migrer est déplacé ailleurs **avant** la migration, jamais supprimé.
 
 Puis applique les adaptations validées (fusion de l'ancien `CLAUDE.md`, souvenirs à écrire dans `~/ai/memory/<type>/` avec leur ligne dans `INDEX.md`, etc.) et mets à jour `~/ai/AGENTS.md` (sommaire et chemins) pour qu'il décrive la structure réellement installée.
 
@@ -78,8 +82,8 @@ Puis applique les adaptations validées (fusion de l'ancien `CLAUDE.md`, souveni
 - `claude-code/skills`, `plugins`, `agents/system-agents` sont des liens (jonctions sous Windows) vers `~/ai`.
 - `settings.json` contient les hooks `guard-sensible` et `memory-hook`, et les anciens hooks de l'utilisateur.
 - `claude mcp list` : anciens MCP présents, nouveaux ajoutés (un échec d'outil web n'est pas bloquant : signale-le).
-- `~/ai/2-tools/logs/backup-bci/` contient `install-avant` (si une config existait) et `install-apres`.
-- Les avertissements `ATTENTION` de la sortie de l'installateur : relève-les tous.
+- `~/ai/2-tools/logs/backup-bci/` contient `install-avant` et `install-apres` (les deux sont faites à la première installation : l'installateur crée `~/ai` pour y cloner le dépôt avant la sauvegarde `install-avant`).
+- Les avertissements de la sortie de l'installateur, `ATTENTION` sous Linux, `AVERTISSEMENT` sous Windows (préfixe de `Write-Warning`, `WARNING` sur un Windows en anglais) : relève-les tous.
 
 Ta session a démarré avant l'installation : elle lit encore l'ancienne configuration et peut recréer `~/.claude`. C'est prévu : l'installateur laisse `~/.claude/.credentials.json` aux sessions ouvertes, et le hook mémoire range ce reliquat dans `4-trash` au premier démarrage d'une session BCI où aucune autre session ne tourne.
 

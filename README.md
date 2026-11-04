@@ -5,7 +5,7 @@
 
 Better Claude Instance (BCI) transforme votre Claude Code en une instance rangée, prudente et qui n'oublie rien, en une seule commande. Tout ce qui touche à l'IA tient dans un seul dossier, `~/ai`, vos projets dans `~/project`, et vos données sensibles ne sortent jamais de leur place.
 
-Vous y gagnez une mémoire écrite au fil de l'eau, des personas à choisir d'un simple `@nom`, un sous-agent d'exécution unique, une recherche web locale sans clé, des sauvegardes quotidiennes et un coffre pour vos clés. Plus besoin de tout configurer à la main : BCI s'en charge et ne supprime rien en chemin.
+Vous y gagnez une mémoire écrite au fil de l'eau, des personas à choisir d'un simple `@nom`, un sous-agent d'exécution unique, une recherche web locale sans clé, des sauvegardes quotidiennes et un coffre pour vos clés. Plus besoin de tout configurer à la main : BCI s'en charge, et ce qu'il retire de votre configuration part dans une corbeille au lieu d'être effacé.
 
 > [!NOTE]
 > BCI fonctionne sous Windows 10 / 11, Linux et Android (Termux). Il n'est pas conçu pour l'environnement Apple : ni macOS, ni iPhone, ni iPad.
@@ -13,7 +13,7 @@ Vous y gagnez une mémoire écrite au fil de l'eau, des personas à choisir d'un
 ## Utilisation
 
 > [!WARNING]
-> BCI déplace votre configuration de Claude Code (`~/.claude`) dans `~/ai`. Rien n'est supprimé : les anciens fichiers vont dans `~/ai/4-trash/`, tout fichier remplacé est gardé en `*.bak-bci`, et une sauvegarde complète est faite avant et après la première installation. Lisez tout de même ce que l'installation va faire avant de la lancer.
+> BCI déplace votre configuration de Claude Code (`~/.claude`) dans `~/ai`. Aucun de vos fichiers n'est effacé : les anciens vont dans `~/ai/4-trash/`, tout fichier remplacé est gardé en `*.bak-bci`, et une sauvegarde complète est faite avant et après la première installation. Exceptions : sous Termux, `~/.claude/downloads` (reste d'un essai d'installation incompatible) est supprimé ; quelques dossiers vides sont retirés (`2-plugins` avant d'y placer vos plugins, l'ancien `2-tools/0-mcp/sensible`) ; `bci keys close` efface la version en clair de `4-keys-code` une fois le coffre chiffré et vérifié. Lisez tout de même ce que l'installation va faire avant de la lancer.
 
 ### Méthode recommandée : laissez votre agent installer
 
@@ -87,15 +87,15 @@ Tout se pilote avec la commande `bci` :
 | `bci backup` | sauvegarde tout de suite (`bci backup list` pour les voir) |
 | `bci search "requête"` | recherche web locale, sans clé |
 | `bci keys open` / `close` | ouvre ou referme le coffre chiffré de vos clés |
-| `bci import` | réimporte vos skills, secrets ou autres LLM (sans doublon) |
+| `bci import` | réimporte vos skills, agents, secrets ou autres LLM (sans doublon) |
 | `bci uninstall` | désinstalle, après deux confirmations |
 
 ## Fonctionnalités
 
-Voici ce que BCI apporte à votre Claude Code. Chaque point renvoie à la [documentation](docs/) pour le détail.
+Voici ce que BCI apporte à votre Claude Code. Chaque point renvoie à la documentation pour le détail.
 
 > [!TIP]
-> Tout est réversible : `bci uninstall` remet votre configuration dans `~/.claude` et ne touche à `~/ai` et `~/project` que si vous le demandez, avec un mot de confirmation à taper en entier. Voir [la désinstallation](docs/uninstall.md).
+> `bci uninstall` remet l'essentiel en place : votre configuration revient dans `~/.claude`, et `~/ai` et `~/project` ne sont touchés que si vous le demandez, avec un mot de confirmation à taper en entier. Ce n'est pas un retour complet en arrière : les MCP `duckduckgo` et `brave` retirés à l'installation ne sont pas restaurés, les MCP ajoutés (`fetch`, `searxng`, `playwright`, `scrapling`) restent déclarés, et toutes les entrées `Agent(…)` de `permissions.deny` sont retirées, y compris les vôtres. Voir [la désinstallation](docs/uninstall.md).
 
 #### Un seul dossier pour l'IA
 
@@ -103,11 +103,15 @@ Voici ce que BCI apporte à votre Claude Code. Chaque point renvoie à la [docum
 - Personas, espace de travail, outils, autres LLM, corbeille et mémoire ont chacun leur dossier numéroté.
 - Vos projets vivent dans `~/project/<catégorie>/<project>/<sub-project>/`, un dépôt Git par unité.
 
+Voir [l'architecture](docs/architecture.md) et [les projets](docs/projects.md).
+
 #### Une mémoire qui ne perd rien
 
 - Un journal du jour écrit à chaque événement : vous pouvez fermer à tout moment.
 - Un sommaire des tâches ouvertes de tous vos projets, mis à jour à chaque démarrage.
 - Des règles de réalignement réinjectées tous les 10 messages et après chaque compaction.
+
+Voir [la mémoire](docs/memory.md) et [le hook mémoire](docs/memory-hook.md).
 
 #### Personas et sous-agent
 
@@ -115,25 +119,35 @@ Voici ce que BCI apporte à votre Claude Code. Chaque point renvoie à la [docum
 - Un seul sous-agent, `slave`, pour toutes les tâches déléguées : les agents intégrés de Claude Code sont désactivés.
 - Des agents isolés, avec leur propre mémoire, cloisonnés du reste de l'instance.
 
+Voir [les personas et agents](docs/agents.md).
+
 #### Vos secrets restent à leur place
 
 - Clés SSH, jetons, identifiants d'outils et cookies sont rassemblés dans `~/ai/2-tools/4-keys-code`, chiffrable avec restic.
 - Un dossier `sensible/` dans chaque projet, exclu de Git et bloqué par deux gardes (commandes de Claude Code et hook `pre-push`).
+
+Voir [le coffre des clés](docs/keys.md) et [les protections](docs/projects.md#protections).
 
 #### Recherche web sans clé
 
 - SearXNG en local : un métamoteur qui interroge Google, Bing, Brave, DuckDuckGo et bien d'autres, sans compte ni clé.
 - Serveurs MCP `fetch`, `searxng`, `playwright` et `scrapling`, plus Crawl4AI pour explorer des sites entiers.
 
+Voir [la recherche web](docs/missions.md#recherche-web-skill-scraping).
+
 #### Sauvegardes automatiques
 
 - Une sauvegarde de tout `~/ai` par jour, dédupliquée et compressée (restic, ou archive `tar.xz` à défaut).
 - Rotation « tour de Hanoï » : au plus 10 sauvegardes, des plus récentes aux plus anciennes.
 
+Voir [les sauvegardes](docs/memory.md#sauvegardes-hooksbci-backuppy).
+
 #### Votre existant est repris
 
-- Vos skills, agents, réglages, hooks et serveurs MCP sont conservés ; un skill au nom déjà pris est renommé, pas écrasé.
+- Vos skills, agents, réglages, hooks et serveurs MCP sont conservés (sauf les MCP `duckduckgo` et `brave`, remplacés par SearXNG) ; un skill au nom déjà pris est renommé, pas écrasé.
 - Les configurations de vos autres LLM (Ollama, Codex, Gemini, Grok, LM Studio…) sont copiées dans `~/ai/3-llm`.
+
+Voir [l'import](docs/scripts.md#bci-importpy) et [l'installation](docs/installation.md).
 
 ## L'architecture
 

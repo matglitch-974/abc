@@ -36,19 +36,19 @@ Deux étapes ne peuvent pas être automatisées :
 1. Android : installer d'abord **Termux depuis F-Droid** (la version du Play Store est obsolète).
 2. Au premier lancement de `claude`, **se connecter à son compte Anthropic**.
 
-Variables reconnues : `BCI_BRANCH` (branche du dépôt, `main` par défaut), `BCI_ENCRYPT_KEYS=oui|non` (répond d'avance à la question du chiffrement), `BCI_MODELS_DIR` (emplacement des modèles Ollama, `~/ai/3-llm/models` par défaut).
+Variables reconnues : `BCI_BRANCH` (branche du dépôt, `main` par défaut), `BCI_ENCRYPT_KEYS=oui|non` (répond d'avance à la question du chiffrement), `BCI_MODELS_DIR` (dossier des modèles, `~/ai/3-llm/models` par défaut ; les modèles Ollama vont dans son sous-dossier `ollama/`).
 
 ## Ce que fait l'installateur
-1. Installe les dépendances. Linux : curl, git, jq, python3, Node.js, npm (Alpine : + bash, ripgrep, libgcc, libstdc++), restic si disponible. Windows : Git, uv, Python, Node.js, restic par winget ; sans winget : uv et restic par leurs sources officielles, Python par uv, Git exigé (arrêt sinon), Node.js signalé manquant.
+1. Installe les dépendances. Linux : curl, git, jq, python3, Node.js, npm (Alpine : + bash, ripgrep, libgcc, libstdc++), restic si disponible. Windows : Git, uv et Python par winget ; sans winget : uv par son script officiel, Python par uv, Git exigé (arrêt sinon). Sous Windows, Node.js et restic ne sont installés qu'à l'étape 10, avec les outils, après la migration (winget ; sans winget : restic depuis GitHub, Node.js signalé manquant).
 2. Installe Claude Code avec l'installateur officiel d'Anthropic (`claude.ai/install.sh` ou `install.ps1`), s'il est absent.
 3. Clone ce dépôt dans `~/ai/2-tools/3-software/better-claude-instance/` (ou le met à jour).
-4. Sauvegarde complète avant la première installation (`install-avant`, si `~/ai` ou `~/.claude` existe) ; une seconde (`install-apres`) à la fin. Les deux sont conservées à vie ([memory.md](memory.md#sauvegardes-hooksbci-backuppy)).
+4. Sauvegarde complète avant la première installation (`install-avant`, toujours faite : `~/ai` existe déjà puisque le dépôt vient d'y être cloné) ; une seconde (`install-apres`) à la fin. Les deux sont conservées à vie ([memory.md](memory.md#sauvegardes-hooksbci-backuppy)).
 5. Crée `~/ai` et `~/project`, copie les fichiers de `skeleton/` sans jamais écraser un fichier existant.
 6. Importe l'existant, par copie (les originaux restent) : skills et agents de `~/.claude`, secrets dans `2-tools/4-keys-code` ([keys.md](keys.md)), configs des autres LLM dans `3-llm/` ; les modèles Ollama sont déplacés une fois ([scripts.md](scripts.md#bci-importpy)).
 7. Fixe `CLAUDE_CONFIG_DIR` à `~/ai/2-tools/3-software/claude-code/`, y range le contenu de `~/.claude` et `~/.claude.json`, puis met les originaux dans `~/ai/4-trash/`. Votre ancien `CLAUDE.md` et votre ancien dossier `skills` y sont gardés en `*.bak-bci`. Si des sessions `claude` tournent, `~/.claude/.credentials.json` leur est laissé ; le [hook mémoire](memory-hook.md#rangement-de-claude) le range plus tard.
 8. Relie `CLAUDE.md` à `~/ai/AGENTS.md`, `skills`, `plugins` et `agents/system-agents` à leurs dossiers de `~/ai` ; `settings.json` est rangé dans `~/ai/memory/` (Linux) ou reste dans `claude-code/` (Windows).
 9. Complète `settings.json` : agents intégrés désactivés, hooks `guard-sensible` et mémoire. Vos autres réglages et hooks sont conservés.
-10. Installe les outils web : SearXNG (métamoteur local, sans clé) et son MCP, `fetch`, `playwright`, `scrapling`, Crawl4AI. Retire les MCP `duckduckgo` et `brave` de portée utilisateur s'ils existent (remplacés par SearXNG). Un échec ici ne bloque pas l'installation.
+10. Installe les outils (sous Windows, d'abord restic et Node.js) et les outils web : SearXNG (métamoteur local, sans clé) et son MCP, `fetch`, `playwright`, `scrapling`, Crawl4AI. Retire les MCP `duckduckgo` et `brave` de portée utilisateur s'ils existent (remplacés par SearXNG). Un échec ici ne bloque pas l'installation.
 11. Installe la commande `bci`.
 12. Propose de chiffrer `4-keys-code` avec une phrase secrète (restic). Chiffré, il n'existe en clair qu'entre `bci keys open` et `bci keys close`, et n'entre jamais en clair dans les sauvegardes.
 
