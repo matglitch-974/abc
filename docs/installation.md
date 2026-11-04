@@ -6,8 +6,12 @@
 - **Android** : `install.sh` dans l'application Termux. Le script détecte Termux, installe Alpine Linux et se relance à l'intérieur.
 - **Apple (macOS, iOS)** : non conçu pour cet environnement, non testé.
 
-## Commandes
+## Deux façons d'installer
 
+### Par votre agent Claude Code (recommandé si vous l'utilisez déjà)
+Votre instance a déjà ses skills, agents, réglages, MCP, peut-être une mémoire : l'agent en fait l'inventaire, vous présente un plan, adapte l'import et n'agit qu'après votre accord. Le prompt à copier-coller est dans le [README](../README.md#méthode-recommandée--laissez-votre-agent-installer) ; le guide que suit l'agent est [SETUP.md](../SETUP.md).
+
+### Par le script (configuration de référence)
 Windows (PowerShell) :
 ```
 irm matglitch-974.github.io/BCI.ps1 | iex
@@ -26,25 +30,29 @@ Commande de secours (adresse complète, si `matglitch-974.github.io` est inacces
 curl -fsSL https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/install.sh | sh
 ```
 
+Les commandes courtes passent par `matglitch-974.github.io` (GitHub Pages, dépôt `matglitch-974/matglitch-974.github.io`) : de simples relais vers `install.sh` et `install.ps1` de ce dépôt, qui reste la seule source de l'installateur.
+
 Deux étapes ne peuvent pas être automatisées :
 1. Android : installer d'abord **Termux depuis F-Droid** (la version du Play Store est obsolète).
 2. Au premier lancement de `claude`, **se connecter à son compte Anthropic**.
 
+Variables reconnues : `BCI_BRANCH` (branche du dépôt, `main` par défaut), `BCI_ENCRYPT_KEYS=oui|non` (répond d'avance à la question du chiffrement), `BCI_MODELS_DIR` (emplacement des modèles Ollama, `~/ai/3-llm/models` par défaut).
+
 ## Ce que fait l'installateur
-1. Installe les dépendances (Linux : curl, git, jq, python3, Node.js ; Alpine : + bash, ripgrep, libgcc, libstdc++ ; Windows : Git, Python, Node.js, uv, restic via winget).
+1. Installe les dépendances. Linux : curl, git, jq, python3, Node.js, npm (Alpine : + bash, ripgrep, libgcc, libstdc++), restic si disponible. Windows : Git, uv, Python, Node.js, restic par winget ; sans winget : uv et restic par leurs sources officielles, Python par uv, Git exigé (arrêt sinon), Node.js signalé manquant.
 2. Installe Claude Code avec l'installateur officiel d'Anthropic (`claude.ai/install.sh` ou `install.ps1`), s'il est absent.
-3. Clone ce dépôt dans `~/ai/2-tools/3-software/better-claude-instance/`.
-4. Crée `~/ai` et `~/project`, copie les fichiers de `skeleton/` sans jamais écraser un fichier existant.
-5. Sauvegarde complète avant la première installation (`install-avant`), et après (`install-apres`), conservées à vie (voir [memory.md](memory.md#sauvegardes-hooksbci-backuppy)).
-6. Copie `~/.claude` et `~/.claude.json` dans `~/ai/2-tools/3-software/claude-code/` puis range les originaux dans `~/ai/4-trash/` (sous Windows, une session Claude ouverte peut les tenir : ils restent alors en cache temporaire et le hook mémoire les range au démarrage de la session BCI suivante), fixe `CLAUDE_CONFIG_DIR`, y relie CLAUDE.md, skills, plugins, agents et `settings.json` (rangé dans `~/ai/memory/`), et complète les réglages : agents intégrés désactivés, hooks `guard-sensible` et mémoire.
-6 bis. Importe l'existant, par copie (les originaux restent) : skills de `~/.claude/skills` dans `2-tools/1-skills` (nom déjà pris : le vôtre devient `<nom>1`, `<nom>2`…, conflit noté dans `memory/TODO.md`) ; clés SSH, variables secrètes (noms contenant KEY, TOKEN, SECRET, PASSWORD, API), identifiants d'outils (gh, git, docker, npm, pip, AWS, kube, rclone, Claude Code) et cookies (Firefox exportés en `cookies.txt` ; Chrome, Edge, Brave copiés tels quels, chiffrés par le navigateur) dans `2-tools/4-keys-code` ; configs des autres LLM (Ollama, Grok, Codex, Gemini, LM Studio, opencode…) dans `3-llm/` (leurs secrets dans `4-keys-code/llm`). Les modèles Ollama sont déplacés une fois vers `BCI_MODELS_DIR` (défaut `~/ai/3-llm/models`) et `OLLAMA_MODELS` y pointe.
-7. Installe restic (sauvegardes) et les outils web : SearXNG (métamoteur local, sans clé) et son MCP, fetch, Playwright, Scrapling, Crawl4AI.
-8. Sauvegarde tout fichier remplacé en `*.bak-bci`.
-9. Propose de chiffrer `4-keys-code` avec une phrase secrète (restic) ; `BCI_ENCRYPT_KEYS=oui` ou `non` évite la question. Chiffré, il n'existe en clair qu'entre `bci keys open` et `bci keys close`, et n'entre jamais en clair dans les sauvegardes.
+3. Clone ce dépôt dans `~/ai/2-tools/3-software/better-claude-instance/` (ou le met à jour).
+4. Sauvegarde complète avant la première installation (`install-avant`, si `~/ai` ou `~/.claude` existe) ; une seconde (`install-apres`) à la fin. Les deux sont conservées à vie ([memory.md](memory.md#sauvegardes-hooksbci-backuppy)).
+5. Crée `~/ai` et `~/project`, copie les fichiers de `skeleton/` sans jamais écraser un fichier existant.
+6. Importe l'existant, par copie (les originaux restent) : skills et agents de `~/.claude`, secrets dans `2-tools/4-keys-code` ([keys.md](keys.md)), configs des autres LLM dans `3-llm/` ; les modèles Ollama sont déplacés une fois ([scripts.md](scripts.md#bci-importpy)).
+7. Fixe `CLAUDE_CONFIG_DIR` à `~/ai/2-tools/3-software/claude-code/`, y range le contenu de `~/.claude` et `~/.claude.json`, puis met les originaux dans `~/ai/4-trash/`. Votre ancien `CLAUDE.md` et votre ancien dossier `skills` y sont gardés en `*.bak-bci`. Si des sessions `claude` tournent, `~/.claude/.credentials.json` leur est laissé ; le [hook mémoire](memory-hook.md#rangement-de-claude) le range plus tard.
+8. Relie `CLAUDE.md` à `~/ai/AGENTS.md`, `skills`, `plugins` et `agents/system-agents` à leurs dossiers de `~/ai` ; `settings.json` est rangé dans `~/ai/memory/` (Linux) ou reste dans `claude-code/` (Windows).
+9. Complète `settings.json` : agents intégrés désactivés, hooks `guard-sensible` et mémoire. Vos autres réglages et hooks sont conservés.
+10. Installe les outils web : SearXNG (métamoteur local, sans clé) et son MCP, `fetch`, `playwright`, `scrapling`, Crawl4AI. Retire les MCP `duckduckgo` et `brave` de portée utilisateur s'ils existent (remplacés par SearXNG). Un échec ici ne bloque pas l'installation.
+11. Installe la commande `bci`.
+12. Propose de chiffrer `4-keys-code` avec une phrase secrète (restic). Chiffré, il n'existe en clair qu'entre `bci keys open` et `bci keys close`, et n'entre jamais en clair dans les sauvegardes.
 
-Les commandes courtes passent par `matglitch-974.github.io` (GitHub Pages, dépôt `matglitch-974/matglitch-974.github.io`) : de simples relais vers `install.sh` et `install.ps1` de ce dépôt, qui reste la seule source de l'installateur.
-
-Relancer la commande met à jour l'instance (`git pull`) sans toucher à vos fichiers.
+Tout fichier remplacé est gardé en `*.bak-bci`. Relancer la commande (ou `bci install`) met l'instance à jour sans toucher à vos fichiers. Détail script par script : [scripts.md](scripts.md).
 
 ## Commande `bci`
 Installée avec BCI (`~/.local/bin/bci` ; Windows : `bci.cmd` ; Termux : `$PREFIX/bin/bci`, qui l'exécute dans Alpine). La toute première installation passe forcément par la commande ci-dessus : avant elle, `bci` n'existe pas.
@@ -57,7 +65,7 @@ Installée avec BCI (`~/.local/bin/bci` ; Windows : `bci.cmd` ; Termux : `$PREFI
 | `bci backup` / `bci backup list` | sauvegarde immédiate / liste |
 | `bci search "requête"` | recherche web (skill `search`) |
 | `bci keys open\|close\|status` | coffre chiffré de `2-tools/4-keys-code` (restic, phrase secrète) |
-| `bci import [skills\|secrets\|llm]` | réimporte l'existant (copies, sans doublon) |
+| `bci import [skills\|agents\|secrets\|llm]` | réimporte l'existant (copies, sans doublon) |
 | `bci version` | commit installé |
 
 ## Pourquoi pas npm
@@ -66,28 +74,6 @@ L'installation par npm est dépréciée par Anthropic au profit de l'installateu
 ## Pourquoi Alpine sous Android
 Claude Code ne fournit pas de binaire pour Android. Il fournit en revanche un binaire `linux-arm64-musl`, qui fonctionne dans Alpine Linux lancé par `proot-distro`. Alpine est retenue pour sa légèreté (Ubuntu est trop lourde pour un téléphone). Sous Termux, la commande `claude` est un alias qui entre dans Alpine et lance Claude Code.
 
-## Installation négociée
-Pour adapter l'installation à ses besoins : installer Claude Code, cloner ce dépôt, lancer `claude` dans le dossier et demander, en n'importe quels termes, de l'installer ou de l'adapter. Le fichier `AGENTS.md` du dépôt renvoie vers `SETUP.md`, qui fait présenter chaque étape, accepter les modifications (« modifie ça, laisse ça, déplace ceci là »), confirmer le plan, puis l'appliquer.
-
-## Désinstallation
-`bci uninstall`, ou :
-Windows :
-```
-irm https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/uninstall.ps1 | iex
-```
-Linux / Android (dans Alpine) :
-```
-curl -fsSL https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/uninstall.sh | sh
-```
-Remet la configuration dans `~/.claude` (liens remplacés par des copies), retire `CLAUDE_CONFIG_DIR` et les réglages ajoutés, restaure les `*.bak-bci`, puis demande avant de supprimer `~/ai` et `~/project`. Claude Code lui-même reste installé. Claude Code peut aussi désinstaller l'organisation sur simple demande (voir `SETUP.md`).
-
-## Dépannage
-
-| Symptôme | Cause | Solution |
-|---|---|---|
-| `claude native binary not installed` (npm, Termux) | pas de binaire Android | utiliser `install.sh`, qui passe par Alpine |
-| `unexpected e_type: 2` | installateur lancé dans Termux et non dans Alpine | supprimer `~/.claude/downloads` côté Termux, relancer `install.sh` |
-| `apk: command not found` | commande tapée dans Termux au lieu d'Alpine | utiliser l'alias `claude`, ou `proot-distro login alpine` |
-| `~/.local/bin is not in your PATH` | session ouverte avant l'installation | ouvrir un nouveau terminal (ou `. ~/.profile`) |
-| recherche de fichiers en échec sous Alpine | ripgrep intégré compilé pour glibc | `USE_BUILTIN_RIPGREP=0`, ajouté automatiquement |
-| `jq absent` à l'installation | settings.json existant non fusionné | installer jq et relancer |
+## Désinstallation et dépannage
+- [Désinstallation](uninstall.md)
+- [Dépannage](troubleshooting.md)

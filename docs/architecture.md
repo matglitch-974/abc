@@ -43,7 +43,7 @@
 
 ### `~/.claude/` disparaît : tout vit dans `~/ai`
 Claude Code lit sa configuration dans le dossier que désigne la variable `CLAUDE_CONFIG_DIR` (vérifié : `.claude.json` y est aussi rangé). L'installateur la fixe à `~/ai/2-tools/3-software/claude-code/` (`.profile`, `.bashrc`, `.zshrc` ; variable utilisateur sous Windows) et y déplace l'ancien `~/.claude` et `~/.claude.json`. Chaque élément utile y est un lien vers sa place dans `~/ai` : instructions, skills, plugins, agents, réglages (rangés avec la mémoire : ce sont des autorisations personnelles). Tout ce qui concerne l'IA tient ainsi dans un seul dossier, sauvegardé d'un bloc.
-Risque : si `CLAUDE_CONFIG_DIR` manque (terminal qui ne lit pas `.profile`), Claude Code recrée un `~/.claude` vide et semble avoir tout oublié. Parade : ouvrir un nouveau terminal, ou `. ~/.profile`, puis supprimer ce `~/.claude` vide. Windows : `settings.json` reste un vrai fichier dans `claude-code/` (un lien de fichier y exige des droits administrateur).
+Risque : si `CLAUDE_CONFIG_DIR` manque (terminal qui ne lit pas `.profile`), Claude Code recrée un `~/.claude` vide et semble avoir tout oublié. Parade : ouvrir un nouveau terminal, ou `. ~/.profile`, puis déplacer ce `~/.claude` dans `~/ai/4-trash/` (le hook mémoire le fait au lancement suivant, voir [memory-hook.md](memory-hook.md#rangement-de-claude)). Windows : `settings.json` reste un vrai fichier dans `claude-code/` (un lien de fichier y exige des droits administrateur).
 
 ### `AGENTS.md` plutôt que `CLAUDE.md`
 `AGENTS.md` est le nom ouvert, lu par plusieurs outils d'IA. `CLAUDE.md` n'existe que là où Claude Code l'exige, sous forme de lien vers `AGENTS.md` (sous Windows, un fichier d'une ligne `@~/ai/AGENTS.md`, car les liens de fichiers y exigent des droits administrateur).
@@ -73,16 +73,19 @@ better-claude-instance/
 ├── README.md
 ├── LICENSE, NOTICE              AGPL-3.0-or-later + attribution
 ├── AGENTS.md, CLAUDE.md         règles pour travailler sur ce dépôt
-├── SETUP.md                     prompt d'installation négociée
+├── SETUP.md                     guide d'installation destiné à un agent Claude Code
 ├── install.sh, install.ps1      installation Linux / Android, Windows
 ├── uninstall.sh, uninstall.ps1  désinstallation
 ├── bootstrap.sh                 création de ~/ai et ~/project (Linux)
+├── bin/bci, bci.ps1, bci.cmd    commande bci
 ├── hooks/guard-sensible.sh      hook de protection de sensible/ et de 4-keys-code
-├── hooks/memory-hook.py        mémoire, persona de session (@<nom>), rangement de l'ancien ~/.claude
-├── hooks/bci-import.py         import de l'existant : skills, secrets, autres LLM
-├── hooks/bci-keys.py           coffre chiffré de 4-keys-code (restic)
+├── hooks/memory-hook.py         mémoire, persona de session (@<nom>), rangement de l'ancien ~/.claude
+├── hooks/bci-backup.py          sauvegardes (restic ou tar.xz)
+├── hooks/bci-import.py          import de l'existant : skills, agents, secrets, autres LLM
+├── hooks/bci-keys.py            coffre chiffré de 4-keys-code (restic)
 ├── skeleton/                    fichiers copiés tels quels dans ~/ (jamais écrasés)
 └── docs/                        cette documentation
 ```
+Rôle de chaque script : [scripts.md](scripts.md).
 
 L'installateur clone le dépôt dans `~/ai/2-tools/3-software/better-claude-instance/` : c'est un logiciel de l'IA, mis à jour avec `git pull`.

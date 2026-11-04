@@ -48,6 +48,6 @@ GitHub ne le permet pas : un dépôt est entièrement public ou entièrement pri
 - **Dépôt privé séparé** : retenu. Les données sensibles et le persona principal vivent dans le dépôt privé `home` (voir [roadmap.md](roadmap.md)).
 
 ## Sécurités supplémentaires possibles
-À proposer lors d'une installation négociée (`SETUP.md`), non installées par défaut :
+À proposer lors d'une installation par agent (`SETUP.md`), non installées par défaut :
 - analyse de secrets avant publication (ex. gitleaks) ;
 - vérification de la visibilité du dépôt distant avant un push.

@@ -29,6 +29,8 @@ Format d'un souvenir et règles d'écriture : skill `memory` (`skeleton/ai/2-too
 | `PostToolUse` (Write, Edit, MultiEdit, NotebookEdit) | journal du fichier modifié |
 | `PreCompact`, `Stop`, `SessionEnd` | journal |
 
+Le hook choisit aussi le persona de la session, tient la cloison des agents isolés et range l'ancien `~/.claude` : détail complet dans [memory-hook.md](memory-hook.md).
+
 Chaque ligne est ajoutée au journal au moment de l'événement : une fermeture brutale ne perd que ce qui n'a pas encore eu lieu. Le hook ne bloque jamais Claude Code (erreur consignée dans le journal, sortie 0).
 
 **Modèle** — règles dans `AGENTS.md` : écrire un souvenir dès qu'une étape est terminée ; chaque correction de l'utilisateur devient un fichier `feedback/` ; fusionner les feedbacks redondants ; vérifier un souvenir avant d'agir dessus.

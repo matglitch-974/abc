@@ -14,7 +14,8 @@
 └── <catégorie>-agents/          toute nouvelle catégorie d'agents
 ```
 - Nom du persona principal : entièrement libre (majuscules, chiffres, caractères spéciaux, Unicode, émojis).
-- Chaque `<catégorie>-agents/` est relié dans `agents/` de la configuration de Claude Code (`$CLAUDE_CONFIG_DIR`, soit `~/ai/2-tools/3-software/claude-code/`). Claude Code y cherche récursivement ; l'identité d'un agent vient du champ `name` de son en-tête, pas de son chemin.
+- L'installateur relie `system-agents/` dans `agents/` de la configuration de Claude Code (`$CLAUDE_CONFIG_DIR`, soit `~/ai/2-tools/3-software/claude-code/`). Toute autre `<catégorie>-agents/` doit y être reliée de la même façon pour servir de sous-agent (non fait par l'installateur). Claude Code y cherche récursivement ; l'identité d'un agent vient du champ `name` de son en-tête, pas de son chemin.
+- Agents existants : à l'installation, ceux de `~/.claude/agents` sont copiés dans `~/ai/0-persona/` (choisis par `@<nom>` ; nom déjà pris : `<nom>1`, conflit noté dans `memory/TODO.md`) et l'original reste dans `claude-code/agents/`, où Claude Code continue de les trouver.
 - Activation : le premier message de la session commence par `@<nom>` ; sans `@` (ou nom introuvable), le persona est `slave`. Le hook `memory-hook.py` l'injecte dans le contexte et le réinjecte après chaque compaction ; l'utilisateur s'adresse alors à ce persona.
 - Agent isolé : en-tête `isolated: true`. Choisi par `@<nom>`, il ouvre une session cloisonnée dans les deux sens : mémoire et journal propres dans `~/ai/isolated/<nom>/` ; le hook bloque (PreToolUse) ses accès à `~/ai/memory`, `AGENTS.md`, aux autres personas et agents isolés, et bloque l'accès des autres sessions à `~/ai/isolated/` comme aux transcripts de ses sessions. Limite : `AGENTS.md` et la mémoire importée sont déjà chargés au démarrage, avant le choix du persona ; la consigne d'isolement demande de les ignorer.
 
