@@ -70,7 +70,11 @@ if [ -d "$OLD" ] && [ ! -L "$OLD" ]; then
       *) [ -e "$CC/$n" ] || [ -L "$CC/$n" ] || mv "$item" "$CC/$n" ;;
     esac
   done
-  mv "$OLD" "$AI/4-trash/claude-ancien_$(date +%Y-%m-%d_%H-%M-%S)"
+  T="$AI/4-trash/claude-ancien_$(date +%Y-%m-%d_%H-%M-%S)"; mv "$OLD" "$T"
+  # Sessions Claude encore ouvertes : leur laisser les identifiants (rangés par memory-hook.py ensuite).
+  if [ -f "$T/.credentials.json" ] && pgrep -x claude >/dev/null 2>&1; then
+    mkdir -p "$OLD" && cp "$T/.credentials.json" "$OLD/" && echo "gardé    : ~/.claude/.credentials.json (sessions Claude ouvertes)"
+  fi
   echo "migré    : ~/.claude -> $CC (restes dans 4-trash/)"
 fi
 if [ -f "$HOME/.claude.json" ] && [ ! -L "$HOME/.claude.json" ]; then

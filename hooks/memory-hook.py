@@ -21,6 +21,7 @@ Ne bloque jamais Claude Code : toute erreur est ignorée, code de sortie toujour
 import json
 import os
 import re
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -173,21 +174,46 @@ def backup():
     return "lancée (quotidienne, si pas encore faite aujourd'hui)"
 
 
+def other_sessions():
+    """Autres processus claude que celui-ci (sessions ouvertes avant ou hors BCI)."""
+    import subprocess
+    try:
+        if os.name == "nt":
+            out = subprocess.run(["tasklist", "/FI", "IMAGENAME eq claude.exe", "/NH"],
+                                 capture_output=True, text=True, timeout=10).stdout
+            n = out.lower().count("claude.exe")
+        else:
+            n = len(subprocess.run(["pgrep", "-x", "claude"], capture_output=True, text=True, timeout=10).stdout.split())
+    except (OSError, subprocess.SubprocessError):
+        return True   # dans le doute, ne déconnecter personne
+    return n > 1
+
+
 def retire_old():
     """Range ~/.claude et ~/.claude.json laissés en cache par une session ouverte pendant l'installation."""
     cc = AI / "2-tools" / "3-software" / "claude-code"
     if Path(os.environ.get("CLAUDE_CONFIG_DIR") or "/").resolve() != cc.resolve():
         return ""
     stamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+    others = other_sessions()
     done = []
     for name, label in ((".claude", "claude-ancien"), (".claude.json", "claude.json-ancien")):
         old = Path.home() / name
-        if old.exists() and not old.is_symlink():
-            try:
-                old.rename(AI / "4-trash" / f"{label}_{stamp}")
-                done.append(name)
-            except OSError:
-                pass   # encore tenu : nouvel essai au prochain démarrage
+        if not old.exists() or old.is_symlink():
+            continue
+        if name == ".claude" and others and [p.name for p in old.iterdir()] == [".credentials.json"]:
+            continue   # reliquat d'identifiants des sessions encore ouvertes : attendre leur fermeture
+        dst, i = AI / "4-trash" / f"{label}_{stamp}", 1
+        while dst.exists():
+            dst, i = AI / "4-trash" / f"{label}_{stamp}-{i}", i + 1
+        try:
+            old.rename(dst)
+            done.append(name)
+        except OSError:
+            continue   # encore tenu : nouvel essai au prochain démarrage
+        if name == ".claude" and others and (dst / ".credentials.json").is_file():
+            old.mkdir(exist_ok=True)   # sessions ouvertes : leurs identifiants restent en place
+            shutil.copy2(dst / ".credentials.json", old / ".credentials.json")
     return ", ".join(done)
 
 

@@ -113,6 +113,13 @@ if ((Test-Path $OLD) -and -not (Get-Item $OLD -Force).LinkType) {
   }
   Write-Host "migré    : ~/.claude -> $CC"
   Retire $OLD 'claude-ancien'
+  # Sessions Claude encore ouvertes (hors BCI) : leur laisser les identifiants, sinon elles sont déconnectées.
+  # Ce reliquat est rangé par memory-hook.py dès qu'aucune autre session ne tourne.
+  $Cred = "$AI\4-trash\claude-ancien_$Stamp\.credentials.json"
+  if (-not (Test-Path $OLD) -and (Test-Path $Cred) -and (Get-Process claude -ErrorAction SilentlyContinue)) {
+    New-Item -ItemType Directory -Force $OLD | Out-Null; Copy-Item $Cred "$OLD\.credentials.json"
+    Write-Host "gardé    : ~/.claude/.credentials.json (sessions Claude ouvertes ; rangé quand elles seront fermées)"
+  }
 }
 $OldJson = Join-Path $HOME '.claude.json'
 if (Test-Path $OldJson) { Copy-Soft $OldJson "$CC\.claude.json"; Retire $OldJson 'claude.json-ancien' }
@@ -185,7 +192,7 @@ if (Get-Command uv -ErrorAction SilentlyContinue) {
   # Le dépôt contient 4 gabarits dont le nom porte « : » (utils/templates), refusés par Git sous Windows :
   # protectNTFS levé pour ce dépôt seul ; ces fichiers ne sont pas écrits (inutiles en local).
   # Un clone cassé par l'ancienne méthode (sans requirements.txt) part dans 4-trash et est refait.
-  if ((Test-Path "$SXD\.git") -and -not (Test-Path "$SXD\requirements.txt")) { Move-Item $SXD "$AI\4-trash\searxng-casse_$Stamp" }
+  if ((Test-Path $SXD) -and -not (Test-Path "$SXD\requirements.txt")) { Move-Item $SXD "$AI\4-trash\searxng-casse_$Stamp" }
   if (Test-Path "$SXD\.git") { git -C $SXD -c core.protectNTFS=false pull -q --ff-only }
   else { git -c core.protectNTFS=false clone -q --depth 1 https://github.com/searxng/searxng.git $SXD; git -C $SXD config core.protectNTFS false }
   if (-not (Test-Path "$SXD\.venv")) { uv venv -q "$SXD\.venv" }
