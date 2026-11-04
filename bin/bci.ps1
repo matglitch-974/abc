@@ -14,9 +14,10 @@ switch ($Cmd) {
   'search'    { & $Py "$AI\2-tools\1-skills\search\search.py" @Rest; break }
   'keys'      { & $Py "$Dest\hooks\bci-keys.py" @Rest; break }
   'import'    { if (-not $Rest) { $Rest = @('all') }; & $Py "$Dest\hooks\bci-import.py" @Rest; break }
-  'version'   { git -C $Dest log -1 --format='BCI %h (%cs)'; break }
+  'version'   { $V = Get-Content "$Dest\VERSION" -ErrorAction SilentlyContinue; git -C $Dest log -1 --format="BCI $V %h (%cs)"; break }
   'status'    {
-    git -C $Dest log -1 --format='BCI          %h (%cs)'
+    $V = Get-Content "$Dest\VERSION" -ErrorAction SilentlyContinue
+    git -C $Dest log -1 --format="BCI          $V %h (%cs)"
     Write-Host "Claude Code  $(claude --version 2>$null)"
     Write-Host "config       $env:CLAUDE_CONFIG_DIR"
     if (Test-Path "$HOME\.claude") { Write-Host 'ATTENTION    ~/.claude existe : cache laissé par une session hors BCI, rangé dans 4-trash au prochain démarrage de claude' }

@@ -74,6 +74,7 @@ better-claude-instance/
 ├── LICENSE, NOTICE              AGPL-3.0-or-later + attribution
 ├── AGENTS.md, CLAUDE.md         règles pour travailler sur ce dépôt
 ├── SETUP.md                     guide d'installation destiné à un agent Claude Code
+├── VERSION                      version de BCI (semver), reprise par bci version et les sauvegardes
 ├── install.sh, install.ps1      installation Linux / Android, Windows
 ├── uninstall.sh, uninstall.ps1  désinstallation
 ├── bootstrap.sh                 création de ~/ai et ~/project (Linux)

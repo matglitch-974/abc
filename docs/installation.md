@@ -66,7 +66,7 @@ Installée avec BCI (`~/.local/bin/bci` ; Windows : `bci.cmd` ; Termux : `$PREFI
 | `bci search "requête"` | recherche web (skill `search`) |
 | `bci keys open\|close\|status` | coffre chiffré de `2-tools/4-keys-code` (restic, phrase secrète) |
 | `bci import [skills\|agents\|secrets\|llm]` | réimporte l'existant (copies, sans doublon) |
-| `bci version` | commit installé |
+| `bci version` | version (fichier `VERSION`, semver) et commit installés |
 
 ## Pourquoi pas npm
 L'installation par npm est dépréciée par Anthropic au profit de l'installateur natif, et npm n'est pas présent par défaut sous Windows.

@@ -36,9 +36,11 @@ case "${1:-}" in
   import)
     shift; [ $# -eq 0 ] && set -- all; exec "$PY" "$DEST/hooks/bci-import.py" "$@" ;;
   version)
-    git -C "$DEST" log -1 --format='BCI %h (%cs)' 2>/dev/null || echo "BCI : dépôt introuvable ($DEST)" ;;
+    V=$(cat "$DEST/VERSION" 2>/dev/null || echo '?')
+    git -C "$DEST" log -1 --format="BCI $V %h (%cs)" 2>/dev/null || echo "BCI $V : dépôt Git introuvable ($DEST)" ;;
   status)
-    git -C "$DEST" log -1 --format='BCI          %h (%cs)' 2>/dev/null || echo "BCI          introuvable"
+    V=$(cat "$DEST/VERSION" 2>/dev/null || echo '?')
+    git -C "$DEST" log -1 --format="BCI          $V %h (%cs)" 2>/dev/null || echo "BCI          introuvable"
     printf 'Claude Code  %s\n' "$(claude --version 2>/dev/null || echo absent)"
     printf 'config       %s %s\n' "${CLAUDE_CONFIG_DIR:-NON DÉFINIE}" \
       "$([ "${CLAUDE_CONFIG_DIR:-}" = "$AI/2-tools/3-software/claude-code" ] && echo '(ok)' || echo '(ouvrir un nouveau terminal)')"
