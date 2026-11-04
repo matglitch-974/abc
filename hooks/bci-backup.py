@@ -133,13 +133,24 @@ def backup(kind, if_needed=False):
                           "fichiers": summary[0].get("total_files_processed")}
     else:
         arch = d / "data.tar.xz"
+        skip = [DEST] + ([AI / "2-tools" / "4-keys-code"] if vaulted else [])
+        missed = 0
         with tarfile.open(arch, "w:xz", preset=9) as tar:
+            # parcours fichier par fichier : un lien cassé ou un fichier verrouillé est sauté, pas fatal
             for p in sources:
-                tar.add(p, arcname=p.name, filter=lambda ti: None if ti.name.startswith(
-                    f"{AI.name}/2-tools/logs/backup-bci") or (vaulted and ti.name.startswith(
-                    f"{AI.name}/2-tools/4-keys-code/")) or (vaulted and ti.name == f"{AI.name}/2-tools/4-keys-code")
-                    else ti)
-        meta["archive"] = {"fichier": arch.name, "octets": arch.stat().st_size}
+                if p.is_file():
+                    tar.add(p, arcname=p.name)
+                    continue
+                for root, dirs, files in os.walk(p):
+                    r = Path(root)
+                    dirs[:] = [x for x in dirs if r / x not in skip]
+                    for name in files:
+                        f = r / name
+                        try:
+                            tar.add(f, arcname=str(Path(p.name) / f.relative_to(p)), recursive=False)
+                        except OSError:
+                            missed += 1
+        meta["archive"] = {"fichier": arch.name, "octets": arch.stat().st_size, "fichiers_sautes": missed}
     if kind == "quotidienne":
         counter = DEST / "counter"
         k = int(counter.read_text() or 0) + 1 if counter.is_file() else 1

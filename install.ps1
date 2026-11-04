@@ -163,6 +163,9 @@ Write-Host "réglages : $S"
 
 # --- Outils : restic, recherche web (SearXNG local, sans clé) ; non bloquants
 Say 'Outils de recherche web et de sauvegarde'
+# Section non bloquante : en mode Stop, PowerShell 5.1 change le stderr redirigé d'un programme
+# (« No MCP server named … ») en erreur fatale. Les échecs sont signalés par $LASTEXITCODE.
+$ErrorActionPreference = 'Continue'
 if (-not (Get-Command restic -ErrorAction SilentlyContinue) -and -not (Winget 'restic.restic')) {
   # sans winget : binaire officiel depuis les releases GitHub, dans ~/.local/bin
   try {
@@ -179,7 +182,12 @@ if (-not (Get-Command npx -ErrorAction SilentlyContinue) -and -not (Winget 'Open
 $env:Path = "$HOME\.local\bin;$env:Path"
 $SXD = "$AI\2-tools\3-software\searxng"
 if (Get-Command uv -ErrorAction SilentlyContinue) {
-  if (Test-Path "$SXD\.git") { git -C $SXD pull -q --ff-only } else { git clone -q --depth 1 https://github.com/searxng/searxng.git $SXD }
+  # Le dépôt contient 4 gabarits dont le nom porte « : » (utils/templates), refusés par Git sous Windows :
+  # protectNTFS levé pour ce dépôt seul ; ces fichiers ne sont pas écrits (inutiles en local).
+  # Un clone cassé par l'ancienne méthode (sans requirements.txt) part dans 4-trash et est refait.
+  if ((Test-Path "$SXD\.git") -and -not (Test-Path "$SXD\requirements.txt")) { Move-Item $SXD "$AI\4-trash\searxng-casse_$Stamp" }
+  if (Test-Path "$SXD\.git") { git -C $SXD -c core.protectNTFS=false pull -q --ff-only }
+  else { git -c core.protectNTFS=false clone -q --depth 1 https://github.com/searxng/searxng.git $SXD; git -C $SXD config core.protectNTFS false }
   if (-not (Test-Path "$SXD\.venv")) { uv venv -q "$SXD\.venv" }
   $env:VIRTUAL_ENV = "$SXD\.venv"
   uv pip install -q setuptools wheel -r "$SXD\requirements.txt"
