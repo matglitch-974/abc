@@ -8,12 +8,13 @@ description: Documentation du système de personas et d'agents (emplacement, cat
 ## Emplacement
 `~/ai/0-persona/`. Son contenu n'est pas numéroté.
 
-## Persona principal
-- Facultatif. Un fichier à la racine de `0-persona/`, sans catégorie tant qu'il est seul.
+## Personas
+- Un fichier par persona dans `0-persona/` (racine ou catégorie).
 - Nom entièrement libre : majuscules, chiffres, caractères spéciaux, Unicode, émojis.
 - Décrit uniquement le caractère. Les règles de travail sont dans `~/ai/AGENTS.md` : retirer le persona ne dégrade pas le travail.
-- Activation : ligne `@~/ai/0-persona/<nom>` dans `~/ai/AGENTS.md`.
-- Le persona principal est une donnée personnelle : il n'est jamais publié.
+- Activation : le premier message de la session commence par `@<nom>` (nom du fichier, avec ou sans `.md`). Sans `@`, ou nom introuvable : `slave`. Le hook `memory-hook.py` injecte le persona et le réinjecte après chaque compaction.
+- Les personas personnels sont des données personnelles : jamais publiés.
+- Agent isolé : en-tête `isolated: true`. Choisi par `@<nom>`, il ouvre une session cloisonnée dans les deux sens : mémoire et journal propres dans `~/ai/isolated/<nom>/` ; le hook bloque (PreToolUse) ses accès à `~/ai/memory`, `AGENTS.md`, aux autres personas et agents isolés, et bloque l'accès des autres sessions à `~/ai/isolated/` comme aux transcripts de ses sessions. Limite : `AGENTS.md` et la mémoire importée sont déjà chargés au démarrage, avant le choix du persona ; la consigne d'isolement demande de les ignorer.
 
 ## Agents
 - Rangés par catégorie : `0-persona/<catégorie>-agents/<agent>.md`.

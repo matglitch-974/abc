@@ -2,6 +2,8 @@
 $Dest = Join-Path $HOME 'ai\2-tools\3-software\better-claude-instance'
 $AI   = Join-Path $HOME 'ai'
 $Py   = (Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' } | Select-Object -First 1).Source
+if (-not $Py) { $Py = (Get-ChildItem "$env:LOCALAPPDATA\Programs\Python\Python3*\python.exe", "$env:ProgramFiles\Python3*\python.exe" -ErrorAction SilentlyContinue | Sort-Object { [int]($_.Directory.Name -replace '\D','') } -Descending | Select-Object -First 1).FullName }
+if (-not $Py -and (Get-Command uv -ErrorAction SilentlyContinue)) { $Py = uv python find 3.13 2>$null }
 $Cmd, $Rest = $args
 switch ($Cmd) {
   { $_ -in 'install','update' } {
@@ -10,6 +12,8 @@ switch ($Cmd) {
   'uninstall' { & powershell -NoProfile -ExecutionPolicy Bypass -File "$Dest\uninstall.ps1"; break }
   'backup'    { if ($Rest -contains 'list') { & $Py "$Dest\hooks\bci-backup.py" list } else { & $Py "$Dest\hooks\bci-backup.py" quotidienne }; break }
   'search'    { & $Py "$AI\2-tools\1-skills\search\search.py" @Rest; break }
+  'keys'      { & $Py "$Dest\hooks\bci-keys.py" @Rest; break }
+  'import'    { if (-not $Rest) { $Rest = @('all') }; & $Py "$Dest\hooks\bci-import.py" @Rest; break }
   'version'   { git -C $Dest log -1 --format='BCI %h (%cs)'; break }
   'status'    {
     git -C $Dest log -1 --format='BCI          %h (%cs)'
@@ -25,6 +29,8 @@ bci uninstall          désinstalle, après deux confirmations (puis deux autres
 bci status             état : versions, configuration, recherche, sauvegardes
 bci backup [list]      sauvegarde immédiate, ou liste des sauvegardes
 bci search "requête"   recherche web (SearXNG local) ; options : bci search -h
+bci keys open|close|status   coffre chiffré de 2-tools/4-keys-code (restic)
+bci import [skills|secrets|llm]   réimporte l'existant (copies ; idempotent)
 bci version            version installée
 '@ | Write-Host }
 }

@@ -33,10 +33,10 @@ Au premier lancement de `claude`, connectez-vous à votre compte Anthropic. Ensu
 ```
 ~/ai/
 ├── AGENTS.md          sommaire + règles de travail
-├── 0-persona/         personas ; system-agents/slave.md (l'unique sous-agent)
+├── 0-persona/         personas (choisis par `@<nom>` en début de session, `slave` sinon) ; system-agents/slave.md
 ├── 1-bench/           espace de travail temporaire, un secteur par sous-agent
-├── 2-tools/           0-mcp, 1-skills, 2-plugins, 3-software
-├── 3-llm/             modèles locaux
+├── 2-tools/           0-mcp, 1-skills, 2-plugins, 3-software, 4-keys-code (clés, jetons, cookies ; chiffrable)
+├── 3-llm/             autres LLM (configs, modèles)
 ├── 4-trash/           corbeille
 └── memory/           mémoire écrite en continu : INDEX.md, TODO.md, realign.md, journal/
 ~/project/<catégorie>/<project>/<sub-project>/   avec sensible/ jamais publié

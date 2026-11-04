@@ -10,20 +10,39 @@ $CC     = Join-Path $AI '2-tools\3-software\claude-code'   # CLAUDE_CONFIG_DIR :
 $Dest   = Join-Path $AI '2-tools\3-software\better-claude-instance'
 
 function Say($m) { Write-Host "`n==> $m" -ForegroundColor Cyan }
-function Refresh-Path { $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') }
+function Refresh-Path { $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') + ";$HOME\.local\bin" }
+$HasWinget = [bool](Get-Command winget -ErrorAction SilentlyContinue)   # absent sur les Windows allégés
+function Winget($id) {
+  if (-not $HasWinget) { return $false }
+  winget install --id $id -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path; return $true
+}
+# Python hors PATH (installé pour l'utilisateur seul, alias WindowsApps) : chercher aussi le lanceur py et les dossiers usuels.
+function Find-Python {
+  $c = Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' } | Select-Object -First 1
+  if ($c) { return $c.Source }
+  if (Get-Command py -ErrorAction SilentlyContinue) { $p = & py -3 -c 'import sys; print(sys.executable)' 2>$null; if ($p -and (Test-Path $p)) { return $p } }
+  $c = Get-ChildItem "$env:LOCALAPPDATA\Programs\Python\Python3*\python.exe", "$env:ProgramFiles\Python3*\python.exe" -ErrorAction SilentlyContinue | Sort-Object { [int]($_.Directory.Name -replace '\D','') } -Descending | Select-Object -First 1
+  if ($c) { return $c.FullName }
+  if (Get-Command uv -ErrorAction SilentlyContinue) { $p = & uv python find 3.13 2>$null; if ($p -and (Test-Path $p)) { return $p } }
+  return $null
+}
 
 # --- Git (requis par Claude Code sous Windows) ---------------------------------
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
   Say 'Installation de Git'
-  winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
-  Refresh-Path
+  if (-not (Winget 'Git.Git')) { Write-Error 'Git est requis et winget est absent : installez Git pour Windows (git-scm.com), puis relancez.' }
 }
 
-# --- Python (identifiants de sous-agents : agent-id.py) ---------------------------
-if (-not (Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' })) {
+# --- uv (outils Python ; sert aussi à installer Python sans winget) -------------------
+if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+  Say 'Installation de uv'
+  if (-not (Winget 'astral-sh.uv')) { Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression; Refresh-Path }
+}
+
+# --- Python (identifiants de sous-agents, hooks) -----------------------------------
+if (-not (Find-Python)) {
   Say 'Installation de Python'
-  winget install --id Python.Python.3.13 -e --source winget --accept-package-agreements --accept-source-agreements
-  Refresh-Path
+  if (-not (Winget 'Python.Python.3.13')) { uv python install 3.13 }
 }
 
 # --- Claude Code (installateur officiel) ----------------------------------------
@@ -38,7 +57,8 @@ Say 'Téléchargement de Better Claude Instance'
 if (Test-Path "$Dest\.git") { git -C $Dest pull -q --ff-only }
 else { New-Item -ItemType Directory -Force (Split-Path $Dest) | Out-Null; git clone -q --depth 1 -b $Branch $Repo $Dest }
 
-$Py = (Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' } | Select-Object -First 1).Source
+$Py = Find-Python
+if (-not $Py) { Write-Error 'Python introuvable après installation : installez Python 3 (python.org), puis relancez.' }
 $Backup = Join-Path $Dest 'hooks\bci-backup.py'
 
 # --- Sauvegarde avant installation (première installation seulement, conservée à vie) ----
@@ -46,7 +66,7 @@ if ((Test-Path $AI) -or (Test-Path $OLD)) { & $Py $Backup install-avant }
 
 # --- Arborescence et fichiers de base (jamais écrasés) ---------------------------
 Say 'Création de ~/ai et ~/project'
-'0-persona\system-agents','1-bench','2-tools\0-mcp\sensible','2-tools\1-skills','2-tools\2-plugins','2-tools\3-software\claude-code','2-tools\logs','3-llm','4-trash' |
+'0-persona\system-agents','1-bench','2-tools\0-mcp','2-tools\1-skills','2-tools\2-plugins','2-tools\3-software\claude-code','2-tools\logs','3-llm','4-trash' |
   ForEach-Object { New-Item -ItemType Directory -Force (Join-Path $AI $_) | Out-Null }
 New-Item -ItemType Directory -Force (Join-Path $HOME 'project') | Out-Null
 'user','feedback','project','reference','journal' | ForEach-Object { New-Item -ItemType Directory -Force (Join-Path $AI "memory\$_") | Out-Null }
@@ -57,6 +77,10 @@ Get-ChildItem $Skel -Recurse -File | ForEach-Object {
   if (Test-Path $dst) { Write-Host "conservé : $dst" }
   else { New-Item -ItemType Directory -Force (Split-Path $dst) | Out-Null; Copy-Item $_.FullName $dst; Write-Host "créé     : $dst" }
 }
+
+# --- Import de l'existant (copies) : skills, secrets -> 2-tools\4-keys-code, autres LLM -> 3-llm ---
+Say "Import de l'existant (skills, clés et jetons, autres LLM)"
+& $Py (Join-Path $Dest 'hooks\bci-import.py') all
 
 # --- Configuration de Claude Code dans ~/ai (CLAUDE_CONFIG_DIR) ----------------------
 [Environment]::SetEnvironmentVariable('CLAUDE_CONFIG_DIR', $CC, 'User'); $env:CLAUDE_CONFIG_DIR = $CC
@@ -108,7 +132,10 @@ foreach ($pair in @(@("$CC\skills", "$AI\2-tools\1-skills"), @("$CC\plugins", "$
 }
 
 # --- settings.json : agents intégrés désactivés + hooks sensible/ et mémoire -----
-$Bash = Join-Path (Split-Path (Split-Path (Get-Command git).Source)) 'bin\bash.exe'
+# bash de Git : remonter depuis git.exe (cmd\, bin\ ou mingw64\bin\ selon le PATH) jusqu'à la racine de Git
+$Bash = $null; $d = Split-Path (Get-Command git).Source
+while ($d -and -not $Bash) { if (Test-Path "$d\bin\bash.exe") { $Bash = "$d\bin\bash.exe" } else { $d = Split-Path $d } }
+if (-not $Bash) { Write-Warning 'bash de Git introuvable : hook guard-sensible inactif'; $Bash = 'bash' }
 $Hook = (Join-Path $Dest 'hooks\guard-sensible.sh') -replace '\\','/'
 $HookCmd = "`"$($Bash -replace '\\','/')`" `"$Hook`""
 $MemHook = (Join-Path $Dest 'hooks\memory-hook.py') -replace '\\','/'
@@ -124,9 +151,11 @@ $pre = @(@($cfg.hooks.PreToolUse) | Where-Object { $_ -and -not ($_.hooks[0].com
 $pre += [pscustomobject]@{ matcher = 'Bash'; hooks = @([pscustomobject]@{ type = 'command'; command = $HookCmd }) }
 $cfg.hooks | Add-Member PreToolUse $pre -Force
 $mem = [pscustomobject]@{ type = 'command'; command = $MemCmd }
-foreach ($ev in 'SessionStart','UserPromptSubmit','PostToolUse','PreCompact','Stop','SessionEnd') {
+foreach ($ev in 'SessionStart','UserPromptSubmit','PreToolUse','PostToolUse','PreCompact','Stop','SessionEnd') {
   $list = @(@($cfg.hooks.$ev) | Where-Object { $_ -and -not ($_.hooks[0].command -like '*memory-hook*') })
-  $entry = if ($ev -eq 'PostToolUse') { [pscustomobject]@{ matcher = 'Write|Edit|MultiEdit|NotebookEdit'; hooks = @($mem) } } else { [pscustomobject]@{ hooks = @($mem) } }
+  $entry = if ($ev -eq 'PostToolUse') { [pscustomobject]@{ matcher = 'Write|Edit|MultiEdit|NotebookEdit'; hooks = @($mem) } }
+           elseif ($ev -eq 'PreToolUse') { [pscustomobject]@{ matcher = 'Read|Write|Edit|MultiEdit|NotebookEdit|Glob|Grep|Bash'; hooks = @($mem) } }   # cloison des agents isolés
+           else { [pscustomobject]@{ hooks = @($mem) } }
   $cfg.hooks | Add-Member $ev @($list + $entry) -Force
 }
 [IO.File]::WriteAllText($S, ($cfg | ConvertTo-Json -Depth 20))   # UTF-8 sans BOM
@@ -134,9 +163,19 @@ Write-Host "réglages : $S"
 
 # --- Outils : restic, recherche web (SearXNG local, sans clé) ; non bloquants
 Say 'Outils de recherche web et de sauvegarde'
-if (-not (Get-Command restic -ErrorAction SilentlyContinue)) { winget install --id restic.restic -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
-if (-not (Get-Command npx -ErrorAction SilentlyContinue)) { winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
-if (-not (Get-Command uv -ErrorAction SilentlyContinue)) { winget install --id astral-sh.uv -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path }
+if (-not (Get-Command restic -ErrorAction SilentlyContinue) -and -not (Winget 'restic.restic')) {
+  # sans winget : binaire officiel depuis les releases GitHub, dans ~/.local/bin
+  try {
+    $rel = Invoke-RestMethod https://api.github.com/repos/restic/restic/releases/latest
+    $url = ($rel.assets | Where-Object { $_.name -like '*_windows_amd64.zip' } | Select-Object -First 1).browser_download_url
+    $zip = Join-Path $env:TEMP 'restic.zip'; $tmp = Join-Path $env:TEMP 'restic-bci'
+    Invoke-WebRequest $url -OutFile $zip -UseBasicParsing; Expand-Archive $zip $tmp -Force
+    New-Item -ItemType Directory -Force "$HOME\.local\bin" | Out-Null
+    Move-Item (Get-ChildItem "$tmp\restic*.exe" | Select-Object -First 1).FullName "$HOME\.local\bin\restic.exe" -Force
+    Remove-Item $zip, $tmp -Recurse -Force; Refresh-Path
+  } catch { Write-Warning "restic non installé (sauvegardes en tar.xz, pas de coffre chiffré) : $_" }
+}
+if (-not (Get-Command npx -ErrorAction SilentlyContinue) -and -not (Winget 'OpenJS.NodeJS.LTS')) { Write-Warning 'Node.js absent et winget indisponible : MCP searxng et playwright non installés (nodejs.org)' }
 $env:Path = "$HOME\.local\bin;$env:Path"
 $SXD = "$AI\2-tools\3-software\searxng"
 if (Get-Command uv -ErrorAction SilentlyContinue) {
@@ -175,5 +214,12 @@ $UserPath = [Environment]::GetEnvironmentVariable('Path','User')
 if (($UserPath -split ';') -notcontains $Bin) { [Environment]::SetEnvironmentVariable('Path', "$UserPath;$Bin", 'User') }
 
 # --- Sauvegarde après installation ---------------------------------------------------
+# --- Chiffrement de 4-keys-code (au choix ; BCI_ENCRYPT_KEYS=oui|non évite la question) ------
+$Keys = Join-Path $Dest 'hooks\bci-keys.py'
+if ((Test-Path "$AI\2-tools\4-keys-code") -and -not (Test-Path "$AI\2-tools\4-keys-code.restic\config") -and (Get-Command restic -ErrorAction SilentlyContinue)) {
+  $ans = if ($env:BCI_ENCRYPT_KEYS) { $env:BCI_ENCRYPT_KEYS } else { Read-Host "Chiffrer ~/ai/2-tools/4-keys-code (clés SSH, jetons, cookies) avec une phrase secrète ? [o/N]" }
+  if ($ans -match '^(o|oui|y|yes)$') { & $Py $Keys close }
+}
+
 & $Py $Backup install-apres
 Say 'Terminé. Ouvrez un nouveau terminal, puis tapez : claude   (mises à jour : bci install)'

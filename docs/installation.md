@@ -37,8 +37,10 @@ Deux étapes ne peuvent pas être automatisées :
 4. Crée `~/ai` et `~/project`, copie les fichiers de `skeleton/` sans jamais écraser un fichier existant.
 5. Sauvegarde complète avant la première installation (`install-avant`), et après (`install-apres`), conservées à vie (voir [memory.md](memory.md#sauvegardes-hooksbci-backuppy)).
 6. Copie `~/.claude` et `~/.claude.json` dans `~/ai/2-tools/3-software/claude-code/` puis range les originaux dans `~/ai/4-trash/` (sous Windows, une session Claude ouverte peut les tenir : ils restent alors en cache temporaire et le hook mémoire les range au démarrage de la session BCI suivante), fixe `CLAUDE_CONFIG_DIR`, y relie CLAUDE.md, skills, plugins, agents et `settings.json` (rangé dans `~/ai/memory/`), et complète les réglages : agents intégrés désactivés, hooks `guard-sensible` et mémoire.
+6 bis. Importe l'existant, par copie (les originaux restent) : skills de `~/.claude/skills` dans `2-tools/1-skills` (nom déjà pris : le vôtre devient `<nom>1`, `<nom>2`…, conflit noté dans `memory/TODO.md`) ; clés SSH, variables secrètes (noms contenant KEY, TOKEN, SECRET, PASSWORD, API), identifiants d'outils (gh, git, docker, npm, pip, AWS, kube, rclone, Claude Code) et cookies (Firefox exportés en `cookies.txt` ; Chrome, Edge, Brave copiés tels quels, chiffrés par le navigateur) dans `2-tools/4-keys-code` ; configs des autres LLM (Ollama, Grok, Codex, Gemini, LM Studio, opencode…) dans `3-llm/` (leurs secrets dans `4-keys-code/llm`). Les modèles Ollama sont déplacés une fois vers `BCI_MODELS_DIR` (défaut `~/ai/3-llm/models`) et `OLLAMA_MODELS` y pointe.
 7. Installe restic (sauvegardes) et les outils web : SearXNG (métamoteur local, sans clé) et son MCP, fetch, Playwright, Scrapling, Crawl4AI.
 8. Sauvegarde tout fichier remplacé en `*.bak-bci`.
+9. Propose de chiffrer `4-keys-code` avec une phrase secrète (restic) ; `BCI_ENCRYPT_KEYS=oui` ou `non` évite la question. Chiffré, il n'existe en clair qu'entre `bci keys open` et `bci keys close`, et n'entre jamais en clair dans les sauvegardes.
 
 Les commandes courtes passent par `matglitch-974.github.io` (GitHub Pages, dépôt `matglitch-974/matglitch-974.github.io`) : de simples relais vers `install.sh` et `install.ps1` de ce dépôt, qui reste la seule source de l'installateur.
 
@@ -54,6 +56,8 @@ Installée avec BCI (`~/.local/bin/bci` ; Windows : `bci.cmd` ; Termux : `$PREFI
 | `bci status` | versions, `CLAUDE_CONFIG_DIR`, SearXNG, nombre de sauvegardes, restic |
 | `bci backup` / `bci backup list` | sauvegarde immédiate / liste |
 | `bci search "requête"` | recherche web (skill `search`) |
+| `bci keys open\|close\|status` | coffre chiffré de `2-tools/4-keys-code` (restic, phrase secrète) |
+| `bci import [skills\|secrets\|llm]` | réimporte l'existant (copies, sans doublon) |
 | `bci version` | commit installé |
 
 ## Pourquoi pas npm

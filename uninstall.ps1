@@ -45,6 +45,14 @@ if (Test-Path $S) {
   [IO.File]::WriteAllText($S, ($cfg | ConvertTo-Json -Depth 20)); Write-Host "réglages nettoyés : $S"
 }
 
+# Modèles Ollama rangés dans ~/ai par BCI : remis dans ~/.ollama/models avant toute suppression de ~/ai
+$OM = [Environment]::GetEnvironmentVariable('OLLAMA_MODELS', 'User')
+if ($OM -and $OM.StartsWith($AI)) {
+  New-Item -ItemType Directory -Force "$HOME\.ollama\models" | Out-Null
+  Get-ChildItem $OM -Force -ErrorAction SilentlyContinue | ForEach-Object { Move-Item $_.FullName "$HOME\.ollama\models\" -ErrorAction SilentlyContinue }
+  [Environment]::SetEnvironmentVariable('OLLAMA_MODELS', $null, 'User'); Write-Host 'modèles Ollama remis dans ~/.ollama/models'
+}
+
 if (Confirm2 'DANGER : supprimer ~/ai efface DÉFINITIVEMENT mémoire, personas, skills, corbeille ET toutes les sauvegardes (backup-bci). Aucune récupération possible.' 'Supprimer définitivement ~/ai ?' 'supprimer ai') { Remove-Item -Recurse -Force $AI; Write-Host '~/ai supprimé' }
 if (Confirm2 "DANGER : supprimer ~/project efface DÉFINITIVEMENT tous vos projets, y compris leurs dossiers sensible/ et ce qui n'a jamais été poussé sur GitHub." 'Supprimer définitivement ~/project ?' 'supprimer project') { Remove-Item -Recurse -Force (Join-Path $HOME 'project'); Write-Host '~/project supprimé' }
 Write-Host 'Désinstallation terminée. Claude Code lui-même reste installé. Ouvrez un nouveau terminal.'

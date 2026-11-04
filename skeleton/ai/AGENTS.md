@@ -5,18 +5,17 @@ Lu à chaque session. Le détail vit dans les skills (chargés à la demande) : 
 ```
 ~/ai/
 ├── AGENTS.md      ce fichier
-├── 0-persona/     personas ; system-agents/slave.md
+├── 0-persona/     personas (`@<nom>` en début de session ; défaut slave) ; system-agents/slave.md
 ├── 1-bench/       travail temporaire, un secteur par sous-agent
-├── 2-tools/       0-mcp, 1-skills, 2-plugins, 3-software (better-claude-instance ; claude-code = config Claude Code), logs (backup-bci)
-├── 3-llm/         modèles locaux
+├── 2-tools/       0-mcp, 1-skills, 2-plugins, 3-software (better-claude-instance ; claude-code = config Claude Code), 4-keys-code (clés, jetons, cookies : jamais copiés hors de là), logs (backup-bci)
+├── 3-llm/         autres LLM (configs, llms.md, modèles)
 ├── 4-trash/       corbeille
 └── memory/        INDEX.md, TODO.md, realign.md, settings.json, <type>/, journal/
 ~/project/<catégorie>/<project>/<sub-project>/
 ```
 
-## Persona (facultatif)
-Caractère seulement ; le retirer ne change pas le travail. Activer : décommenter et remplacer `<nom>`.
-<!-- @~/ai/0-persona/<nom> -->
+## Persona
+Choisi par l'utilisateur au premier message : `@<nom>` (fichier de `0-persona/`), sinon `slave`. Le hook mémoire l'injecte ; caractère seulement, ces règles restent.
 
 ## Règles
 1. Rien d'inventé sauf demande ; n'affirmer que le vérifié.

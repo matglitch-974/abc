@@ -7,12 +7,12 @@
 ├── ai/                                   tout ce qui concerne l'IA (~/.claude n'existe plus)
 │   ├── AGENTS.md                         sommaire + règles de travail
 │   ├── 0-persona/                        personas et agents (contenu non numéroté)
-│   │   ├── <persona principal>           facultatif, nom libre
+│   │   ├── <persona>.md                  personas, nom libre ; choisi par `@<nom>` en début de session
 │   │   └── system-agents/
 │   │       └── slave.md                  l'unique sous-agent
 │   ├── 1-bench/                          espace de travail temporaire (secteurs)
 │   ├── 2-tools/
-│   │   ├── 0-mcp/                        serveurs MCP ; sensible/ (clés éventuelles)
+│   │   ├── 0-mcp/                        serveurs MCP
 │   │   ├── 1-skills/                     skills : persona, bench, project, memory, context, mission, search, scraping, sampling, specula, leçons…
 │   │   ├── 2-plugins/                    plugins de Claude Code
 │   │   ├── 3-software/                   logiciels de l'IA
@@ -24,10 +24,13 @@
 │   │   │       ├── plugins    ───────▶ ~/ai/2-tools/2-plugins/
 │   │   │       ├── agents/system-agents ▶ ~/ai/0-persona/system-agents/
 │   │   │       └── settings.json ────▶ ~/ai/memory/settings.json
+│   │   ├── 4-keys-code/                  clés SSH, jetons, clés d'API, cookies (copies de l'existant)
+│   │   ├── 4-keys-code.restic/           coffre chiffré de 4-keys-code, si choisi (bci keys)
 │   │   └── logs/
 │   │       └── backup-bci/               sauvegardes (voir memory.md)
-│   ├── 3-llm/                            modèles et runtimes locaux
+│   ├── 3-llm/                            autres LLM : configs copiées, llms.md, models/ (modèles Ollama)
 │   ├── 4-trash/                          corbeille
+│   ├── isolated/<nom>/                   mémoire et journal des agents isolés (cloisonnés)
 │   └── memory/                           mémoire (voir memory.md)
 │
 └── project/
@@ -74,7 +77,10 @@ better-claude-instance/
 ├── install.sh, install.ps1      installation Linux / Android, Windows
 ├── uninstall.sh, uninstall.ps1  désinstallation
 ├── bootstrap.sh                 création de ~/ai et ~/project (Linux)
-├── hooks/guard-sensible.sh      hook de protection de sensible/
+├── hooks/guard-sensible.sh      hook de protection de sensible/ et de 4-keys-code
+├── hooks/memory-hook.py        mémoire, persona de session (@<nom>), rangement de l'ancien ~/.claude
+├── hooks/bci-import.py         import de l'existant : skills, secrets, autres LLM
+├── hooks/bci-keys.py           coffre chiffré de 4-keys-code (restic)
 ├── skeleton/                    fichiers copiés tels quels dans ~/ (jamais écrasés)
 └── docs/                        cette documentation
 ```

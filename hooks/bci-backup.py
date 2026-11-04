@@ -113,13 +113,17 @@ def backup(kind, if_needed=False):
     meta = {"nom": d.name, "type": kind, "date": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
             "sources": [str(p) for p in sources], "versions": versions()}
     d.mkdir()
+    # 4-keys-code chiffré : sa version en clair (ouverte) ne va jamais dans les sauvegardes, le coffre si
+    keys = AI / "2-tools" / "4-keys-code"
+    vaulted = (AI / "2-tools" / "4-keys-code.restic" / "config").is_file()
+    excl = ["--exclude", str(keys)] if vaulted else []
     if restic_ok():
         if not (REPO / "config").exists():
             r = restic("init")
             if r.returncode:
                 raise RuntimeError(f"restic init : {r.stderr.strip()[:300]}")
         r = restic("backup", "--json", "--compression", "max", "--tag", d.name,
-                   "--exclude", str(DEST), *map(str, sources))
+                   "--exclude", str(DEST), *excl, *map(str, sources))
         summary = [json.loads(l) for l in r.stdout.splitlines() if '"message_type":"summary"' in l]
         if r.returncode not in (0, 3) or not summary:  # 3 = fichiers illisibles ignorés, instantané créé
             shutil.rmtree(d)
@@ -132,7 +136,9 @@ def backup(kind, if_needed=False):
         with tarfile.open(arch, "w:xz", preset=9) as tar:
             for p in sources:
                 tar.add(p, arcname=p.name, filter=lambda ti: None if ti.name.startswith(
-                    f"{AI.name}/2-tools/logs/backup-bci") else ti)
+                    f"{AI.name}/2-tools/logs/backup-bci") or (vaulted and ti.name.startswith(
+                    f"{AI.name}/2-tools/4-keys-code/")) or (vaulted and ti.name == f"{AI.name}/2-tools/4-keys-code")
+                    else ti)
         meta["archive"] = {"fichier": arch.name, "octets": arch.stat().st_size}
     if kind == "quotidienne":
         counter = DEST / "counter"

@@ -13,7 +13,7 @@ HOOK="$SRC/hooks/guard-sensible.sh"
 if [ -d "$AI" ] || [ -d "$OLD" ]; then python3 "$SRC/hooks/bci-backup.py" install-avant || true; fi
 
 # --- Arborescence et fichiers de base -----------------------------------------
-mkdir -p "$AI/0-persona/system-agents" "$AI/1-bench" "$AI/2-tools/0-mcp/sensible" \
+mkdir -p "$AI/0-persona/system-agents" "$AI/1-bench" "$AI/2-tools/0-mcp" \
          "$AI/2-tools/1-skills" "$AI/2-tools/2-plugins" "$AI/2-tools/3-software" "$AI/2-tools/logs" \
          "$CC" "$AI/3-llm" "$AI/4-trash" "$HOME/project"
 for t in user feedback project reference journal; do mkdir -p "$AI/memory/$t"; done
@@ -24,7 +24,7 @@ for t in user feedback project reference journal; do mkdir -p "$AI/memory/$t"; d
     mkdir -p "$(dirname "$dst")"; cp "$SRC/skeleton/$f" "$dst"; echo "créé     : $dst"
   fi
 done
-chmod +x "$SRC/hooks/memory-hook.py" "$SRC/hooks/bci-backup.py" "$AI/2-tools/1-skills/bench/sector" \
+chmod +x "$SRC/hooks/memory-hook.py" "$SRC/hooks/bci-backup.py" "$SRC/hooks/bci-import.py" "$SRC/hooks/bci-keys.py" "$AI/2-tools/1-skills/bench/sector" \
   "$AI/2-tools/1-skills/bench/agent-id.py" "$AI/2-tools/1-skills/project/new-unit" "$HOOK" \
   "$AI/2-tools/1-skills/mission/tool-scan.py" "$AI/2-tools/1-skills/mission/tool-install.py"
 
@@ -50,6 +50,9 @@ for f in "$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc"; do
     echo 'export CLAUDE_CONFIG_DIR="$HOME/ai/2-tools/3-software/claude-code"' >> "$f"
 done
 export CLAUDE_CONFIG_DIR="$CC"
+
+# --- Import de l'existant (copies) : skills, secrets -> 2-tools/4-keys-code, autres LLM -> 3-llm ---
+python3 "$SRC/hooks/bci-import.py" all || true
 
 # --- Migration de ~/.claude vers ~/ai ----------------------------------------------
 # Chaque élément rejoint sa place ; ce qui reste (anciens liens) part dans 4-trash/.
@@ -86,7 +89,8 @@ mkdir -p "$CC/agents"
 M='{"type":"command","command":"python3 \"'"$SRC"'/hooks/memory-hook.py\""}'
 ADD=$(cat <<EOF
 {"permissions":{"deny":["Agent(Explore)","Agent(Plan)","Agent(general-purpose)","Agent(statusline-setup)","Agent(claude-code-guide)"]},
- "hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"sh \"$HOOK\""}]}],
+ "hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"sh \"$HOOK\""}]},
+                {"matcher":"Read|Write|Edit|MultiEdit|NotebookEdit|Glob|Grep|Bash","hooks":[$M]}],
   "SessionStart":[{"hooks":[$M]}], "UserPromptSubmit":[{"hooks":[$M]}],
   "PostToolUse":[{"matcher":"Write|Edit|MultiEdit|NotebookEdit","hooks":[$M]}],
   "PreCompact":[{"hooks":[$M]}], "Stop":[{"hooks":[$M]}], "SessionEnd":[{"hooks":[$M]}]}}
@@ -147,6 +151,16 @@ fi
 command -v claude >/dev/null 2>&1 && command -v scrapling >/dev/null 2>&1 && addmcp scrapling -- scrapling mcp
 if command -v uv >/dev/null 2>&1 && ! command -v crwl >/dev/null 2>&1; then
   { uv tool install -q crawl4ai && crawl4ai-setup; } || echo "ATTENTION : Crawl4AI non installé (navigateur requis)" >&2
+fi
+
+# --- Chiffrement de 4-keys-code (au choix ; BCI_ENCRYPT_KEYS=oui|non évite la question) ------
+if [ -d "$AI/2-tools/4-keys-code" ] && [ ! -f "$AI/2-tools/4-keys-code.restic/config" ] && command -v restic >/dev/null 2>&1; then
+  ans="${BCI_ENCRYPT_KEYS:-}"
+  if [ -z "$ans" ] && [ -r /dev/tty ]; then
+    printf 'Chiffrer ~/ai/2-tools/4-keys-code (clés SSH, jetons, cookies) avec une phrase secrète ? [o/N] ' > /dev/tty
+    read -r ans < /dev/tty || ans=""
+  fi
+  case "$ans" in o|oui|y|yes) python3 "$SRC/hooks/bci-keys.py" close || true ;; esac
 fi
 
 # --- Sauvegarde après installation -------------------------------------------------

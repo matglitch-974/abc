@@ -12,6 +12,8 @@ bci uninstall          désinstalle, après deux confirmations (puis deux autres
 bci status             état : versions, configuration, recherche, sauvegardes
 bci backup [list]      sauvegarde immédiate, ou liste des sauvegardes
 bci search "requête"   recherche web (SearXNG local) ; options : bci search -h
+bci keys open|close|status   coffre chiffré de 2-tools/4-keys-code (restic)
+bci import [skills|secrets|llm]   réimporte l'existant (copies ; idempotent)
 bci version            version installée
 TXT
 }
@@ -29,6 +31,10 @@ case "${1:-}" in
     exec "$PY" "$DEST/hooks/bci-backup.py" quotidienne ;;
   search)
     shift; exec "$PY" "$AI/2-tools/1-skills/search/search.py" "$@" ;;
+  keys)
+    shift; exec "$PY" "$DEST/hooks/bci-keys.py" "$@" ;;
+  import)
+    shift; [ $# -eq 0 ] && set -- all; exec "$PY" "$DEST/hooks/bci-import.py" "$@" ;;
   version)
     git -C "$DEST" log -1 --format='BCI %h (%cs)' 2>/dev/null || echo "BCI : dépôt introuvable ($DEST)" ;;
   status)

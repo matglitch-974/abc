@@ -1,21 +1,22 @@
 # Personas et agents
 
 ## Principe
-- **Agent principal** : celui avec qui l'utilisateur parle. Il lit `~/ai/AGENTS.md` (règles de travail) et, facultativement, un persona principal.
+- **Agent principal** : celui avec qui l'utilisateur parle. Il lit `~/ai/AGENTS.md` (règles de travail) et le persona choisi pour la session : `@<nom>` au premier message, `slave` par défaut.
 - **Sous-agents** : tous passent par un seul agent système, `slave`. L'agent principal présente leur travail comme le sien : il le vérifie et en assume la responsabilité.
 - **Séparation caractère / méthode** : le persona principal ne décrit que le caractère. Toute la méthode (vérifier ses sources, revendiquer le travail des sous-agents, s'améliorer) est dans `AGENTS.md`. Retirer le persona change le ton, jamais la qualité.
 
 ## Rangement
 ```
 ~/ai/0-persona/
-├── <persona principal>          facultatif ; sans catégorie tant qu'il est seul
+├── <persona>.md                 un fichier par persona, nom libre
 ├── system-agents/               catégorie minimale obligatoire
 │   └── slave.md
 └── <catégorie>-agents/          toute nouvelle catégorie d'agents
 ```
 - Nom du persona principal : entièrement libre (majuscules, chiffres, caractères spéciaux, Unicode, émojis).
 - Chaque `<catégorie>-agents/` est relié dans `agents/` de la configuration de Claude Code (`$CLAUDE_CONFIG_DIR`, soit `~/ai/2-tools/3-software/claude-code/`). Claude Code y cherche récursivement ; l'identité d'un agent vient du champ `name` de son en-tête, pas de son chemin.
-- Activation du persona principal : ligne `@~/ai/0-persona/<nom>` dans `~/ai/AGENTS.md`.
+- Activation : le premier message de la session commence par `@<nom>` ; sans `@` (ou nom introuvable), le persona est `slave`. Le hook `memory-hook.py` l'injecte dans le contexte et le réinjecte après chaque compaction ; l'utilisateur s'adresse alors à ce persona.
+- Agent isolé : en-tête `isolated: true`. Choisi par `@<nom>`, il ouvre une session cloisonnée dans les deux sens : mémoire et journal propres dans `~/ai/isolated/<nom>/` ; le hook bloque (PreToolUse) ses accès à `~/ai/memory`, `AGENTS.md`, aux autres personas et agents isolés, et bloque l'accès des autres sessions à `~/ai/isolated/` comme aux transcripts de ses sessions. Limite : `AGENTS.md` et la mémoire importée sont déjà chargés au démarrage, avant le choix du persona ; la consigne d'isolement demande de les ignorer.
 
 ## Confidentialité
 - Le persona principal est une donnée personnelle : il n'est jamais publié.

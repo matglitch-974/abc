@@ -48,6 +48,13 @@ if [ -f "$S" ] && command -v jq >/dev/null 2>&1; then
      "$S" > "$S.tmp" && mv "$S.tmp" "$S" && echo "réglages nettoyés : $S"
 fi
 
+# Modèles Ollama rangés dans ~/ai par BCI : remis dans ~/.ollama/models avant toute suppression de ~/ai
+OM=$(sed -n 's/^export OLLAMA_MODELS="\(.*\)"$/\1/p' "$HOME/.profile" 2>/dev/null | tail -1)
+case "$OM" in "$AI"/*)
+  mkdir -p "$HOME/.ollama/models" && mv "$OM"/* "$HOME/.ollama/models/" 2>/dev/null
+  sed -i '/^export OLLAMA_MODELS=/d' "$HOME/.profile"; echo "modèles Ollama remis dans ~/.ollama/models" ;;
+esac
+
 confirm2 "DANGER : supprimer ~/ai efface DÉFINITIVEMENT mémoire, personas, skills, corbeille ET toutes les sauvegardes (backup-bci). Aucune récupération possible." \
   "Supprimer définitivement ~/ai ?" "supprimer ai" && rm -rf "$AI" && echo "~/ai supprimé"
 confirm2 "DANGER : supprimer ~/project efface DÉFINITIVEMENT tous vos projets, y compris leurs dossiers sensible/ et ce qui n'a jamais été poussé sur GitHub." \
