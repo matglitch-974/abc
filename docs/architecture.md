@@ -9,7 +9,7 @@
 │   ├── 0-persona/                        personas et agents (contenu non numéroté)
 │   │   ├── <persona>.md                  personas, nom libre ; choisi par `@<nom>` en début de session
 │   │   └── system-agents/
-│   │       └── slave.md                  l'unique sous-agent
+│   │       └── slave.md                  le sous-agent par défaut
 │   ├── 1-bench/                          espace de travail temporaire (secteurs)
 │   ├── 2-tools/
 │   │   ├── 0-mcp/                        serveurs MCP
@@ -22,7 +22,7 @@
 │   │   │       ├── CLAUDE.md  ───────▶ ~/ai/AGENTS.md
 │   │   │       ├── skills     ───────▶ ~/ai/2-tools/1-skills/
 │   │   │       ├── plugins    ───────▶ ~/ai/2-tools/2-plugins/
-│   │   │       ├── agents/system-agents ▶ ~/ai/0-persona/system-agents/
+│   │   │       ├── agents/0-persona ─▶ ~/ai/0-persona/
 │   │   │       └── settings.json ────▶ ~/ai/memory/settings.json
 │   │   ├── 4-keys-code/                  clés SSH, jetons, clés d'API, cookies (copies de l'existant)
 │   │   ├── 4-keys-code.restic/           coffre chiffré de 4-keys-code, si choisi (bcai keys)

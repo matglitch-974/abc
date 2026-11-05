@@ -79,7 +79,7 @@ Puis applique les adaptations validées (fusion de l'ancien `CLAUDE.md`, souveni
 ## 5. Vérifier
 - `bcai status` (nouveau terminal) : `CLAUDE_CONFIG_DIR` pointe vers `~/ai/2-tools/3-software/claude-code`.
 - `claude-code/CLAUDE.md` mène à `~/ai/AGENTS.md` (lien sous Linux ; ligne `@~/ai/AGENTS.md` sous Windows).
-- `claude-code/skills`, `plugins`, `agents/system-agents` sont des liens (jonctions sous Windows) vers `~/ai`.
+- `claude-code/skills`, `plugins`, `agents/0-persona` sont des liens (jonctions sous Windows) vers `~/ai` ; l'ancien `agents/system-agents` n'existe plus.
 - `settings.json` contient les hooks `guard-sensible` et `memory-hook`, et les anciens hooks de l'utilisateur.
 - `claude mcp list` : anciens MCP présents, nouveaux ajoutés (un échec d'outil web n'est pas bloquant : signale-le).
 - `~/ai/2-tools/logs/backup-bcai/` contient `install-avant` et `install-apres` (les deux sont faites à la première installation : l'installateur crée `~/ai` pour y cloner le dépôt avant la sauvegarde `install-avant`).

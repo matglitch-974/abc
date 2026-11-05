@@ -1,15 +1,18 @@
-# bcai — commande de BCAI (Windows). Appelée par bcai.cmd.
+﻿# bcai — commande de BCAI (Windows). Appelée par bcai.cmd.
 $Dest = Join-Path $HOME 'ai\2-tools\3-software\bcai'
 $AI   = Join-Path $HOME 'ai'
 $Py   = (Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' } | Select-Object -First 1).Source
 if (-not $Py) { $Py = (Get-ChildItem "$env:LOCALAPPDATA\Programs\Python\Python3*\python.exe", "$env:ProgramFiles\Python3*\python.exe" -ErrorAction SilentlyContinue | Sort-Object { [int]($_.Directory.Name -replace '\D','') } -Descending | Select-Object -First 1).FullName }
 if (-not $Py -and (Get-Command uv -ErrorAction SilentlyContinue)) { $Py = uv python find 3.13 2>$null }
+# install.ps1 et uninstall.ps1 restent sans BOM (un BOM casse leur première ligne sous irm | iex) :
+# -File les lirait en ANSI sous PowerShell 5.1 ; on les lit donc en UTF-8 et on les exécute comme irm | iex.
+function Run-Utf8($f) { "iex ([IO.File]::ReadAllText('$($f -replace "'","''")', [Text.Encoding]::UTF8))" }
 $Cmd, $Rest = $args
 switch ($Cmd) {
   { $_ -in 'install','update' } {
     if (Test-Path "$Dest\.git") { git -C $Dest pull -q --ff-only }
-    & powershell -NoProfile -ExecutionPolicy Bypass -File "$Dest\install.ps1"; break }
-  'uninstall' { & powershell -NoProfile -ExecutionPolicy Bypass -File "$Dest\uninstall.ps1"; break }
+    & powershell -NoProfile -ExecutionPolicy Bypass -Command (Run-Utf8 "$Dest\install.ps1"); break }
+  'uninstall' { & powershell -NoProfile -ExecutionPolicy Bypass -Command (Run-Utf8 "$Dest\uninstall.ps1"); break }
   'backup'    { if ($Rest -contains 'list') { & $Py "$Dest\hooks\bcai-backup.py" list } else { & $Py "$Dest\hooks\bcai-backup.py" quotidienne }; break }
   'search'    { & $Py "$AI\2-tools\1-skills\search\search.py" @Rest; break }
   'keys'      { & $Py "$Dest\hooks\bcai-keys.py" @Rest; break }

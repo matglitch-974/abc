@@ -26,7 +26,7 @@ confirm2 "ATTENTION : la désinstallation retire BCAI de Claude Code (réglages,
 if [ -d "$CC" ] && [ ! -e "$CL" ]; then
   mv "$CC" "$CL"; echo "configuration remise : $CL"
   [ -f "$CL/.claude.json" ] && [ ! -e "$HOME/.claude.json" ] && mv "$CL/.claude.json" "$HOME/.claude.json"
-  for l in "$CL/CLAUDE.md" "$CL/skills" "$CL/agents/system-agents"; do [ -L "$l" ] && rm "$l"; done
+  for l in "$CL/CLAUDE.md" "$CL/skills" "$CL/agents/0-persona" "$CL/agents/system-agents"; do [ -L "$l" ] && rm "$l"; done
   for l in "$CL/plugins" "$CL/settings.json"; do
     [ -L "$l" ] || continue
     t=$(readlink "$l"); rm "$l"; [ -e "$t" ] && cp -R "$t" "$l" && echo "copié : $l"

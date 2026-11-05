@@ -150,7 +150,7 @@ def import_agents(src=None):
     taken = {f.stem: f for f in root.rglob("*.md")}
     for ag in sorted(src.rglob("*.md")):
         if any(is_link(p) for p in [ag, *ag.parents] if src in p.parents or p == src):
-            continue   # anciens liens BCAI (system-agents)
+            continue   # liens BCAI (0-persona, ancien system-agents)
         data = ag.read_bytes()
         if any(f.read_bytes() == data for f in taken.values()):
             continue

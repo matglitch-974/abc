@@ -153,7 +153,10 @@ $ClaudeMd = "$CC\CLAUDE.md"
 if (-not ((Test-Path $ClaudeMd) -and ((Get-Content $ClaudeMd -Raw) -match '@~/ai/AGENTS.md'))) {
   Backup $ClaudeMd; [IO.File]::WriteAllText($ClaudeMd, "@~/ai/AGENTS.md`n"); Write-Host "lien     : $ClaudeMd -> ~/ai/AGENTS.md"
 }
-foreach ($pair in @(@("$CC\skills", "$AI\2-tools\1-skills"), @("$CC\plugins", "$AI\2-tools\2-plugins"), @("$CC\agents\system-agents", "$AI\0-persona\system-agents"))) {
+# agents\0-persona expose toutes les personas comme sous-agents ; l'ancien lien agents\system-agents ferait doublon.
+$OldAg = "$CC\agents\system-agents"
+if ((Test-Path $OldAg) -and (Get-Item $OldAg -Force).LinkType) { (Get-Item $OldAg -Force).Delete(); Write-Host "retiré   : $OldAg (remplacé par agents\0-persona)" }
+foreach ($pair in @(@("$CC\skills", "$AI\2-tools\1-skills"), @("$CC\plugins", "$AI\2-tools\2-plugins"), @("$CC\agents\0-persona", "$AI\0-persona"))) {
   $link, $target = $pair
   if ((Test-Path $link) -and (Get-Item $link -Force).LinkType) { (Get-Item $link -Force).Delete() } else { Backup $link }
   New-Item -ItemType Junction -Path $link -Target $target | Out-Null; Write-Host "lien     : $link -> $target"
@@ -171,7 +174,8 @@ $MemCmd = "`"$($Py -replace '\\','/')`" `"$MemHook`""
 $Deny = 'Agent(Explore)','Agent(Plan)','Agent(general-purpose)','Agent(statusline-setup)','Agent(claude-code-guide)','Agent(claude)'
 
 $S = "$CC\settings.json"
-$cfg = if ((Test-Path $S) -and (Get-Content $S -Raw).Trim()) { if (-not (Test-Path "$S.bak-bcai") -and -not (Test-Path "$S.bak-bci")) { Copy-Item $S "$S.bak-bcai" }; Get-Content $S -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
+# -Encoding UTF8 : sans lui, PowerShell 5.1 lit settings.json (UTF-8 sans BOM) en ANSI et chaque installation double-encode les accents
+$cfg = if ((Test-Path $S) -and (Get-Content $S -Raw -Encoding UTF8).Trim()) { if (-not (Test-Path "$S.bak-bcai") -and -not (Test-Path "$S.bak-bci")) { Copy-Item $S "$S.bak-bcai" }; Get-Content $S -Raw -Encoding UTF8 | ConvertFrom-Json } else { [pscustomobject]@{} }
 if (-not $cfg.permissions) { $cfg | Add-Member permissions ([pscustomobject]@{}) }
 $cfg.permissions | Add-Member deny (@(@($cfg.permissions.deny) + $Deny | Where-Object { $_ } | Select-Object -Unique)) -Force
 if (-not $cfg.hooks) { $cfg | Add-Member hooks ([pscustomobject]@{}) }
@@ -255,7 +259,9 @@ Copy-Item "$Dest\bin\bcai.cmd" "$Bin\bcai.cmd" -Force
 # cmd.exe relit un .cmd modifié pendant son exécution à la même position, et n'y trouve que la fin du fichier.
 if (Test-Path "$Bin\bci.cmd") { Copy-Item "$Dest\bin\bci.cmd" "$Bin\bci.cmd" -Force }
 $UserPath = [Environment]::GetEnvironmentVariable('Path','User')
-if (($UserPath -split ';') -notcontains $Bin) { [Environment]::SetEnvironmentVariable('Path', "$UserPath;$Bin", 'User') }
+if (($UserPath -split ';') -notcontains $Bin) {   # PATH utilisateur vide : pas de « ; » initial
+  [Environment]::SetEnvironmentVariable('Path', ((@($UserPath -split ';') + $Bin | Where-Object { $_ }) -join ';'), 'User')
+}
 
 # --- Sauvegarde après installation ---------------------------------------------------
 # --- Chiffrement de 4-keys-code (au choix ; BCAI_ENCRYPT_KEYS=oui|non évite la question) ------

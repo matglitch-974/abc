@@ -144,7 +144,8 @@ echo "réglages : $S"
 link "$AI/AGENTS.md"                 "$CC/CLAUDE.md"
 link "$AI/2-tools/1-skills"          "$CC/skills"
 link "$AI/2-tools/2-plugins"         "$CC/plugins"
-link "$AI/0-persona/system-agents"   "$CC/agents/system-agents"
+if [ -L "$CC/agents/system-agents" ]; then rm "$CC/agents/system-agents"; fi   # ancien lien : doublon de 0-persona/system-agents
+link "$AI/0-persona"                 "$CC/agents/0-persona"   # toutes les personas comme sous-agents
 link "$S"                            "$CC/settings.json"
 
 # --- Outils de recherche web (gratuits, sans clé) --------------------------------------

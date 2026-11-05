@@ -6,7 +6,7 @@ description: Secteurs de l'espace de travail temporaire ~/ai/1-bench. À utilise
 # Secteurs de 1-bench
 
 - `sh ~/ai/2-tools/1-skills/bench/sector new` : crée le prochain secteur libre (`A-sector`… `Z-sector`, `AB-sector`… `ZB-sector`, `AC-sector`…) et affiche son chemin.
-- `sh ~/ai/2-tools/1-skills/bench/sector release <nom>` : supprime le secteur.
+- `sh ~/ai/2-tools/1-skills/bench/sector release <nom>` : supprime le secteur, vérifie sa disparition et affiche `Secteur libéré : <nom>` (code 1 et message si le secteur est absent ou résiste).
 
 Règles :
 - un secteur appartient à son créateur ; les autres peuvent le lire ;

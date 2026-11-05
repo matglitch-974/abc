@@ -16,7 +16,7 @@ $CL = Join-Path $HOME '.claude'
 
 # 1. Configuration : ~/ai/2-tools/3-software/claude-code -> ~/.claude (jonctions remplacées par des copies)
 if ((Test-Path $CC) -and -not (Test-Path $CL)) {
-  foreach ($j in "$CC\skills", "$CC\agents\system-agents", "$CC\plugins") {
+  foreach ($j in "$CC\skills", "$CC\agents\0-persona", "$CC\agents\system-agents", "$CC\plugins") {   # system-agents : ancien lien
     if ((Test-Path $j) -and (Get-Item $j -Force).LinkType) {
       $target = (Get-Item $j -Force).Target; (Get-Item $j -Force).Delete()
       if ($j -like '*\plugins' -and $target -and (Test-Path $target)) { Copy-Item $target $j -Recurse; Write-Host "copié : $j" }
@@ -37,7 +37,7 @@ Remove-Item "$HOME\.local\bin\bcai.cmd", "$HOME\.local\bin\bci.cmd" -ErrorAction
 # 2. Réglages : retirer uniquement ce que l'installation a ajouté
 $S = "$CL\settings.json"
 if (Test-Path $S) {
-  $cfg = Get-Content $S -Raw | ConvertFrom-Json
+  $cfg = Get-Content $S -Raw -Encoding UTF8 | ConvertFrom-Json   # sans -Encoding, PowerShell 5.1 lit en ANSI
   if ($cfg.permissions.deny) { $cfg.permissions.deny = @($cfg.permissions.deny | Where-Object { $_ -notlike 'Agent(*' }) }
   if ($cfg.hooks) { foreach ($ev in @($cfg.hooks.PSObject.Properties.Name)) {
     $cfg.hooks.$ev = @($cfg.hooks.$ev | Where-Object { -not ($_.hooks[0].command -like '*guard-sensible*' -or $_.hooks[0].command -like '*memory-hook*') })
