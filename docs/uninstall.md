@@ -7,11 +7,11 @@ bcai uninstall
 Ou, sans la commande `bcai` :
 - Windows (PowerShell) :
   ```
-  irm https://raw.githubusercontent.com/matglitch-974/bcai/main/uninstall.ps1 | iex
+  irm https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/uninstall.ps1 | iex
   ```
 - Linux / Android (dans Alpine) :
   ```
-  curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/uninstall.sh | sh
+  curl -fsSL https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/uninstall.sh | sh
   ```
 
 La désinstallation est interactive : un avertissement en rouge, une question `[o/N]`, puis le mot `desinstaller` à taper en entier. Sans ces deux confirmations, rien n'est modifié. Elle se lance donc dans un terminal, par l'utilisateur, pas par un agent.

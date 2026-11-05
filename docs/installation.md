@@ -18,7 +18,7 @@ irm matglitch-974.github.io/bc.ps1 | iex
 ```
 Commande de secours (adresse complète, si `matglitch-974.github.io` est inaccessible) :
 ```
-irm https://raw.githubusercontent.com/matglitch-974/bcai/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/install.ps1 | iex
 ```
 
 Linux / Android (Termux) :
@@ -27,7 +27,7 @@ curl -fsSL matglitch-974.github.io/bc | sh
 ```
 Commande de secours (adresse complète, si `matglitch-974.github.io` est inaccessible) :
 ```
-curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/install.sh | sh
 ```
 
 Les commandes courtes passent par `matglitch-974.github.io` (GitHub Pages, dépôt `matglitch-974/matglitch-974.github.io`) : de simples relais vers `install.sh` et `install.ps1` de ce dépôt, qui reste la seule source de l'installateur. Les anciennes adresses (`…/BCI`, `…/BCI.ps1`) et `…/BCAI`, `…/BCAI.ps1` sont des relais identiques à `…/bc` et `…/bc.ps1`.

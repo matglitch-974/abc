@@ -17,7 +17,7 @@ Pourquoi passer par un agent : chaque instance de Claude Code est différente (`
 - **Vider `~/ai/4-trash/`**, ni lancer la suppression de `~/ai` ou de `~/project` : c'est à l'utilisateur de le faire.
 
 ## 1. Lire
-Lis, dans cet ordre, depuis GitHub (`https://raw.githubusercontent.com/matglitch-974/bcai/main/<fichier>`) ou depuis un clone placé dans un dossier temporaire du système (pas encore dans `~/ai`) :
+Lis, dans cet ordre, depuis GitHub (`https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/<fichier>`) ou depuis un clone placé dans un dossier temporaire du système (pas encore dans `~/ai`) :
 1. `docs/architecture.md` : la structure cible de `~/ai` et `~/project` ;
 2. `skeleton/ai/AGENTS.md` : les règles que l'instance installée lira à chaque session ;
 3. `install.ps1` (Windows) ou `install.sh` puis `bootstrap.sh` (Linux, Android) : ce que l'installateur fait réellement ;
@@ -60,11 +60,11 @@ Laisse l'utilisateur garder, déplacer, renommer ou retirer n'importe quel élé
 **Sans écart** : lance l'installateur officiel, sans interaction (le chiffrement est fait plus tard par l'utilisateur) :
 - Windows (depuis PowerShell) :
   ```
-  $env:BCAI_ENCRYPT_KEYS='non'; irm https://raw.githubusercontent.com/matglitch-974/bcai/main/install.ps1 | iex
+  $env:BCAI_ENCRYPT_KEYS='non'; irm https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/install.ps1 | iex
   ```
 - Linux, Android (Termux) :
   ```
-  curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/install.sh | BCAI_ENCRYPT_KEYS=non sh
+  curl -fsSL https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/install.sh | BCAI_ENCRYPT_KEYS=non sh
   ```
   Sous Linux, l'installation des paquets passe par `sudo` : si un mot de passe est demandé, l'utilisateur lance la commande lui-même. Sous Termux, `install.sh` se relance dans Alpine sans transmettre `BCAI_ENCRYPT_KEYS` : la question du chiffrement peut y être posée au terminal.
 
