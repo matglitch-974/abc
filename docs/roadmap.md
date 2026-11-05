@@ -29,7 +29,10 @@ Dictée vocale instantanée dans l'esprit de Wispr Flow : parler, et le texte pr
 - **Plateformes** : Linux (X11 et Wayland diffèrent pour le raccourci global et la saisie), Windows ; Android/Termux à évaluer (micro via Termux:API).
 - **Mesures d'acceptation** : latence entre fin de parole et texte inséré, taux d'erreur sur le français, consommation de quota par dictée.
 
+## Fait
+- **Retrait du prompt système de comportement d'Anthropic** (novembre 2026), par tweakcc 4.4.0 : [`patch/tri-prompts.tsv`](../patch/tri-prompts.tsv) classe chaque fragment (RETIRER, GARDER, DOUTE gardé) ; seuls ton, style, rédaction, « doing tasks », proactivité et agents intégrés refusés sont vidés, outils, mécanique du harnais et sécurité restent intacts.
+- Rejouer après une mise à jour de Claude Code : `node patch/apply-prompt-patch.mjs` (vide les fragments RETIRER en gardant l'en-tête tweakcc, puis `npx tweakcc@4.4.0 --apply --yes`) ; claude.exe ne doit pas être en cours d'exécution.
+
 ## Pistes évoquées, non retenues
-- **Décompiler et recompiler le binaire de Claude Code** pour en retirer les prompts : écarté, contraire aux conditions d'utilisation d'Anthropic. Alternative légitime : construire sa propre instance avec le Claude Agent SDK ou un harnais open source, avec des outils open source branchés en MCP (`2-tools/0-mcp/`) et chaque prompt d'outil sous forme de skill.
 - **Installation par npm** : dépréciée par Anthropic (voir [installation.md](installation.md)).
 - **git-crypt** : voir [projects.md](projects.md).

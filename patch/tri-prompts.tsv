@@ -1,0 +1,897 @@
+fichier	classe	raison
+agent-prompt-agent-hook.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-artifact-comment-completion-reply-and-resolution.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-artifact-comment-thread-analyst.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-artifact-comment-thread-background-directive.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-artifact-editor-thread-follow-up.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-artifact-type-creation-slash-command-quickstart-flow.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-artifact-type-creation-slash-command.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-auto-mode-rule-reviewer.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-away-summary-generation.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-background-agent-state-classifier-ask-opens-message-rule.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-background-agent-state-classifier-chat-thread-relay-rule.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-background-agent-state-classifier.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-background-job-agent-instructions.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-batch-slash-command.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-claude-code-guide.md	RETIRER	agent intégré refusé (claude-code-guide, description)
+agent-prompt-claude-guide-agent.md	RETIRER	agent intégré refusé (claude-code-guide)
+agent-prompt-claude-test-author.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-claude-test-explorer.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-claudemd-creation.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-gitlab-comment-posting.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-inline-gap-sweep-phase.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-minimal-mode.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-1-base-finder-angles.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-10-reportfindings-output-format.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-2-low-effort-minimum-findings-mode.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-2-low-effort-mode.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-3-extra-high-and-maximum-effort-modes.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-4-three-state-verification-phase.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-5-recall-biased-verification-phase.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-6-medium-effort-mode.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-7-high-effort-mode.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-8-github-comment-posting.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-part-9-fix-application.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-code-review-unavailable-agent-inline-mode.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-coding-session-title-generator.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-conversation-summarization-capped-variant.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-conversation-summarization-lean-variant.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-conversation-summarization-short-variant.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-conversation-summarization-with-additional-instructions.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-conversation-summarization.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-coordinator-worker-instructions.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-determine-which-memory-files-to-attach.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-dream-memory-consolidation.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-explore.md	RETIRER	agent intégré refusé (Explore)
+agent-prompt-general-purpose-agent.md	RETIRER	agent intégré refusé (general-purpose, description)
+agent-prompt-general-purpose.md	RETIRER	agent intégré refusé (general-purpose)
+agent-prompt-general-task-agent.md	RETIRER	agent intégré refusé (agent par défaut « claude », non vérifié)
+agent-prompt-hook-condition-evaluator-stop.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-hook-condition-evaluator.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-inherited-context-for-worktree-sub-agent.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-onboarding-guide-draft-share-link-workflow.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-onboarding-guide-generator.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-plan-mode-enhanced.md	RETIRER	agent intégré refusé (Plan)
+agent-prompt-plugin-eval-pilot-trust-requirement.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-pr-follow-up-cron-pr-steward-label-check.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-pr-follow-up-cron.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-project-thread-status-card-classifier-ask-opens-message-rule.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-project-thread-status-card-classifier.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-prompt-suggestion-generator-v2.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-pull-request-creation.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-quick-git-commit.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-quick-pr-creation.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-read-only-search-agent.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-recent-message-summarization.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-remote-machine-auto-mode-rules.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-rename-auto-generate-session-name.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-schedule-action-selection.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-schedule-local-mcp-server-limitation.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-schedule-slash-command.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-security-monitor-attached-machine-call-results.md	GARDER	sécurité (security-monitor)
+agent-prompt-security-monitor-claude-tag-connector-writes.md	GARDER	sécurité (security-monitor)
+agent-prompt-security-monitor-for-autonomous-agent-actions.md	GARDER	sécurité (security-monitor)
+agent-prompt-security-monitor-forwarded-user-turns.md	GARDER	sécurité (security-monitor)
+agent-prompt-security-monitor-host-context-line-guidance.md	GARDER	sécurité (security-monitor)
+agent-prompt-security-review-slash-command.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-session-title-and-branch-generation.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-session-transcript-chunk-summary.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-simplify-slash-command.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-simplify-unavailable-agent-inline-mode.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-status-line-setup.md	RETIRER	agent intégré refusé (statusline-setup)
+agent-prompt-subagent-delegation-configuration-classifier.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-summarization-no-tools-guard.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-web-fetch-agent-usage-guidance.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-web-reading-specialist.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-worker-fork.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-workflow-script-plain-text-return-note.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-workflow-script-structured-return-note.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-workflow-subagent-plain-text-output.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+agent-prompt-workflow-subagent-structured-output.md	GARDER	agent/utilitaire mécanique (résumé, titres, revue, classifieur...)
+data-allow-managed-permission-rules-only-allowed-tools-frontmatter-scope.md	GARDER	données
+data-allow-managed-permission-rules-only-deny-rules-still-apply.md	GARDER	données
+data-allow-managed-permission-rules-only-setting.md	GARDER	données
+data-allowed-mcp-servers-setting.md	GARDER	données
+data-artifact-capability-verification-pass.md	GARDER	données
+data-artifact-connector-call-observation-requirement.md	GARDER	données
+data-artifact-connector-server-naming-guidance.md	GARDER	données
+data-artifact-decision-component-html-skeleton.md	GARDER	données
+data-artifact-host-mcp-server-guidance.md	GARDER	données
+data-artifact-mcp-connector-guidance.md	GARDER	données
+data-artifact-publish-merged-over-newer-version-file-changes-notice.md	GARDER	données
+data-artifact-runtime-capability-declarations.md	GARDER	données
+data-auto-compact-inputs-changed-event-schema.md	GARDER	données
+data-auto-mode-setup-usage.md	GARDER	données
+data-available-models-match-setting.md	GARDER	données
+data-background-tasks-changed-event-schema.md	GARDER	données
+data-batches-api-reference-csharp.md	GARDER	données
+data-batches-api-reference-php.md	GARDER	données
+data-batches-api-reference-python.md	GARDER	données
+data-built-in-gh-stand-in-api-command-help.md	GARDER	données
+data-chrome-browser-hints-control-request.md	GARDER	données
+data-claude-api-reference-php.md	GARDER	données
+data-claude-api-reference-ruby.md	GARDER	données
+data-claude-code-agent-proxy-troubleshooting-guide.md	GARDER	données
+data-claude-code-gateway-customer-routed-inference-protocol.md	GARDER	données
+data-claude-code-gateway-protocol.md	GARDER	données
+data-claude-code-live-documentation-sources.md	GARDER	données
+data-claude-code-recent-changes-reference.md	GARDER	données
+data-claude-gateway-landing-page.md	GARDER	données
+data-claude-platform-on-aws-reference.md	GARDER	données
+data-claude-tag-claude-in-slack-reference.md	GARDER	données
+data-claude-test-spec-file-format.md	GARDER	données
+data-cloud-session-unverified-remote-branch-push-notice.md	GARDER	données
+data-code-change-published-event-schema.md	GARDER	données
+data-command-plugin-source-command-field.md	GARDER	données
+data-cowork-plugin-examples.md	GARDER	données
+data-cowork-plugin-mcp-discovery-and-connection.md	GARDER	données
+data-cross-session-inbound-setting.md	GARDER	données
+data-data-visualization-anti-patterns.md	GARDER	données
+data-data-visualization-choosing-a-form.md	GARDER	données
+data-data-visualization-components.md	GARDER	données
+data-data-visualization-interaction.md	GARDER	données
+data-data-visualization-marks-and-anatomy.md	GARDER	données
+data-denied-models-setting.md	GARDER	données
+data-dialog-expiry-setting.md	GARDER	données
+data-directory-added-hook-description.md	GARDER	données
+data-files-api-reference-csharp.md	GARDER	données
+data-files-api-reference-go.md	GARDER	données
+data-files-api-reference-java.md	GARDER	données
+data-files-api-reference-php.md	GARDER	données
+data-files-api-reference-python.md	GARDER	données
+data-files-api-reference-typescript.md	GARDER	données
+data-gateway-device-code-entry-page.md	GARDER	données
+data-gateway-ignored-x-forwarded-for-warning.md	GARDER	données
+data-get-task-output-control-request.md	GARDER	données
+data-github-actions-workflow-for-claude-mentions.md	GARDER	données
+data-github-app-installation-pr-description.md	GARDER	données
+data-hook-classifier-context-field.md	GARDER	données
+data-hook-mcp-server-field.md	GARDER	données
+data-interrupt-cancel-queued-parameter.md	GARDER	données
+data-interrupt-receipt-cancelled-field.md	GARDER	données
+data-interrupt-receipt-still-queued-field.md	GARDER	données
+data-interrupt-send-now-message-uuid-parameter.md	GARDER	données
+data-interrupt-send-now-parameter.md	GARDER	données
+data-interrupt-worker-epoch-parameter.md	GARDER	données
+data-knowledge-mcp-search-strategies.md	GARDER	données
+data-managed-agents-quickstart-bug-hunter.md	GARDER	données
+data-managed-agents-quickstart-contract-tracker.md	GARDER	données
+data-managed-agents-quickstart-data-analyst.md	GARDER	données
+data-managed-agents-quickstart-deep-researcher.md	GARDER	données
+data-managed-agents-quickstart-explainer-video-maker.md	GARDER	données
+data-managed-agents-quickstart-field-monitor.md	GARDER	données
+data-managed-agents-quickstart-incident-commander.md	GARDER	données
+data-managed-agents-quickstart-sprint-retro-facilitator.md	GARDER	données
+data-managed-agents-quickstart-structured-extractor.md	GARDER	données
+data-managed-agents-quickstart-support-agent.md	GARDER	données
+data-managed-agents-quickstart-support-to-eng-escalator.md	GARDER	données
+data-managed-agents-quickstart-watchlist-scanner.md	GARDER	données
+data-managed-settings-helper-onfailure-field.md	GARDER	données
+data-managed-settings-helper-retries-field.md	GARDER	données
+data-mcp-http-client-capability-validation-rationale.md	GARDER	données
+data-mcp-http-parameter-header-validation-rationale.md	GARDER	données
+data-mcp-http-standard-header-validation-rationale.md	GARDER	données
+data-mcp-read-resource-control-request.md	GARDER	données
+data-mcp-server-status-error-code-field.md	GARDER	données
+data-message-batches-api-typescript.md	GARDER	données
+data-network-path-settings-file-unread-recovery-guidance.md	GARDER	données
+data-peer-sender-display-name-field.md	GARDER	données
+data-plugin-manifest-types-field.md	GARDER	données
+data-prompt-suggestions-paused-control-request.md	GARDER	données
+data-query-result-pending-command-count.md	GARDER	données
+data-rate-limit-grace-signal.md	GARDER	données
+data-rate-limit-unified-windows.md	GARDER	données
+data-remote-tools-reannounce-control-request.md	GARDER	données
+data-review-upload-excluded-changes-error.md	GARDER	données
+data-rewind-files-skippedlinks-field.md	GARDER	données
+data-sandbox-credential-environment-no-match-setting.md	GARDER	données
+data-sandbox-credential-file-mask-claims-setting.md	GARDER	données
+data-sandbox-credential-mask-empty-inject-hosts-warning.md	GARDER	données
+data-sandbox-denied-resolved-addresses-setting.md	GARDER	données
+data-sandbox-filesystem-disabled-setting.md	GARDER	données
+data-sandbox-network-domain-spelling-warning.md	GARDER	données
+data-sandbox-root-without-cap-setfcap-error.md	GARDER	données
+data-sandbox-tls-termination-setting.md	GARDER	données
+data-sdk-api-error-kind-field.md	GARDER	données
+data-sdk-api-error-params-field.md	GARDER	données
+data-sdk-footer-indicator-schema.md	GARDER	données
+data-sdk-frame-intake-phases-ms-field.md	GARDER	données
+data-sdk-frame-received-wall-ms-field.md	GARDER	données
+data-sdk-initialize-response-sdk-mcp-manifests-parked-field.md	GARDER	données
+data-sdk-mcp-server-disableautobackground-field.md	GARDER	données
+data-sdk-message-stop-abandoned-blocks-field.md	GARDER	données
+data-sdk-permission-check-status-event-schema.md	GARDER	données
+data-sdk-read-file-anchor-field.md	GARDER	données
+data-sdk-result-safety-stops-field.md	GARDER	données
+data-sdk-safeguard-results-field.md	GARDER	données
+data-sdk-safeguard-tool-use-field.md	GARDER	données
+data-sdk-set-max-thinking-tokens-request-schema.md	GARDER	données
+data-sdk-set-model-only-if-model-is-current-field.md	GARDER	données
+data-sdk-set-model-system-prompt-field.md	GARDER	données
+data-sdk-system-init-plugin-errors-field.md	GARDER	données
+data-sdk-task-notification-handback-field.md	GARDER	données
+data-sdk-thinking-duration-ms-field.md	GARDER	données
+data-sdk-ui-prompt-autocomplete-request-schema.md	GARDER	données
+data-self-hosted-runner-anthropic-git-proxy-credential-warning.md	GARDER	données
+data-self-hosted-runner-client-certificate-relay-warning.md	GARDER	données
+data-self-hosted-runner-decode-token-command-help.md	GARDER	données
+data-self-hosted-runner-deferred-shutdown-timing-notice.md	GARDER	données
+data-self-hosted-runner-disabled-by-org-fatal-message.md	GARDER	données
+data-self-hosted-runner-git-askpass-governed-hosts-warning.md	GARDER	données
+data-self-hosted-runner-git-lfs-hook-warning.md	GARDER	données
+data-self-hosted-runner-git-ssl-cainfo-trust-bundle-warning.md	GARDER	données
+data-self-hosted-runner-git-ssl-no-verify-lifecycle-hook-exception.md	GARDER	données
+data-self-hosted-runner-git-ssl-no-verify-session-relocation-note.md	GARDER	données
+data-self-hosted-runner-orchestrator-command-help.md	GARDER	données
+data-self-hosted-runner-session-metrics-help.md	GARDER	données
+data-streaming-reference-csharp.md	GARDER	données
+data-streaming-reference-go.md	GARDER	données
+data-streaming-reference-java.md	GARDER	données
+data-streaming-reference-php.md	GARDER	données
+data-streaming-reference-ruby.md	GARDER	données
+data-structured-tool-output-field-schema.md	GARDER	données
+data-structured-usage-rate-limit-rows-field.md	GARDER	données
+data-submit-feedback-control-request.md	GARDER	données
+data-sync-claude-ai-plugins-setting.md	GARDER	données
+data-sync-claude-ai-skills-setting.md	GARDER	données
+data-telemetry-variables-ignored-notice.md	GARDER	données
+data-thin-client-diff-dialog-schema.md	GARDER	données
+data-token-counting-reference.md	GARDER	données
+data-tool-result-display-metadata-field.md	GARDER	données
+data-tool-use-display-metadata-field.md	GARDER	données
+data-tool-use-reference-csharp.md	GARDER	données
+data-tool-use-reference-ruby.md	GARDER	données
+data-turn-handoff-available-event-schema.md	GARDER	données
+data-turn-handoff-file-names-field.md	GARDER	données
+data-turn-handoff-hydrates-carried-lines-field.md	GARDER	données
+data-turn-handoff-memory-context-field.md	GARDER	données
+data-upload-device-hook-template-request.md	GARDER	données
+data-vcs-state-changed-branch-field.md	GARDER	données
+data-vcs-state-changed-event-schema.md	GARDER	données
+data-windows-transcript-read-ebadf-notice.md	GARDER	données
+data-working-tree-upload-refusal-for-duplicated-withheld-file.md	GARDER	données
+data-working-tree-upload-refusal-for-git-dubious-ownership.md	GARDER	données
+data-working-tree-upload-refusal-for-misplaced-git-entry.md	GARDER	données
+data-working-tree-upload-refusal-for-missing-git-objects-folders.md	GARDER	données
+data-working-tree-upload-refusal-for-private-git-directory-setup-failure.md	GARDER	données
+data-working-tree-upload-refusal-for-unread-git-config-environment-variable.md	GARDER	données
+skill-artifact-components.md	GARDER	skill
+skill-artifact-data-table.md	GARDER	skill
+skill-artifact-diagramming.md	GARDER	skill
+skill-artifact-document.md	GARDER	skill
+skill-artifact-explainer.md	GARDER	skill
+skill-artifact-pr-review-description-composed-publish-flow.md	GARDER	skill
+skill-artifact-report.md	GARDER	skill
+skill-artifact-whiteboard-when-to-use-guidance.md	GARDER	skill
+skill-claude-api-managed-agents-onboarding-source-tier.md	GARDER	skill
+skill-claude-code-configuration-guide.md	GARDER	skill
+skill-claude-guide-unavailable-reference-fallback.md	GARDER	skill
+skill-claude-test-sign-in.md	GARDER	skill
+skill-code-review-angle-cross-file-tracer.md	GARDER	skill
+skill-code-review-angle-language-pitfall-specialist.md	GARDER	skill
+skill-code-review-angle-removed-behavior-auditor.md	GARDER	skill
+skill-code-review-angle-wrapper-proxy-correctness.md	GARDER	skill
+skill-code-review-conventions.md	GARDER	skill
+skill-code-review-correctness-finder-angles.md	GARDER	skill
+skill-code-review-efficiency.md	GARDER	skill
+skill-code-review-inline-medium-high-template.md	GARDER	skill
+skill-code-review-inline-xhigh-mode.md	GARDER	skill
+skill-code-review-low-effort-expanded-findings-mode.md	GARDER	skill
+skill-code-review-output-findings-json-array.md	GARDER	skill
+skill-code-review-phase-0-gather-diff.md	GARDER	skill
+skill-code-review-phase-2-verify-3-state.md	GARDER	skill
+skill-code-review-phase-2-verify-recall-biased.md	GARDER	skill
+skill-code-review-phase-3-sweep.md	GARDER	skill
+skill-computer-use-mcp.md	GARDER	skill
+skill-data-visualization-description.md	GARDER	skill
+skill-data-visualization.md	GARDER	skill
+skill-debugging.md	GARDER	skill
+skill-doctor-prompt-audit-configuration-scope.md	GARDER	skill
+skill-doctor-slash-command-description.md	GARDER	skill
+skill-doctor-slash-command.md	GARDER	skill
+skill-dynamic-pacing-loop-execution-re-arm-decision.md	GARDER	skill
+skill-dynamic-pacing-loop-execution.md	GARDER	skill
+skill-explain-usage-measured-usage-slash-command.md	GARDER	skill
+skill-explain-usage-slash-command.md	GARDER	skill
+skill-generate-permission-allowlist-from-transcripts.md	GARDER	skill
+skill-import-to-claude-code.md	GARDER	skill
+skill-init-claude-md-and-skill-setup-new-version.md	GARDER	skill
+skill-insights-report-output.md	GARDER	skill
+skill-loop-cloud-first-scheduling-offer.md	GARDER	skill
+skill-loop-local-runtime-note.md	GARDER	skill
+skill-loop-self-pacing-mode-re-arm-decision.md	GARDER	skill
+skill-loop-self-pacing-mode.md	GARDER	skill
+skill-loop-slash-command-dynamic-mode.md	GARDER	skill
+skill-multiplayer-whiteboard-description.md	GARDER	skill
+skill-plugin-eval-authoring-interview.md	GARDER	skill
+skill-prototype-description.md	GARDER	skill
+skill-prototype-runtime-capabilities-guidance.md	GARDER	skill
+skill-run-app.md	GARDER	skill
+skill-run-browser-driven-web-app-example.md	GARDER	skill
+skill-run-cli-tool-example.md	GARDER	skill
+skill-run-library-sdk-example.md	GARDER	skill
+skill-run-skill-template.md	GARDER	skill
+skill-run-tui-interactive-terminal-app-example.md	GARDER	skill
+skill-run-web-server-api-example.md	GARDER	skill
+skill-schedule-recurring-cron-and-run-immediately.md	GARDER	skill
+skill-setup-cowork-role-selection.md	GARDER	skill
+skill-setup-cowork.md	GARDER	skill
+skill-stuck-background-daemon-diagnostics.md	GARDER	skill
+skill-stuck-slash-command.md	GARDER	skill
+skill-team-onboarding-guide.md	GARDER	skill
+skill-update-claude-code-config.md	GARDER	skill
+skill-update-config-7-step-verification-flow.md	GARDER	skill
+skill-update-config-description.md	GARDER	skill
+skill-update-config-settings-file-locations.md	GARDER	skill
+skill-verify-cli-changes-example-for-verify-skill.md	GARDER	skill
+skill-verify-server-api-changes-example-for-verify-skill.md	GARDER	skill
+skill-whiteboard-description.md	GARDER	skill
+skill-workflow-authoring-reference.md	GARDER	skill
+system-prompt-01-memory-save-exclusions.md	GARDER	mécanique mémoire
+system-prompt-02-comment-why-only-guidance.md	RETIRER	style de code (commentaires)
+system-prompt-03-comment-what-and-task-context-avoidance.md	RETIRER	style de code (commentaires)
+system-prompt-04-frontend-browser-verification.md	RETIRER	consigne de comportement (doing tasks)
+system-prompt-05-prefer-editing-existing-files.md	RETIRER	consigne de comportement (doing tasks)
+system-prompt-06-emoji-avoidance.md	RETIRER	emojis
+system-prompt-07-tool-call-colon-avoidance.md	RETIRER	format de réponse
+system-prompt-act-when-ready.md	RETIRER	proactivité/verbosité
+system-prompt-action-safety-and-truthful-reporting.md	DOUTE	sûreté des actions (doute)
+system-prompt-advisor-tool-instructions.md	GARDER	mécanique ou mode spécifique
+system-prompt-agent-intro-collaborative-goals.md	RETIRER	identité/personnalité d'ouverture
+system-prompt-agent-summary-generation.md	GARDER	compaction/résumé
+system-prompt-agent-thread-notes.md	DOUTE	mixte : cwd/chemins absolus mécaniques (doute)
+system-prompt-analysis-instructions-for-full-compact-prompt-recent-messages.md	GARDER	compaction/résumé
+system-prompt-artifact-comment-decision-reformat-retry.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-comment-edit-composer.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-comment-fast-acknowledgement-selection.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-comment-fast-acknowledgement.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-comment-list-framing.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-comment-presence-state-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-comment-reply-composer.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-comment-result-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-comment-thread-framing.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-comment-thread-triage.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-commenter-access-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-page-owned-comment-thread-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-artifact-patch-turn-edit-composer.md	GARDER	mécanique ou mode spécifique
+system-prompt-auto-mode-setup-proposal-generator.md	GARDER	mécanique ou mode spécifique
+system-prompt-auto-mode-slack-message-provenance.md	GARDER	mécanique ou mode spécifique
+system-prompt-auto-mode.md	GARDER	mécanique ou mode spécifique
+system-prompt-autonomous-loop-check.md	GARDER	mécanique ou mode spécifique
+system-prompt-autonomous-loop-notification-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-autonomous-loop-persistence-guidance-CLAUDE_CODE_LOOP_PERSISTENT.md	GARDER	mécanique ou mode spécifique
+system-prompt-autonomous-loop-tick-dynamic.md	GARDER	mécanique ou mode spécifique
+system-prompt-autonomous-loop-tick.md	GARDER	mécanique ou mode spécifique
+system-prompt-autonomous-operation-guidelines.md	GARDER	mécanique ou mode spécifique
+system-prompt-avoiding-unnecessary-sleep-commands-part-of-powershell-tool-description.md	GARDER	mécanique ou mode spécifique
+system-prompt-background-session-instructions.md	GARDER	mécanique ou mode spécifique
+system-prompt-background-session-worktree-persistence-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-background-worktree-isolation-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-censoring-assistance-with-malicious-activities.md	GARDER	sécurité
+system-prompt-chrome-browser-mcp-tools.md	GARDER	mécanique ou mode spécifique
+system-prompt-claude-fable-5-1-model-identity.md	GARDER	mécanique ou mode spécifique
+system-prompt-claude-fable-5-model-identity.md	GARDER	mécanique ou mode spécifique
+system-prompt-claude-in-chrome-browser-automation-non-deferred-tools.md	GARDER	mécanique ou mode spécifique
+system-prompt-claude-in-chrome-browser-automation.md	GARDER	mécanique ou mode spécifique
+system-prompt-claude-in-chrome-browser-selection-instructions.md	GARDER	mécanique ou mode spécifique
+system-prompt-claude-in-chrome-deferred-tool-loading.md	GARDER	mécanique ou mode spécifique
+system-prompt-combined-memory-index-pointer-instructions.md	GARDER	mécanique mémoire
+system-prompt-communication-style.md	RETIRER	ton et style
+system-prompt-concise-output-style.md	RETIRER	style de sortie (concision)
+system-prompt-context-compaction-summary.md	GARDER	compaction/résumé
+system-prompt-coordinator-cross-session-peer-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-coordinator-mode-orchestration.md	GARDER	mécanique ou mode spécifique
+system-prompt-correction-restraint.md	RETIRER	consigne de rédaction
+system-prompt-delivering-work-at-full-scope.md	RETIRER	comportement (doing tasks)
+system-prompt-deny-rule-circumvention-classifier-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-description-part-of-memory-instructions.md	GARDER	mécanique mémoire
+system-prompt-doing-tasks-ambitious.md	RETIRER	doing tasks
+system-prompt-doing-tasks-focus.md	RETIRER	doing tasks
+system-prompt-doing-tasks-help-feedback.md	RETIRER	auto-promotion (aide/feedback)
+system-prompt-doing-tasks-no-additions.md	RETIRER	doing tasks
+system-prompt-doing-tasks-no-compat-hacks.md	RETIRER	doing tasks
+system-prompt-doing-tasks-no-unnecessary-error-handling.md	RETIRER	doing tasks
+system-prompt-doing-tasks-security.md	GARDER	sécurité
+system-prompt-dream-claude-md-memory-reconciliation.md	GARDER	mécanique mémoire
+system-prompt-dream-team-memory-handling.md	GARDER	mécanique mémoire
+system-prompt-executing-actions-with-care.md	DOUTE	sûreté des actions (doute)
+system-prompt-explain-code-review-ultra.md	GARDER	mécanique ou mode spécifique
+system-prompt-exploratory-questions-analyze-before-implementing.md	RETIRER	comportement/verbosité
+system-prompt-feedback-memory-body-structure.md	GARDER	mécanique mémoire
+system-prompt-feedback-memory-save-guidance.md	GARDER	mécanique mémoire
+system-prompt-finish-the-request-instead-of-stopping-early.md	RETIRER	proactivité
+system-prompt-focus-mode-long-form.md	GARDER	mécanique ou mode spécifique
+system-prompt-focus-mode-short-form.md	GARDER	mécanique ou mode spécifique
+system-prompt-fork-usage-guidelines.md	GARDER	mécanique ou mode spécifique
+system-prompt-forked-agent-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-forked-conversation-worktree-isolation-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-fresh-subagent-delegation-example.md	GARDER	mécanique ou mode spécifique
+system-prompt-git-status.md	GARDER	mécanique ou mode spécifique
+system-prompt-harness-instructions.md	GARDER	mécanique harness + variables
+system-prompt-hook-evaluator-truncated-transcript-note.md	GARDER	mécanique ou mode spécifique
+system-prompt-hook-feedback-handling.md	GARDER	mécanique ou mode spécifique
+system-prompt-hooks-configuration.md	GARDER	mécanique ou mode spécifique
+system-prompt-how-to-use-the-sendusermessage-tool.md	GARDER	mécanique ou mode spécifique
+system-prompt-insights-at-a-glance-summary.md	GARDER	compaction/résumé
+system-prompt-insights-friction-analysis.md	GARDER	mécanique ou mode spécifique
+system-prompt-insights-interaction-style.md	GARDER	mécanique ou mode spécifique
+system-prompt-insights-memorable-moment.md	GARDER	mécanique ou mode spécifique
+system-prompt-insights-on-the-horizon.md	GARDER	mécanique ou mode spécifique
+system-prompt-insights-session-facets-extraction.md	GARDER	mécanique ou mode spécifique
+system-prompt-insights-suggestions.md	GARDER	mécanique ou mode spécifique
+system-prompt-insights-summary-at-a-glance.md	GARDER	compaction/résumé
+system-prompt-insights-what-works.md	GARDER	mécanique ou mode spécifique
+system-prompt-interactive-agent-intro-output-style-active.md	DOUTE	intro output style (doute)
+system-prompt-interactive-agent-intro-output-style-conditional.md	GARDER	gabarit + politique sécurité
+system-prompt-learning-mode-insights.md	GARDER	mécanique ou mode spécifique
+system-prompt-learning-mode.md	GARDER	mécanique ou mode spécifique
+system-prompt-loop-tick-loop-md-absent-dynamic.md	GARDER	mécanique ou mode spécifique
+system-prompt-loop-tick-loop-md-tasks-dynamic.md	GARDER	mécanique ou mode spécifique
+system-prompt-loop-tick-loop-md-tasks.md	GARDER	mécanique ou mode spécifique
+system-prompt-memory-description-of-user-feedback.md	GARDER	mécanique mémoire
+system-prompt-memory-index-pointer-instructions.md	GARDER	mécanique mémoire
+system-prompt-memory-instructions.md	GARDER	mécanique mémoire
+system-prompt-memory-persistence-scope.md	GARDER	mécanique mémoire
+system-prompt-minimal-mode.md	GARDER	mécanique ou mode spécifique
+system-prompt-monitor-fallback-heartbeat-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-moved-artifact-comment-thread-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-non-fork-subagent-delegation-examples.md	GARDER	mécanique ou mode spécifique
+system-prompt-one-of-six-rules-for-using-sleep-command.md	GARDER	mécanique ou mode spécifique
+system-prompt-option-previewer.md	GARDER	mécanique ou mode spécifique
+system-prompt-outcome-first-communication-style.md	RETIRER	ton et style
+system-prompt-parallel-tool-call-note.md	GARDER	mécanique ou mode spécifique
+system-prompt-partial-compaction-instructions.md	GARDER	compaction/résumé
+system-prompt-permission-classifier-strict-review-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-personal-project-memory-description.md	GARDER	mécanique mémoire
+system-prompt-phase-four-of-plan-mode.md	GARDER	mécanique ou mode spécifique
+system-prompt-plan-mode-interactive-workshop-offer.md	GARDER	mécanique ou mode spécifique
+system-prompt-plan-sent-to-ultraplan.md	GARDER	mécanique ou mode spécifique
+system-prompt-plan-vs-memory-guidance.md	GARDER	mécanique mémoire
+system-prompt-powershell-5.1.md	GARDER	mécanique ou mode spécifique
+system-prompt-powershell-edition-for-7-plus.md	GARDER	mécanique ou mode spécifique
+system-prompt-powershell-edition-unknown.md	GARDER	mécanique ou mode spécifique
+system-prompt-pr-slack-notification-step.md	GARDER	mécanique ou mode spécifique
+system-prompt-pr-steward-handoff-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-project-member-session-user-message-provenance.md	GARDER	mécanique ou mode spécifique
+system-prompt-project-memory-body-structure.md	GARDER	mécanique mémoire
+system-prompt-project-memory-save-guidance.md	GARDER	mécanique mémoire
+system-prompt-project-skill-upkeep-for-feedback-memory.md	GARDER	mécanique mémoire
+system-prompt-project-thread-in-thread-message-provenance.md	GARDER	mécanique ou mode spécifique
+system-prompt-project-timeline-user-message-provenance.md	GARDER	mécanique ou mode spécifique
+system-prompt-remote-plan-mode-ultraplan.md	GARDER	mécanique ou mode spécifique
+system-prompt-remote-planning-session.md	GARDER	mécanique ou mode spécifique
+system-prompt-reporting-outcomes.md	RETIRER	consigne de rédaction des rapports
+system-prompt-respond-in-configured-language.md	GARDER	mécanique ou mode spécifique
+system-prompt-responsive-mode.md	RETIRER	style de réponse
+system-prompt-sandbox-task-resource-boundary.md	GARDER	mécanique ou mode spécifique
+system-prompt-saving-skills-via-file-delivery.md	GARDER	mécanique ou mode spécifique
+system-prompt-self-hosted-runner-doctor.md	GARDER	mécanique ou mode spécifique
+system-prompt-self-hosted-runner-setup.md	GARDER	mécanique ou mode spécifique
+system-prompt-shared-git-stash-safety.md	GARDER	mécanique ou mode spécifique
+system-prompt-skill-save-permission-note.md	GARDER	mécanique ou mode spécifique
+system-prompt-skillify-current-session.md	GARDER	mécanique ou mode spécifique
+system-prompt-subagent-delegation-cost-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-subagent-delegation-examples.md	GARDER	mécanique ou mode spécifique
+system-prompt-subagent-delegation-restraint.md	GARDER	mécanique ou mode spécifique
+system-prompt-subagent-delegation-when-to-use-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-system-section.md	GARDER	mécanique ou mode spécifique
+system-prompt-task-approval-continuity.md	RETIRER	proactivité
+system-prompt-tasks-vs-memory-guidance.md	GARDER	mécanique mémoire
+system-prompt-team-memory-index-pointer-instructions.md	GARDER	mécanique mémoire
+system-prompt-team-project-memory-description.md	GARDER	mécanique mémoire
+system-prompt-teammate-communication.md	GARDER	mécanique ou mode spécifique
+system-prompt-tone-code-references.md	RETIRER	tone and style
+system-prompt-tone-concise-output-short.md	RETIRER	tone and style (verbosité)
+system-prompt-tool-call-summary-label.md	GARDER	compaction/résumé
+system-prompt-tool-usage-subagent-guidance.md	GARDER	mécanique ou mode spécifique
+system-prompt-tool-usage-task-management.md	GARDER	mécanique ou mode spécifique
+system-prompt-troubleshooting-confirmation-policy.md	GARDER	mécanique ou mode spécifique
+system-prompt-user-memory-usage-guidance.md	GARDER	mécanique mémoire
+system-prompt-worker-instructions.md	GARDER	mécanique ou mode spécifique
+system-prompt-writing-for-the-user.md	RETIRER	consigne de rédaction
+system-prompt-writing-subagent-prompts.md	GARDER	mécanique ou mode spécifique
+system-prompt-wsl-managed-settings-double-opt-in.md	GARDER	mécanique ou mode spécifique
+system-prompt-you-should-know-understood-topic-skip-guidance.md	GARDER	mécanique ou mode spécifique
+system-reminder-agent-mention.md	GARDER	rappel système technique
+system-reminder-appifactrepl-design-canvas-workflow.md	GARDER	rappel système technique
+system-reminder-appifactrepl-slides-deck-workflow.md	GARDER	rappel système technique
+system-reminder-artifact-auto-replies-resumed.md	GARDER	rappel système technique
+system-reminder-artifact-capability-declaration-revocation-warning.md	GARDER	rappel système technique
+system-reminder-artifact-comment-reply-activation-failure.md	GARDER	rappel système technique
+system-reminder-artifact-comment-reply-session-collision.md	GARDER	rappel système technique
+system-reminder-artifact-page-owned-comment-reply-refusal.md	GARDER	rappel système technique
+system-reminder-artifact-type-instructions-trust-boundary.md	GARDER	rappel système technique
+system-reminder-artifact-type-page-untrusted-content-warning.md	GARDER	rappel système technique
+system-reminder-askuserquestion-minimum-options-validation.md	GARDER	rappel système technique
+system-reminder-async-agent-launched-metadata.md	GARDER	rappel système technique
+system-reminder-async-agent-launched.md	GARDER	rappel système technique
+system-reminder-attached-device-stopped-offering-tools.md	GARDER	rappel système technique
+system-reminder-attached-machine-asleep-command-paused.md	GARDER	rappel système technique
+system-reminder-attached-machine-asleep-command-withdrawn.md	GARDER	rappel système technique
+system-reminder-attached-machine-away-recheck-on-request-ending.md	GARDER	rappel système technique
+system-reminder-attached-machine-away-until-reachable-condition.md	GARDER	rappel système technique
+system-reminder-attached-machine-could-not-be-reached-oversized-call.md	GARDER	rappel système technique
+system-reminder-attached-machine-could-not-be-reached-return-not-noted.md	GARDER	rappel système technique
+system-reminder-attached-machine-could-not-be-reached-return-noted.md	GARDER	rappel système technique
+system-reminder-attached-machine-could-not-be-reached.md	GARDER	rappel système technique
+system-reminder-attached-machine-not-answering-retry-shortly.md	GARDER	rappel système technique
+system-reminder-attached-machine-not-answering-stop-calling.md	GARDER	rappel système technique
+system-reminder-attached-machine-reply-not-received.md	GARDER	rappel système technique
+system-reminder-attached-machine-stopped-answering-return-not-noted.md	GARDER	rappel système technique
+system-reminder-attached-machine-stopped-answering-return-noted.md	GARDER	rappel système technique
+system-reminder-attached-machine-stopped-answering.md	GARDER	rappel système technique
+system-reminder-attached-machine-untrusted-attachments-refusal.md	GARDER	rappel système technique
+system-reminder-attached-machine-went-to-sleep-return-not-noted.md	GARDER	rappel système technique
+system-reminder-attached-machine-went-to-sleep-return-noted.md	GARDER	rappel système technique
+system-reminder-attached-machine-went-to-sleep.md	GARDER	rappel système technique
+system-reminder-auto-mode-clarification-bias.md	GARDER	rappel système technique
+system-reminder-auto-mode-consent-flow.md	GARDER	rappel système technique
+system-reminder-auto-mode-no-verdict-after-hook-input-rewrite.md	GARDER	rappel système technique
+system-reminder-background-command-quiet-check-in.md	GARDER	rappel système technique
+system-reminder-background-command-stopped-under-memory-pressure.md	GARDER	rappel système technique
+system-reminder-background-task-notification-with-concurrent-user-input.md	GARDER	rappel système technique
+system-reminder-bound-conversation-activity-authority-warning.md	GARDER	rappel système technique
+system-reminder-brief-mode-toggle.md	GARDER	rappel système technique
+system-reminder-brief-mode-user-facing-output.md	GARDER	rappel système technique
+system-reminder-browser-extension-not-connected.md	GARDER	rappel système technique
+system-reminder-btw-side-question.md	GARDER	rappel système technique
+system-reminder-cloud-agent-launched.md	GARDER	rappel système technique
+system-reminder-cloud-session-device-tools-disabled.md	GARDER	rappel système technique
+system-reminder-compact-file-reference.md	GARDER	rappel système technique
+system-reminder-cross-session-message-held-notice.md	GARDER	rappel système technique
+system-reminder-cross-session-peer-message-authority-warning-legacy.md	GARDER	rappel système technique
+system-reminder-cross-session-peer-message-authority-warning-note.md	GARDER	rappel système technique
+system-reminder-cross-session-peer-message-authority-warning.md	GARDER	rappel système technique
+system-reminder-dangerous-removal-blocked.md	GARDER	rappel système technique
+system-reminder-deferred-tools-available.md	GARDER	rappel système technique
+system-reminder-end-conversation-background-fork-no-op.md	GARDER	rappel système technique
+system-reminder-exited-plan-mode.md	GARDER	rappel système technique
+system-reminder-external-source-trust-boundary.md	GARDER	rappel système technique
+system-reminder-file-already-in-context.md	GARDER	rappel système technique
+system-reminder-file-exists-but-empty.md	GARDER	rappel système technique
+system-reminder-file-opened-in-ide.md	GARDER	rappel système technique
+system-reminder-file-shorter-than-offset.md	GARDER	rappel système technique
+system-reminder-file-summary-completeness-disclosure.md	GARDER	rappel système technique
+system-reminder-file-truncated.md	GARDER	rappel système technique
+system-reminder-hook-additional-context.md	GARDER	rappel système technique
+system-reminder-hook-blocking-error.md	GARDER	rappel système technique
+system-reminder-hook-stopped-continuation-prefix.md	GARDER	rappel système technique
+system-reminder-hook-stopped-continuation.md	GARDER	rappel système technique
+system-reminder-hook-success.md	GARDER	rappel système technique
+system-reminder-large-file-full-content-reading-guidance.md	GARDER	rappel système technique
+system-reminder-large-pdf-read-guidance.md	GARDER	rappel système technique
+system-reminder-lines-selected-in-ide.md	GARDER	rappel système technique
+system-reminder-mcp-output-truncation-warning.md	GARDER	rappel système technique
+system-reminder-mcp-resource-no-content.md	GARDER	rappel système technique
+system-reminder-mcp-servers-connecting-without-toolsearch.md	GARDER	rappel système technique
+system-reminder-mcp-servers-connecting.md	GARDER	rappel système technique
+system-reminder-mcp-servers-failed-to-connect-guidance.md	GARDER	rappel système technique
+system-reminder-mcp-servers-failed-to-connect.md	GARDER	rappel système technique
+system-reminder-memory-consolidation-tool-constraints.md	GARDER	rappel système technique
+system-reminder-memory-extraction-recent-context-only.md	GARDER	rappel système technique
+system-reminder-memory-extraction-tool-constraints.md	GARDER	rappel système technique
+system-reminder-memory-extraction-turn-budget.md	GARDER	rappel système technique
+system-reminder-memory-file-contents.md	GARDER	rappel système technique
+system-reminder-memory-index-capacity-warning.md	GARDER	rappel système technique
+system-reminder-memory-sync-mass-deletion-guard.md	GARDER	rappel système technique
+system-reminder-memory-updates.md	GARDER	rappel système technique
+system-reminder-nested-instruction-file-contents.md	GARDER	rappel système technique
+system-reminder-nested-memory-contents.md	GARDER	rappel système technique
+system-reminder-new-design-canvas-parallel-appifactrepl-workflow.md	GARDER	rappel système technique
+system-reminder-new-design-canvas-two-step-appifactrepl-workflow.md	GARDER	rappel système technique
+system-reminder-new-diagnostics-detected.md	GARDER	rappel système technique
+system-reminder-new-slides-deck-parallel-appifactrepl-workflow.md	GARDER	rappel système technique
+system-reminder-new-slides-deck-two-step-appifactrepl-workflow.md	GARDER	rappel système technique
+system-reminder-no-attached-machine-request-guidance.md	GARDER	rappel système technique
+system-reminder-output-style-active.md	GARDER	rappel système technique
+system-reminder-output-token-limit-continuation.md	GARDER	rappel système technique
+system-reminder-plan-approved.md	GARDER	rappel système technique
+system-reminder-plan-awaiting-team-lead-approval.md	GARDER	rappel système technique
+system-reminder-plan-file-reference.md	GARDER	rappel système technique
+system-reminder-plan-mode-approval-tool-enforcement.md	GARDER	rappel système technique
+system-reminder-plan-mode-is-active-5-phase.md	GARDER	rappel système technique
+system-reminder-plan-mode-is-active-subagent.md	GARDER	rappel système technique
+system-reminder-plan-mode-is-active.md	GARDER	rappel système technique
+system-reminder-plan-mode-phase-2-design.md	GARDER	rappel système technique
+system-reminder-plan-mode-prototype-artifact-option.md	GARDER	rappel système technique
+system-reminder-plan-mode-re-entry.md	GARDER	rappel système technique
+system-reminder-plan-mode-workflow.md	GARDER	rappel système technique
+system-reminder-prefetched-artifact-type-instruction-files.md	GARDER	rappel système technique
+system-reminder-prefetched-design-system-file-reading-guidance.md	GARDER	rappel système technique
+system-reminder-previously-invoked-skills.md	GARDER	rappel système technique
+system-reminder-proactivity-level-high.md	GARDER	rappel système technique
+system-reminder-proactivity-level-low.md	GARDER	rappel système technique
+system-reminder-proactivity-level-medium.md	GARDER	rappel système technique
+system-reminder-proactivity-setting-announcement-header.md	GARDER	rappel système technique
+system-reminder-proactivity-setting-withdrawn.md	GARDER	rappel système technique
+system-reminder-project-memory-disconnected.md	GARDER	rappel système technique
+system-reminder-provider-context.md	GARDER	rappel système technique
+system-reminder-question-context.md	GARDER	rappel système technique
+system-reminder-queued-notifications-delivery.md	GARDER	rappel système technique
+system-reminder-queued-notifications-read-time-clock-note.md	GARDER	rappel système technique
+system-reminder-read-truncation-retry-guidance.md	GARDER	rappel système technique
+system-reminder-remote-chrome-browser-extension-not-connected.md	GARDER	rappel système technique
+system-reminder-remote-machine-branch-transfer-review.md	GARDER	rappel système technique
+system-reminder-remote-machine-git-and-credential-routing.md	GARDER	rappel système technique
+system-reminder-remote-machine-only-resources-routing.md	GARDER	rappel système technique
+system-reminder-remote-machine-separate-project-copies.md	GARDER	rappel système technique
+system-reminder-scheduled-task-automated-firing.md	GARDER	rappel système technique
+system-reminder-session-context.md	GARDER	rappel système technique
+system-reminder-session-continuation.md	GARDER	rappel système technique
+system-reminder-session-stop-hook-active.md	GARDER	rappel système technique
+system-reminder-still-running-tool-call.md	GARDER	rappel système technique
+system-reminder-stop-hook-blocking-error.md	GARDER	rappel système technique
+system-reminder-subagent-write-blocked-pending-worktree-isolation.md	GARDER	rappel système technique
+system-reminder-task-tools-reminder.md	GARDER	rappel système technique
+system-reminder-team-coordination.md	GARDER	rappel système technique
+system-reminder-team-shutdown.md	GARDER	rappel système technique
+system-reminder-todowrite-reminder.md	GARDER	rappel système technique
+system-reminder-token-usage.md	GARDER	rappel système technique
+system-reminder-ultracode-enabled.md	GARDER	rappel système technique
+system-reminder-ultraplan-mode.md	GARDER	rappel système technique
+system-reminder-unreachable-attached-machines-call-only.md	GARDER	rappel système technique
+system-reminder-unreachable-attached-machines-rechecked.md	GARDER	rappel système technique
+system-reminder-unreachable-attached-machines-retry-by-call-guidance.md	GARDER	rappel système technique
+system-reminder-unreachable-attached-machines-return-noted.md	GARDER	rappel système technique
+system-reminder-unreachable-attached-machines.md	GARDER	rappel système technique
+system-reminder-usd-budget.md	GARDER	rappel système technique
+system-reminder-web-fetch-untrusted-content-reporting-guidance.md	GARDER	rappel système technique
+system-reminder-workflow-isolated-worktree.md	GARDER	rappel système technique
+system-reminder-you-should-know-side-request.md	GARDER	rappel système technique
+tool-description-agent-explicit-spawn-restriction.md	GARDER	description/paramètre d'outil
+tool-description-agent-usage-notes.md	GARDER	description/paramètre d'outil
+tool-description-agent-when-to-launch-subagents.md	GARDER	description/paramètre d'outil
+tool-description-appifactrepl.md	GARDER	description/paramètre d'outil
+tool-description-artifact-action-reference-concise-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-action-reference.md	GARDER	description/paramètre d'outil
+tool-description-artifact-asset-read-result.md	GARDER	description/paramètre d'outil
+tool-description-artifact-asset-upload-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-assets-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-browser-storage-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-comments-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-comments-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-database-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-database-version-pinning-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-design-fallback-requirements.md	GARDER	description/paramètre d'outil
+tool-description-artifact-design-skill-loading-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-external-resource-allowlist.md	GARDER	description/paramètre d'outil
+tool-description-artifact-html-document-skeleton.md	GARDER	description/paramètre d'outil
+tool-description-artifact-identical-resubmission-refusal.md	GARDER	description/paramètre d'outil
+tool-description-artifact-known-version-resubmission-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-line-diff-reading-legend.md	GARDER	description/paramètre d'outil
+tool-description-artifact-live-room-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-live-room-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-nested-runtime-cleanup-error.md	GARDER	description/paramètre d'outil
+tool-description-artifact-page-authoring-and-html-skeleton-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-page-implementation-requirements-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-preview-action-in-session-viewer.md	GARDER	description/paramètre d'outil
+tool-description-artifact-preview-action.md	GARDER	description/paramètre d'outil
+tool-description-artifact-profiles-action-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-publishing-and-update-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-publishing-introduction-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-quickstart-type-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-quickstart-type-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-responsive-page-contract.md	GARDER	description/paramètre d'outil
+tool-description-artifact-runtime-capabilities-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-runtime-verification-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-same-response-edit-and-publish-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-share-action-reference.md	GARDER	description/paramètre d'outil
+tool-description-artifact-sharing-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-stale-publish-line-diff-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-stale-publish-saved-source-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-theme-aware-styling.md	GARDER	description/paramètre d'outil
+tool-description-artifact-title-and-description-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-title-and-description-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-type-creation-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-type-discovery-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-artifact-type-discovery-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-type-file-backed-content-detection-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-type-file-backed-content-update-guidance.md	GARDER	description/paramètre d'outil
+tool-description-artifact-type-staged-first-publish-sequence.md	GARDER	description/paramètre d'outil
+tool-description-artifact-watch-approval-explanation.md	GARDER	description/paramètre d'outil
+tool-description-askuserquestion-decision-guidance.md	GARDER	description/paramètre d'outil
+tool-description-askuserquestion-extended-host-guidance.md	GARDER	description/paramètre d'outil
+tool-description-askuserquestion-preview-field.md	GARDER	description/paramètre d'outil
+tool-description-askuserquestion-without-plan-mode-note.md	GARDER	description/paramètre d'outil
+tool-description-askuserquestion.md	GARDER	description/paramètre d'outil
+tool-description-background-monitor-push-notification-guidance.md	GARDER	description/paramètre d'outil
+tool-description-background-monitor-streaming-events.md	GARDER	description/paramètre d'outil
+tool-description-background-monitor-websocket-source.md	GARDER	description/paramètre d'outil
+tool-description-bash-alt-communication.md	GARDER	description/paramètre d'outil
+tool-description-bash-alt-content-search.md	GARDER	description/paramètre d'outil
+tool-description-bash-alt-edit-files.md	GARDER	description/paramètre d'outil
+tool-description-bash-alt-file-search.md	GARDER	description/paramètre d'outil
+tool-description-bash-alt-read-files.md	GARDER	description/paramètre d'outil
+tool-description-bash-alt-write-files.md	GARDER	description/paramètre d'outil
+tool-description-bash-attached-machines.md	GARDER	description/paramètre d'outil
+tool-description-bash-built-in-tools-note.md	GARDER	description/paramètre d'outil
+tool-description-bash-git-avoid-destructive-ops.md	GARDER	description/paramètre d'outil
+tool-description-bash-git-commit-instructions.md	DOUTE	protocole sécurité git + gabarit (doute)
+tool-description-bash-git-never-skip-hooks.md	GARDER	description/paramètre d'outil
+tool-description-bash-git-prefer-new-commits.md	GARDER	description/paramètre d'outil
+tool-description-bash-maintain-cwd.md	GARDER	description/paramètre d'outil
+tool-description-bash-overview.md	GARDER	description/paramètre d'outil
+tool-description-bash-pr-creation-instructions.md	DOUTE	gabarit PR à variables (doute)
+tool-description-bash-prefer-dedicated-tools-bullet.md	GARDER	description/paramètre d'outil
+tool-description-bash-prefer-dedicated-tools.md	GARDER	description/paramètre d'outil
+tool-description-bash-quote-file-paths.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-default.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-evidence-access-denied.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-evidence-header.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-evidence-network.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-evidence-op-not-permitted.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-evidence-unix-socket.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-explain.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-failure-evidence.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-local-port-binding-eperm-no-override.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-local-port-binding-eperm-override-available.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-no-sensitive-paths.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-per-command.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-response-header.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-retry.md	GARDER	description/paramètre d'outil
+tool-description-bash-sandbox-tmpdir.md	GARDER	description/paramètre d'outil
+tool-description-bash-sleep-keep-short.md	GARDER	description/paramètre d'outil
+tool-description-bash-sleep-no-polling.md	GARDER	description/paramètre d'outil
+tool-description-bash-sleep-run-immediately.md	GARDER	description/paramètre d'outil
+tool-description-bash-sleep-use-check-commands.md	GARDER	description/paramètre d'outil
+tool-description-bash-timeout.md	GARDER	description/paramètre d'outil
+tool-description-bash-verify-parent-dir.md	GARDER	description/paramètre d'outil
+tool-description-bash-working-directory.md	GARDER	description/paramètre d'outil
+tool-description-browserbatch.md	GARDER	description/paramètre d'outil
+tool-description-chrome-browser-automation.md	GARDER	description/paramètre d'outil
+tool-description-claude-ai-project.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-bridge-disconnect-error.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-find.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-get-page-text.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-javascript-tool.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-read-console-messages.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-read-network-requests.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-read-page.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-shortcuts-execute.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-switch-browser.md	GARDER	description/paramètre d'outil
+tool-description-claude-in-chrome-tabs-context.md	GARDER	description/paramètre d'outil
+tool-description-claudedesign.md	GARDER	description/paramètre d'outil
+tool-description-code-review-command.md	GARDER	description/paramètre d'outil
+tool-description-computer-use-enable-stub-guidance.md	GARDER	description/paramètre d'outil
+tool-description-computer-use-unlinked-chat-guidance.md	GARDER	description/paramètre d'outil
+tool-description-computer.md	GARDER	description/paramètre d'outil
+tool-description-cowork-onboarding-role-picker.md	GARDER	description/paramètre d'outil
+tool-description-cowork-plugin-creation.md	GARDER	description/paramètre d'outil
+tool-description-croncreate-durability.md	GARDER	description/paramètre d'outil
+tool-description-croncreate.md	GARDER	description/paramètre d'outil
+tool-description-designsync.md	GARDER	description/paramètre d'outil
+tool-description-durable-artifact-watch-and-status-guidance.md	GARDER	description/paramètre d'outil
+tool-description-edit-minimal-old_string-guidance.md	GARDER	description/paramètre d'outil
+tool-description-edit-single-replacement.md	GARDER	description/paramètre d'outil
+tool-description-edit.md	GARDER	description/paramètre d'outil
+tool-description-enable-claude-app-browser-shared-description.md	GARDER	description/paramètre d'outil
+tool-description-enable-claude-app-browser.md	GARDER	description/paramètre d'outil
+tool-description-enable-claude-in-chrome-shared-description.md	GARDER	description/paramètre d'outil
+tool-description-enable-claude-in-chrome.md	GARDER	description/paramètre d'outil
+tool-description-enable-computer-use-shared-description.md	GARDER	description/paramètre d'outil
+tool-description-enable-computer-use.md	GARDER	description/paramètre d'outil
+tool-description-endconversation.md	GARDER	description/paramètre d'outil
+tool-description-enterplanmode-ambiguous.md	GARDER	description/paramètre d'outil
+tool-description-enterplanmode.md	GARDER	description/paramètre d'outil
+tool-description-enterworktree.md	GARDER	description/paramètre d'outil
+tool-description-exitplanmode.md	GARDER	description/paramètre d'outil
+tool-description-exitworktree.md	GARDER	description/paramètre d'outil
+tool-description-fetchinboxmessage-project-thread-wake-envelope.md	GARDER	description/paramètre d'outil
+tool-description-fetchinboxmessage.md	GARDER	description/paramètre d'outil
+tool-description-gettask.md	GARDER	description/paramètre d'outil
+tool-description-glob-compact.md	GARDER	description/paramètre d'outil
+tool-description-glob.md	GARDER	description/paramètre d'outil
+tool-description-grep-compact.md	GARDER	description/paramètre d'outil
+tool-description-grep.md	GARDER	description/paramètre d'outil
+tool-description-invoke-skill.md	GARDER	description/paramètre d'outil
+tool-description-list-connected-browsers-browser-picker-guidance.md	GARDER	description/paramètre d'outil
+tool-description-listagents-no-sendmessage-tool.md	GARDER	description/paramètre d'outil
+tool-description-listagents.md	GARDER	description/paramètre d'outil
+tool-description-listconnectors.md	GARDER	description/paramètre d'outil
+tool-description-listmcpresourcestool-prompt.md	GARDER	description/paramètre d'outil
+tool-description-listmcpresourcestool.md	GARDER	description/paramètre d'outil
+tool-description-live-artifact-watch-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-lsp.md	GARDER	description/paramètre d'outil
+tool-description-memorylist-prompt.md	GARDER	description/paramètre d'outil
+tool-description-memorywrite-prompt.md	GARDER	description/paramètre d'outil
+tool-description-memorywrite-update-triggers-and-timing.md	GARDER	description/paramètre d'outil
+tool-description-navigate-tab-cleanup-guidance.md	GARDER	description/paramètre d'outil
+tool-description-navigate.md	GARDER	description/paramètre d'outil
+tool-description-new-file-backed-artifact-type-content-guidance.md	GARDER	description/paramètre d'outil
+tool-description-notebookedit.md	GARDER	description/paramètre d'outil
+tool-description-offer-claude-in-chrome-setup.md	GARDER	description/paramètre d'outil
+tool-description-poll.md	GARDER	description/paramètre d'outil
+tool-description-powershell-git-guidance.md	GARDER	description/paramètre d'outil
+tool-description-powershell.md	GARDER	description/paramètre d'outil
+tool-description-prohibited-artifact-publishing-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-proposegoal.md	GARDER	description/paramètre d'outil
+tool-description-publish-audience-facing-deliverables-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-publishplugin-file-listing-and-consent-flow.md	GARDER	description/paramètre d'outil
+tool-description-pushnotification.md	GARDER	description/paramètre d'outil
+tool-description-readfile-compact.md	GARDER	description/paramètre d'outil
+tool-description-readfile.md	GARDER	description/paramètre d'outil
+tool-description-readmcpresourcedirtool-prompt.md	GARDER	description/paramètre d'outil
+tool-description-readnotifications.md	GARDER	description/paramètre d'outil
+tool-description-refreshmcptools-prompt.md	GARDER	description/paramètre d'outil
+tool-description-refreshmcptools.md	GARDER	description/paramètre d'outil
+tool-description-remote-artifact-watch-guidance.md	GARDER	description/paramètre d'outil
+tool-description-remotetrigger-prompt.md	GARDER	description/paramètre d'outil
+tool-description-report-code-review-findings.md	GARDER	description/paramètre d'outil
+tool-description-schedulewakeup-delay-guidance-1-hour-cache-ttl.md	GARDER	description/paramètre d'outil
+tool-description-schedulewakeup-delay-guidance-5-minute-cache-ttl.md	GARDER	description/paramètre d'outil
+tool-description-schedulewakeup-delay-guidance-unknown-cache-ttl.md	GARDER	description/paramètre d'outil
+tool-description-schedulewakeup-noop-state-guidance.md	GARDER	description/paramètre d'outil
+tool-description-schedulewakeup-reason-field-guidance.md	GARDER	description/paramètre d'outil
+tool-description-schedulewakeup.md	GARDER	description/paramètre d'outil
+tool-description-searchmcpregistry.md	GARDER	description/paramètre d'outil
+tool-description-searchplugins-examples.md	GARDER	description/paramètre d'outil
+tool-description-searchplugins-purpose.md	GARDER	description/paramètre d'outil
+tool-description-searchplugins-result-handling.md	GARDER	description/paramètre d'outil
+tool-description-searchplugins-up-front-guidance.md	GARDER	description/paramètre d'outil
+tool-description-searchskills.md	GARDER	description/paramètre d'outil
+tool-description-self-hosted-runner-requeue-session.md	GARDER	description/paramètre d'outil
+tool-description-sendfeedback-drafting-guidance.md	GARDER	description/paramètre d'outil
+tool-description-sendfile.md	GARDER	description/paramètre d'outil
+tool-description-sendmessage-cross-session-guidance.md	GARDER	description/paramètre d'outil
+tool-description-sendmessage.md	GARDER	description/paramètre d'outil
+tool-description-senduserfile.md	GARDER	description/paramètre d'outil
+tool-description-sendusermessage-verbatim.md	GARDER	description/paramètre d'outil
+tool-description-sendusermessage.md	GARDER	description/paramètre d'outil
+tool-description-session-artifact-watch-lifecycle.md	GARDER	description/paramètre d'outil
+tool-description-showonboardingrolepicker.md	GARDER	description/paramètre d'outil
+tool-description-skill-proposal-rendering.md	GARDER	description/paramètre d'outil
+tool-description-skill-scoped-git-push-refusal.md	GARDER	description/paramètre d'outil
+tool-description-subagenthandback.md	GARDER	description/paramètre d'outil
+tool-description-suggestconnectors.md	GARDER	description/paramètre d'outil
+tool-description-suggestplugininstall.md	GARDER	description/paramètre d'outil
+tool-description-suggestskills-proactive-guidance.md	GARDER	description/paramètre d'outil
+tool-description-task-get.md	GARDER	description/paramètre d'outil
+tool-description-taskcreate.md	GARDER	description/paramètre d'outil
+tool-description-tasklist-teammate-workflow.md	GARDER	description/paramètre d'outil
+tool-description-tasklist.md	GARDER	description/paramètre d'outil
+tool-description-taskupdate.md	GARDER	description/paramètre d'outil
+tool-description-todowrite-compact.md	GARDER	description/paramètre d'outil
+tool-description-todowrite-proactive-update-guidance.md	GARDER	description/paramètre d'outil
+tool-description-todowrite.md	GARDER	description/paramètre d'outil
+tool-description-toolsearch-input-validation-note.md	GARDER	description/paramètre d'outil
+tool-description-toolsearch-opening.md	GARDER	description/paramètre d'outil
+tool-description-toolsearch-unfetched-tool-note.md	GARDER	description/paramètre d'outil
+tool-description-toolsearch.md	GARDER	description/paramètre d'outil
+tool-description-updating-existing-artifacts-app-wording.md	GARDER	description/paramètre d'outil
+tool-description-upload-image.md	GARDER	description/paramètre d'outil
+tool-description-webfetch-concise.md	GARDER	description/paramètre d'outil
+tool-description-webfetch-private-url-warning.md	GARDER	description/paramètre d'outil
+tool-description-webfetch.md	GARDER	description/paramètre d'outil
+tool-description-websearch-concise.md	GARDER	description/paramètre d'outil
+tool-description-websearch.md	GARDER	description/paramètre d'outil
+tool-description-workflow.md	GARDER	description/paramètre d'outil
+tool-description-write-read-existing-file-first.md	GARDER	description/paramètre d'outil
+tool-description-write.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-auto-open-timing-app-wording.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-auto-open-timing.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-comment-actions-guidance.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-database-access-level.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-database-batch-writes.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-database-version-precondition.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-force-overwrite-guidance.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-force-page-overwrite-warning.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-force-supporting-files-preservation.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-preview-action.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-supporting-files-with-cross-artifact-sources-app-wording.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-supporting-files-with-cross-artifact-sources.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-title.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-unread-path-overwrite-acknowledgement.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-url-guidance-app-wording.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-url-guidance.md	GARDER	description/paramètre d'outil
+tool-parameter-artifact-watch-actions-guidance.md	GARDER	description/paramètre d'outil
+tool-parameter-bash-command-description.md	GARDER	description/paramètre d'outil
+tool-parameter-bash-run_in_background-guidance-completion-notices-disabled.md	GARDER	description/paramètre d'outil
+tool-parameter-bash-run_in_background-guidance.md	GARDER	description/paramètre d'outil
+tool-parameter-claude-in-chrome-javascript-code.md	GARDER	description/paramètre d'outil
+tool-parameter-computer-action.md	GARDER	description/paramètre d'outil
+tool-parameter-matched-ask-rule.md	GARDER	description/paramètre d'outil
+tool-parameter-powershell-run_in_background-note-completion-notices-disabled.md	GARDER	description/paramètre d'outil
+tool-parameter-powershell-run_in_background-note.md	GARDER	description/paramètre d'outil
+tool-parameter-sandboxed-command-allowed-domains.md	GARDER	description/paramètre d'outil
+tool-parameter-sendusermessage-attachments.md	GARDER	description/paramètre d'outil
+tool-parameter-set_cwd-needs_trust-directory.md	GARDER	description/paramètre d'outil
