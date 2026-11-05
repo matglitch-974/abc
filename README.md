@@ -118,7 +118,7 @@ Voir [la mémoire](docs/memory.md) et [le hook mémoire](docs/memory-hook.md).
 #### Personas et sous-agent
 
 - Choisissez le persona de la session en commençant votre premier message par `@nom`.
-- Un seul sous-agent, `slave`, pour toutes les tâches déléguées : les agents intégrés de Claude Code sont désactivés.
+- Un seul sous-agent, `slave`, pour toutes les tâches déléguées : les agents intégrés de Claude Code (dont `claude`, l'agent fourre-tout) sont désactivés.
 - Des agents isolés, avec leur propre mémoire, cloisonnés du reste de l'instance.
 
 Voir [les personas et agents](docs/agents.md).

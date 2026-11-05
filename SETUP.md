@@ -37,7 +37,7 @@ Relève, sans rien modifier :
 | `~/.claude/CLAUDE.md` | contenu | **mis de côté** en `claude-code/CLAUDE.md.bak-bcai` : il n'est plus chargé, `CLAUDE.md` pointe vers `~/ai/AGENTS.md` |
 | `~/.claude/skills/` | liste des skills | copiés dans `~/ai/2-tools/1-skills/` ; nom déjà pris : renommé `<nom>1`, conflit noté dans `memory/TODO.md` |
 | `~/.claude/agents/` | liste des agents | copiés dans `~/ai/0-persona/` (choisis par `@<nom>`) ; le dossier d'origine reste dans `claude-code/agents/` |
-| `~/.claude/settings.json` | `permissions`, `hooks`, `env` | conservé et complété : 5 agents intégrés refusés (`Agent(Explore)`, `Agent(Plan)`, `Agent(general-purpose)`, `Agent(statusline-setup)`, `Agent(claude-code-guide)`), hooks `guard-sensible` et `memory-hook` ajoutés ; vos autres hooks restent |
+| `~/.claude/settings.json` | `permissions`, `hooks`, `env` | conservé et complété : 6 agents intégrés refusés (`Agent(Explore)`, `Agent(Plan)`, `Agent(general-purpose)`, `Agent(statusline-setup)`, `Agent(claude-code-guide)`, `Agent(claude)`), hooks `guard-sensible` et `memory-hook` ajoutés ; vos autres hooks restent |
 | Serveurs MCP | `claude mcp list`, `~/.claude.json` | `.claude.json` est déplacé dans `claude-code/` : vos MCP suivent. Ajouts : `fetch`, `searxng`, `playwright`, `scrapling` ; **retraits** : `duckduckgo` et `brave` s'ils existent en portée utilisateur |
 | `~/.claude/plugins/` | liste | déplacé dans `~/ai/2-tools/2-plugins/` (s'il est vide), sinon en `plugins.bak-bcai` |
 | Mémoire existante | `~/.claude/projects/*/memory/`, fichiers de mémoire maison | rien n'est importé dans `~/ai/memory/` : à proposer |

@@ -107,7 +107,7 @@ mkdir -p "$CC/agents"
 # --- settings.json : agents intégrés désactivés + hooks sensible/ et mémoire ----
 M='{"type":"command","command":"python3 \"'"$SRC"'/hooks/memory-hook.py\""}'
 ADD=$(cat <<EOF
-{"permissions":{"deny":["Agent(Explore)","Agent(Plan)","Agent(general-purpose)","Agent(statusline-setup)","Agent(claude-code-guide)"]},
+{"permissions":{"deny":["Agent(Explore)","Agent(Plan)","Agent(general-purpose)","Agent(statusline-setup)","Agent(claude-code-guide)","Agent(claude)"]},
  "hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"sh \"$HOOK\""}]},
                 {"matcher":"Read|Write|Edit|MultiEdit|NotebookEdit|Glob|Grep|Bash","hooks":[$M]}],
   "SessionStart":[{"hooks":[$M]}], "UserPromptSubmit":[{"hooks":[$M]}],

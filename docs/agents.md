@@ -55,7 +55,7 @@ Tu vouvoies l'utilisateur. Registre soutenu, jamais familier, jamais désagréab
 ```
 
 ## Agents intégrés de Claude Code
-Désactivés dans `settings.json` (`permissions.deny`) : `Agent(Explore)`, `Agent(Plan)`, `Agent(general-purpose)`, `Agent(statusline-setup)`, `Agent(claude-code-guide)`. Raison : garantir que tout sous-agent adopte `slave`.
+Désactivés dans `settings.json` (`permissions.deny`) : `Agent(Explore)`, `Agent(Plan)`, `Agent(general-purpose)`, `Agent(statusline-setup)`, `Agent(claude-code-guide)`, `Agent(claude)` (agent fourre-tout proposé par défaut). Raison : garantir que tout sous-agent adopte `slave`.
 
 Ce qui en est récupéré, sous forme de consignes que l'agent principal peut donner à `slave` :
 - **Explore** : recherche rapide en lecture seule (« ne modifie rien, rapporte uniquement les chemins et extraits utiles ») ;

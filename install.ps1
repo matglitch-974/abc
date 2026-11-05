@@ -168,7 +168,7 @@ $Hook = (Join-Path $Dest 'hooks\guard-sensible.sh') -replace '\\','/'
 $HookCmd = "`"$($Bash -replace '\\','/')`" `"$Hook`""
 $MemHook = (Join-Path $Dest 'hooks\memory-hook.py') -replace '\\','/'
 $MemCmd = "`"$($Py -replace '\\','/')`" `"$MemHook`""
-$Deny = 'Agent(Explore)','Agent(Plan)','Agent(general-purpose)','Agent(statusline-setup)','Agent(claude-code-guide)'
+$Deny = 'Agent(Explore)','Agent(Plan)','Agent(general-purpose)','Agent(statusline-setup)','Agent(claude-code-guide)','Agent(claude)'
 
 $S = "$CC\settings.json"
 $cfg = if ((Test-Path $S) -and (Get-Content $S -Raw).Trim()) { if (-not (Test-Path "$S.bak-bcai") -and -not (Test-Path "$S.bak-bci")) { Copy-Item $S "$S.bak-bcai" }; Get-Content $S -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
