@@ -31,7 +31,7 @@ if [ -d "$CC" ] && [ ! -e "$CL" ]; then
     [ -L "$l" ] || continue
     t=$(readlink "$l"); rm "$l"; [ -e "$t" ] && cp -R "$t" "$l" && echo "copié : $l"
   done
-  for b in "$CL"/*.bak-bcai; do [ -e "$b" ] && mv "$b" "${b%.bak-bcai}" && echo "restauré : ${b%.bak-bcai}"; done
+  for b in "$CL"/*.bak-bcai; do [ -e "$b" ] && [ ! -e "${b%.bak-bcai}" ] && mv "$b" "${b%.bak-bcai}" && echo "restauré : ${b%.bak-bcai}"; done
   # *.bak-bci : copies faites avant le renommage en BCAI
   for b in "$CL"/*.bak-bci; do [ -e "$b" ] && [ ! -e "${b%.bak-bci}" ] && mv "$b" "${b%.bak-bci}" && echo "restauré : ${b%.bak-bci}"; done
 fi

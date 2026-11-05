@@ -23,7 +23,7 @@ irm https://raw.githubusercontent.com/matglitch-974/bcai/main/install.ps1 | iex
 
 Linux / Android (Termux) :
 ```
-curl -sL matglitch-974.github.io/bc | sh
+curl -fsSL matglitch-974.github.io/bc | sh
 ```
 Commande de secours (adresse complète, si `matglitch-974.github.io` est inaccessible) :
 ```

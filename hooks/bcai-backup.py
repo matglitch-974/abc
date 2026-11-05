@@ -24,6 +24,7 @@ import json
 import os
 import platform
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
@@ -42,6 +43,17 @@ SRC_DIR = Path(__file__).resolve().parent.parent  # dépôt bcai
 TYPES = ("quotidienne", "install-avant", "install-apres")
 CC = Path(os.environ.get("CLAUDE_CONFIG_DIR") or AI / "2-tools" / "3-software" / "claude-code")
 NOWIN = {"creationflags": 0x08000000} if os.name == "nt" else {}  # CREATE_NO_WINDOW : pas de console qui clignote
+
+
+def is_link(p):
+    """Lien symbolique ou jonction Windows. La jonction est lue dans st_reparse_tag : os.path.isjunction
+    n'existe qu'à partir de Python 3.12 et Path.is_symlink() ne voit pas les jonctions."""
+    try:
+        st = os.lstat(p)
+    except OSError:
+        return False
+    return stat.S_ISLNK(st.st_mode) or (os.name == "nt" and getattr(st, "st_reparse_tag", 0)
+                                         == getattr(stat, "IO_REPARSE_TAG_MOUNT_POINT", 0xA0000003))
 
 
 def run(cmd, **kw):
@@ -255,7 +267,7 @@ def backup(kind, if_needed=False):
     while d.exists():
         d, n = DEST / f"{name}_{n}", n + 1
     sources = [p for p in (AI, HOME / ".claude", HOME / ".claude.json")
-               if p.exists() and (p == AI or kind == "install-avant") and not p.is_symlink()]
+               if p.exists() and (p == AI or kind == "install-avant") and not is_link(p)]
     if not sources:
         return None
     date = time.strftime("%Y-%m-%dT%H:%M:%S%z")
@@ -344,7 +356,7 @@ def adopt_legacy():
     """Reprend l'ancien dossier backup-bci : renommé en backup-bcai, ou fusionné élément par élément si
     backup-bcai existe déjà (un élément présent des deux côtés reste dans backup-bci). Reporté tant que
     restic y tient un verrou (sauvegarde en cours). Retourne un message, ou ''."""
-    if not LEGACY.is_dir() or LEGACY.is_symlink():
+    if not LEGACY.is_dir() or is_link(LEGACY):
         return ""
     locks = LEGACY / ".restic" / "locks"
     if locks.is_dir() and any(locks.iterdir()):

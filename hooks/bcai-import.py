@@ -19,6 +19,7 @@ import os
 import re
 import shutil
 import sqlite3
+import stat
 import subprocess
 import sys
 import tempfile
@@ -42,6 +43,17 @@ SECRET_NAME = re.compile(r"KEY|TOKEN|SECRET|PASSWORD|PASSWD|API", re.I)
 SECRET_FILE = re.compile(r"^(id_[^.]+|.*\.(pem|key|p12|pfx)|.*credential.*|auth\.json|oauth.*\.json|\.env.*|token.*)$", re.I)
 SKIP_ENV = re.compile(r"^CLAUDE_CODE_(MESSAGING|SESSION|BRIDGE|CHILD)", re.I)
 BIG = 100 * 1024 * 1024   # au-delà : fichier signalé dans llms.md, pas copié (poids de modèles)
+
+
+def is_link(p):
+    """Lien symbolique ou jonction Windows. La jonction est lue dans st_reparse_tag : os.path.isjunction
+    n'existe qu'à partir de Python 3.12 et Path.is_symlink() ne voit pas les jonctions."""
+    try:
+        st = os.lstat(p)
+    except OSError:
+        return False
+    return stat.S_ISLNK(st.st_mode) or (os.name == "nt" and getattr(st, "st_reparse_tag", 0)
+                                         == getattr(stat, "IO_REPARSE_TAG_MOUNT_POINT", 0xA0000003))
 
 
 def say(msg):
@@ -100,7 +112,7 @@ def todo_line(text):
 
 def import_skills(src=None):
     src = Path(src) if src else HOME / ".claude" / "skills"
-    if not src.is_dir() or src.is_symlink():
+    if not src.is_dir() or is_link(src):
         return
     SKILLS.mkdir(parents=True, exist_ok=True)
     for sk in sorted(p for p in src.iterdir() if p.is_dir() and (p / "SKILL.md").is_file()):
@@ -131,13 +143,13 @@ def import_skills(src=None):
 def import_agents(src=None):
     """Agents de ~/.claude/agents -> ~/ai/0-persona (choisis par @<nom>) ; nom pris : <nom>1, 2… + TODO.md."""
     src = Path(src) if src else HOME / ".claude" / "agents"
-    if not src.is_dir() or src.is_symlink():
+    if not src.is_dir() or is_link(src):
         return
     root = AI / "0-persona"
     root.mkdir(parents=True, exist_ok=True)
     taken = {f.stem: f for f in root.rglob("*.md")}
     for ag in sorted(src.rglob("*.md")):
-        if any(p.is_symlink() for p in [ag, *ag.parents] if src in p.parents or p == src):
+        if any(is_link(p) for p in [ag, *ag.parents] if src in p.parents or p == src):
             continue   # anciens liens BCAI (system-agents)
         data = ag.read_bytes()
         if any(f.read_bytes() == data for f in taken.values()):

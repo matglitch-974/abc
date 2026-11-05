@@ -62,6 +62,14 @@ export CLAUDE_CONFIG_DIR="$CC"
 python3 "$SRC/hooks/bcai-import.py" all || true
 
 # --- Migration de ~/.claude vers ~/ai ----------------------------------------------
+bak() { # bak <source> <copie> : une copie existante n'est jamais écrasée (suffixe daté, puis -N)
+  _b="$2"; _n=1
+  if [ -e "$_b" ] || [ -L "$_b" ]; then
+    _b="$2-$(date +%Y-%m-%d_%H-%M-%S)"; _t="$_b"
+    while [ -e "$_b" ] || [ -L "$_b" ]; do _b="$_t-$_n"; _n=$((_n + 1)); done
+  fi
+  mv "$1" "$_b"; echo "sauvegardé : $_b"
+}
 # Chaque élément rejoint sa place ; ce qui reste (anciens liens) part dans 4-trash/.
 if [ -d "$OLD" ] && [ ! -L "$OLD" ]; then
   for item in "$OLD"/* "$OLD"/.[!.]*; do
@@ -69,10 +77,10 @@ if [ -d "$OLD" ] && [ ! -L "$OLD" ]; then
     n=$(basename "$item")
     [ -L "$item" ] && [ "$n" != agents ] && continue          # anciens liens BCAI : recréés plus bas
     case "$n" in
-      settings.json) if [ -e "$AI/memory/settings.json" ]; then mv "$item" "$CC/settings.json.bak-bcai"
+      settings.json) if [ -e "$AI/memory/settings.json" ]; then bak "$item" "$CC/settings.json.bak-bcai"
                      else mv "$item" "$AI/memory/settings.json"; fi ;;
       plugins) if [ -z "$(ls -A "$AI/2-tools/2-plugins")" ]; then rmdir "$AI/2-tools/2-plugins"; mv "$item" "$AI/2-tools/2-plugins"
-               else mv "$item" "$CC/plugins.bak-bcai"; fi ;;
+               else bak "$item" "$CC/plugins.bak-bcai"; fi ;;
       CLAUDE.md|skills) [ -e "$CC/$n.bak-bcai" ] || mv "$item" "$CC/$n.bak-bcai" ;;
       *) [ -e "$CC/$n" ] || [ -L "$CC/$n" ] || mv "$item" "$CC/$n" ;;
     esac
@@ -90,7 +98,7 @@ if [ -f "$HOME/.claude.json" ] && [ ! -L "$HOME/.claude.json" ]; then
 fi
 
 link() { # link <cible> <lien>
-  if [ -e "$2" ] && [ ! -L "$2" ]; then mv "$2" "$2.bak-bcai"; echo "sauvegardé : $2.bak-bcai"; fi
+  if [ -e "$2" ] && [ ! -L "$2" ]; then bak "$2" "$2.bak-bcai"; fi
   ln -sfn "$1" "$2"; echo "lien     : $2 -> $1"
 }
 [ -L "$CC/agents" ] && rm "$CC/agents"

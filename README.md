@@ -55,7 +55,7 @@ irm matglitch-974.github.io/bc.ps1 | iex
 2. Copiez-collez la commande ci-dessous :
 
 ```sh
-curl -sL matglitch-974.github.io/bc | sh
+curl -fsSL matglitch-974.github.io/bc | sh
 ```
 
 3. Attendez la fin de l'installation. Sous Android, le script installe Alpine Linux et s'y relance tout seul.

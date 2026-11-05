@@ -1,6 +1,6 @@
 #!/bin/sh
 # BCAI — installation Linux / Android (Termux).
-#   curl -sL matglitch-974.github.io/bc | sh
+#   curl -fsSL matglitch-974.github.io/bc | sh
 #   (secours : curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/install.sh | sh)
 # Termux : installe Alpine Linux (proot) puis relance ce script à l'intérieur.
 # Linux : Debian, Ubuntu, Alpine, Fedora, Arch, openSUSE et dérivés.

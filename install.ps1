@@ -143,7 +143,12 @@ if (Test-Path $OldJson) { Copy-Soft $OldJson "$CC\.claude.json"; Retire $OldJson
 # Windows : les liens symboliques de fichiers exigent des droits admin.
 # CLAUDE.md importe donc AGENTS.md ; settings.json reste un vrai fichier dans $CC ; les dossiers sont des jonctions.
 New-Item -ItemType Directory -Force "$CC\agents" | Out-Null
-function Backup($p) { if ((Test-Path $p) -and -not ((Get-Item $p -Force).LinkType)) { Move-Item $p "$p.bak-bcai" -Force; Write-Host "sauvegardé : $p.bak-bcai" } }
+function Backup($p) {   # une copie .bak-bcai existante n'est jamais écrasée : suffixe daté, puis -N
+  if (-not (Test-Path $p) -or (Get-Item $p -Force).LinkType) { return }
+  $b = "$p.bak-bcai"; $i = 1
+  if (Test-Path -LiteralPath $b) { $b = "$p.bak-bcai-$Stamp"; while (Test-Path -LiteralPath $b) { $b = "$p.bak-bcai-$Stamp-$i"; $i++ } }
+  Move-Item -LiteralPath $p $b -Force; Write-Host "sauvegardé : $b"
+}
 $ClaudeMd = "$CC\CLAUDE.md"
 if (-not ((Test-Path $ClaudeMd) -and ((Get-Content $ClaudeMd -Raw) -match '@~/ai/AGENTS.md'))) {
   Backup $ClaudeMd; [IO.File]::WriteAllText($ClaudeMd, "@~/ai/AGENTS.md`n"); Write-Host "lien     : $ClaudeMd -> ~/ai/AGENTS.md"

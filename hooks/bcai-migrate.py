@@ -26,6 +26,7 @@ import importlib.util
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import time
@@ -64,8 +65,14 @@ def stamp():
 
 
 def is_link(p):
-    """Lien symbolique ou jonction Windows (un renommage ne déplace que le lien, pas sa cible)."""
-    return p.is_symlink() or bool(getattr(os.path, "isjunction", lambda _: False)(p))
+    """Lien symbolique ou jonction Windows (un renommage ne déplace que le lien, pas sa cible).
+    La jonction est lue dans st_reparse_tag : os.path.isjunction n'existe qu'à partir de Python 3.12."""
+    try:
+        st = os.lstat(p)
+    except OSError:
+        return False
+    return stat.S_ISLNK(st.st_mode) or (os.name == "nt" and getattr(st, "st_reparse_tag", 0)
+                                         == getattr(stat, "IO_REPARSE_TAG_MOUNT_POINT", 0xA0000003))
 
 
 def exists(p):
@@ -229,8 +236,8 @@ def leftovers():
         if not root.is_dir():
             continue
         for f in root.rglob("*.md"):
-            if "journal" in f.parts or not f.is_file():
-                continue
+            if "journal" in f.parts or not f.is_file() or (f in SKELETON and not f.is_symlink()):
+                continue   # skeleton : déjà traité ou signalé par step_skeleton
             try:
                 if cites_old(f.read_text(encoding="utf-8", errors="replace")):
                     out.append(f"à revoir : {f} cite encore {OLD}")

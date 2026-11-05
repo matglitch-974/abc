@@ -25,6 +25,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import sys
 import time
 from pathlib import Path
@@ -35,6 +36,17 @@ PROJECTS = Path.home() / "project"
 EVERY = int(os.environ.get("BCAI_REALIGN_EVERY") or os.environ.get("BCI_REALIGN_EVERY") or "10")
 BEGIN = "<!-- projets:début"
 END = "<!-- projets:fin -->"
+
+
+def is_link(p):
+    """Lien symbolique ou jonction Windows. La jonction est lue dans st_reparse_tag : os.path.isjunction
+    n'existe qu'à partir de Python 3.12 et Path.is_symlink() ne voit pas les jonctions."""
+    try:
+        st = os.lstat(p)
+    except OSError:
+        return False
+    return stat.S_ISLNK(st.st_mode) or (os.name == "nt" and getattr(st, "st_reparse_tag", 0)
+                                         == getattr(stat, "IO_REPARSE_TAG_MOUNT_POINT", 0xA0000003))
 
 
 def short(text, n=200):
@@ -222,7 +234,7 @@ def retire_old(others=None):
     done = []
     for name, label in ((".claude", "claude-ancien"), (".claude.json", "claude.json-ancien")):
         old = Path.home() / name
-        if not old.exists() or old.is_symlink():
+        if not old.exists() or is_link(old):
             continue
         if name == ".claude" and others and [p.name for p in old.iterdir()] == [".credentials.json"]:
             continue   # reliquat d'identifiants des sessions encore ouvertes : attendre leur fermeture
