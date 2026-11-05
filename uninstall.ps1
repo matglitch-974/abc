@@ -1,5 +1,5 @@
 # BCAI — désinstallation Windows (PowerShell).
-#   irm https://raw.githubusercontent.com/matglitch-974/bcai/main/uninstall.ps1 | iex
+#   irm https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/uninstall.ps1 | iex
 # Remet la configuration de Claude Code dans ~/.claude, retire les liens et réglages ajoutés,
 # puis demande avant de toucher à ~/ai et ~/project. Claude Code reste installé.
 $ErrorActionPreference = 'Stop'

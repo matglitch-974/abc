@@ -1,6 +1,6 @@
 #!/bin/sh
 # BCAI — désinstallation Linux / Android (dans Alpine sous Termux).
-#   bcai uninstall   (ou : curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/uninstall.sh | sh)
+#   bcai uninstall   (ou : curl -fsSL https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/uninstall.sh | sh)
 # Deux confirmations (oui, puis un mot à taper) avant toute modification, et de nouveau avant chaque suppression.
 # Remet la configuration de Claude Code dans ~/.claude, retire les liens et réglages ajoutés,
 # puis demande avant de toucher à ~/ai et ~/project. Claude Code reste installé.

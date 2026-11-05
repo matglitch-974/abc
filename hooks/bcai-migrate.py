@@ -44,7 +44,7 @@ SOFT = AI / "2-tools" / "3-software"
 OLD = SOFT / "better-claude-instance"   # emplacement d'avant BCAI
 NEW = SOFT / "bcai"
 REPO_OLD = "https://github.com/matglitch-974/better-claude-instance"
-REPO_NEW = "https://github.com/matglitch-974/bcai"
+REPO_NEW = "https://github.com/matglitch-974/Better-Context-of-Agents-Instance"
 CC = Path(os.environ.get("CLAUDE_CONFIG_DIR") or SOFT / "claude-code")
 TRASH = AI / "4-trash"
 NOWIN = {"creationflags": 0x08000000} if os.name == "nt" else {}   # CREATE_NO_WINDOW

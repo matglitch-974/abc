@@ -20,7 +20,7 @@ from pathlib import Path
 
 API = "https://specula.fr/wp-json/wp/v2/posts"
 CATEGORY = 87  # « Ce matin » : synthèse publique quotidienne de La Note Sentinelle
-UA = "bcai-specula/1.0 (lecture personnelle; +https://github.com/matglitch-974/bcai)"
+UA = "bcai-specula/1.0 (lecture personnelle; +https://github.com/matglitch-974/Better-Context-of-Agents-Instance)"
 STOP = "ce que contient l"  # section promotionnelle en fin d'article : ignorée
 
 

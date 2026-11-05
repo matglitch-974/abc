@@ -1,8 +1,8 @@
 # BCAI — installation Windows 10 / 11 (PowerShell).
 #   irm matglitch-974.github.io/bc.ps1 | iex
-#   (secours : irm https://raw.githubusercontent.com/matglitch-974/bcai/main/install.ps1 | iex)
+#   (secours : irm https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/install.ps1 | iex)
 $ErrorActionPreference = 'Stop'
-$Repo   = 'https://github.com/matglitch-974/bcai'
+$Repo   = 'https://github.com/matglitch-974/Better-Context-of-Agents-Instance'
 $Branch = if ($env:BCAI_BRANCH) { $env:BCAI_BRANCH } elseif ($env:BCI_BRANCH) { $env:BCI_BRANCH } else { 'main' }   # BCI_BRANCH : ancien nom
 $AI     = Join-Path $HOME 'ai'
 $OLD    = Join-Path $HOME '.claude'
@@ -13,9 +13,9 @@ $OldDest = Join-Path $AI '2-tools\3-software\better-claude-instance'   # emplace
 function Say($m) { Write-Host "`n==> $m" -ForegroundColor Cyan }
 function Refresh-Path { $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') + ";$HOME\.local\bin" }
 $HasWinget = [bool](Get-Command winget -ErrorAction SilentlyContinue)   # absent sur les Windows allégés
-function Winget($id) {
+function Winget($id) {   # winget.exe : sans extension, l'appel visait cette fonction (récursion infinie, CallDepthOverflow)
   if (-not $HasWinget) { return $false }
-  winget install --id $id -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path; return $true
+  winget.exe install --id $id -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path; return $true
 }
 # Python hors PATH (installé pour l'utilisateur seul, alias WindowsApps) : chercher aussi le lanceur py et les dossiers usuels.
 function Find-Python {

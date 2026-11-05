@@ -24,7 +24,7 @@ Vous utilisez déjà Claude Code ? Alors votre instance a sa propre histoire : u
 
 ```
 Installe BCAI sur cette machine en suivant son guide pour agents :
-https://raw.githubusercontent.com/matglitch-974/bcai/main/SETUP.md
+https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/SETUP.md
 Lis-le en entier, puis les fichiers qu'il désigne. Fais l'inventaire de mon installation actuelle de Claude Code (CLAUDE.md, skills, agents, réglages et hooks, serveurs MCP, mémoire, plugins) et de ce que l'installateur toucherait. Présente-moi ton plan, élément par élément, avec ce que tu proposes de garder, d'adapter ou de laisser de côté. Ne modifie rien avant ma validation explicite.
 ```
 
@@ -66,11 +66,11 @@ curl -fsSL matglitch-974.github.io/bc | sh
 
   Windows :
   ```PowerShell
-  irm https://raw.githubusercontent.com/matglitch-974/bcai/main/install.ps1 | iex
+  irm https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/install.ps1 | iex
   ```
   Linux / Android :
   ```sh
-  curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/install.sh | sh
+  curl -fsSL https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/install.sh | sh
   ```
 </details>
 

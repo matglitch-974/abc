@@ -1,13 +1,13 @@
 #!/bin/sh
 # BCAI — installation Linux / Android (Termux).
 #   curl -fsSL matglitch-974.github.io/bc | sh
-#   (secours : curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/install.sh | sh)
+#   (secours : curl -fsSL https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/main/install.sh | sh)
 # Termux : installe Alpine Linux (proot) puis relance ce script à l'intérieur.
 # Linux : Debian, Ubuntu, Alpine, Fedora, Arch, openSUSE et dérivés.
 set -eu
-REPO="https://github.com/matglitch-974/bcai"
+REPO="https://github.com/matglitch-974/Better-Context-of-Agents-Instance"
 BRANCH="${BCAI_BRANCH:-${BCI_BRANCH:-main}}"   # BCI_BRANCH : ancien nom, encore lu
-RAW="https://raw.githubusercontent.com/matglitch-974/bcai/$BRANCH"
+RAW="https://raw.githubusercontent.com/matglitch-974/Better-Context-of-Agents-Instance/$BRANCH"
 DEST="$HOME/ai/2-tools/3-software/bcai"
 OLD_DEST="$HOME/ai/2-tools/3-software/better-claude-instance"   # emplacement d'avant le renommage en BCAI
 
