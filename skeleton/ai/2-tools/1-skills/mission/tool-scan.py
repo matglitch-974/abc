@@ -80,7 +80,7 @@ def local(ws):
 
 
 def get(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "bci-tool-scan", "Accept": "application/json"})
+    req = urllib.request.Request(url, headers={"User-Agent": "bcai-tool-scan", "Accept": "application/json"})
     tok = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if tok and "api.github.com" in url:
         req.add_header("Authorization", f"Bearer {tok}")

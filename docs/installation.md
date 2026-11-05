@@ -14,59 +14,73 @@ Votre instance a déjà ses skills, agents, réglages, MCP, peut-être une mémo
 ### Par le script (configuration de référence)
 Windows (PowerShell) :
 ```
-irm matglitch-974.github.io/BCI.ps1 | iex
+irm matglitch-974.github.io/bc.ps1 | iex
 ```
 Commande de secours (adresse complète, si `matglitch-974.github.io` est inaccessible) :
 ```
-irm https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/matglitch-974/bcai/main/install.ps1 | iex
 ```
 
 Linux / Android (Termux) :
 ```
-curl -sL matglitch-974.github.io/BCI | sh
+curl -sL matglitch-974.github.io/bc | sh
 ```
 Commande de secours (adresse complète, si `matglitch-974.github.io` est inaccessible) :
 ```
-curl -fsSL https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/install.sh | sh
 ```
 
-Les commandes courtes passent par `matglitch-974.github.io` (GitHub Pages, dépôt `matglitch-974/matglitch-974.github.io`) : de simples relais vers `install.sh` et `install.ps1` de ce dépôt, qui reste la seule source de l'installateur.
+Les commandes courtes passent par `matglitch-974.github.io` (GitHub Pages, dépôt `matglitch-974/matglitch-974.github.io`) : de simples relais vers `install.sh` et `install.ps1` de ce dépôt, qui reste la seule source de l'installateur. Les anciennes adresses (`…/BCI`, `…/BCI.ps1`) et `…/BCAI`, `…/BCAI.ps1` sont des relais identiques à `…/bc` et `…/bc.ps1`.
 
 Deux étapes ne peuvent pas être automatisées :
 1. Android : installer d'abord **Termux depuis F-Droid** (la version du Play Store est obsolète).
 2. Au premier lancement de `claude`, **se connecter à son compte Anthropic**.
 
-Variables reconnues : `BCI_BRANCH` (branche du dépôt, `main` par défaut), `BCI_ENCRYPT_KEYS=oui|non` (répond d'avance à la question du chiffrement), `BCI_MODELS_DIR` (dossier des modèles, `~/ai/3-llm/models` par défaut ; les modèles Ollama vont dans son sous-dossier `ollama/`).
+Variables reconnues : `BCAI_BRANCH` (branche du dépôt, `main` par défaut), `BCAI_ENCRYPT_KEYS=oui|non` (répond d'avance à la question du chiffrement), `BCAI_MODELS_DIR` (dossier des modèles, `~/ai/3-llm/models` par défaut ; les modèles Ollama vont dans son sous-dossier `ollama/`). Les anciens noms `BCI_*` sont encore lus si `BCAI_*` n'est pas défini.
 
 ## Ce que fait l'installateur
 1. Installe les dépendances. Linux : curl, git, jq, python3, Node.js, npm (Alpine : + bash, ripgrep, libgcc, libstdc++), restic si disponible. Windows : Git, uv et Python par winget ; sans winget : uv par son script officiel, Python par uv, Git exigé (arrêt sinon). Sous Windows, Node.js et restic ne sont installés qu'à l'étape 10, avec les outils, après la migration (winget ; sans winget : restic depuis GitHub, Node.js signalé manquant).
 2. Installe Claude Code avec l'installateur officiel d'Anthropic (`claude.ai/install.sh` ou `install.ps1`), s'il est absent.
-3. Clone ce dépôt dans `~/ai/2-tools/3-software/better-claude-instance/` (ou le met à jour).
-4. Sauvegarde complète avant la première installation (`install-avant`, toujours faite : `~/ai` existe déjà puisque le dépôt vient d'y être cloné) ; une seconde (`install-apres`) à la fin. Les deux sont conservées à vie ([memory.md](memory.md#sauvegardes-hooksbci-backuppy)).
+3. Clone ce dépôt dans `~/ai/2-tools/3-software/bcai/` (ou le met à jour ; une installation d'avant le renommage est d'abord migrée, voir [plus bas](#mise-à-jour-dune-installation-bci)).
+4. Sauvegarde complète avant la première installation (`install-avant`, toujours faite : `~/ai` existe déjà puisque le dépôt vient d'y être cloné) ; une seconde (`install-apres`) à la fin. Les deux sont conservées à vie ([memory.md](memory.md#sauvegardes-hooksbcai-backuppy)).
 5. Crée `~/ai` et `~/project`, copie les fichiers de `skeleton/` sans jamais écraser un fichier existant.
-6. Importe l'existant, par copie (les originaux restent) : skills et agents de `~/.claude`, secrets dans `2-tools/4-keys-code` ([keys.md](keys.md)), configs des autres LLM dans `3-llm/` ; les modèles Ollama sont déplacés une fois ([scripts.md](scripts.md#bci-importpy)).
-7. Fixe `CLAUDE_CONFIG_DIR` à `~/ai/2-tools/3-software/claude-code/`, y range le contenu de `~/.claude` et `~/.claude.json`, puis met les originaux dans `~/ai/4-trash/`. Votre ancien `CLAUDE.md` et votre ancien dossier `skills` y sont gardés en `*.bak-bci`. Si des sessions `claude` tournent, `~/.claude/.credentials.json` leur est laissé ; le [hook mémoire](memory-hook.md#rangement-de-claude) le range plus tard.
+6. Importe l'existant, par copie (les originaux restent) : skills et agents de `~/.claude`, secrets dans `2-tools/4-keys-code` ([keys.md](keys.md)), configs des autres LLM dans `3-llm/` ; les modèles Ollama sont déplacés une fois ([scripts.md](scripts.md#bcai-importpy)).
+7. Fixe `CLAUDE_CONFIG_DIR` à `~/ai/2-tools/3-software/claude-code/`, y range le contenu de `~/.claude` et `~/.claude.json`, puis met les originaux dans `~/ai/4-trash/`. Votre ancien `CLAUDE.md` et votre ancien dossier `skills` y sont gardés en `*.bak-bcai`. Si des sessions `claude` tournent, `~/.claude/.credentials.json` leur est laissé ; le [hook mémoire](memory-hook.md#rangement-de-claude) le range plus tard.
 8. Relie `CLAUDE.md` à `~/ai/AGENTS.md`, `skills`, `plugins` et `agents/system-agents` à leurs dossiers de `~/ai` ; `settings.json` est rangé dans `~/ai/memory/` (Linux) ou reste dans `claude-code/` (Windows).
 9. Complète `settings.json` : agents intégrés désactivés, hooks `guard-sensible` et mémoire. Vos autres réglages et hooks sont conservés.
 10. Installe les outils (sous Windows, d'abord restic et Node.js) et les outils web : SearXNG (métamoteur local, sans clé) et son MCP, `fetch`, `playwright`, `scrapling`, Crawl4AI. Retire les MCP `duckduckgo` et `brave` de portée utilisateur s'ils existent (remplacés par SearXNG). Un échec ici ne bloque pas l'installation.
-11. Installe la commande `bci`.
-12. Propose de chiffrer `4-keys-code` avec une phrase secrète (restic). Chiffré, il n'existe en clair qu'entre `bci keys open` et `bci keys close`, et n'entre jamais en clair dans les sauvegardes.
+11. Installe la commande `bcai`.
+12. Propose de chiffrer `4-keys-code` avec une phrase secrète (restic). Chiffré, il n'existe en clair qu'entre `bcai keys open` et `bcai keys close`, et n'entre jamais en clair dans les sauvegardes.
 
-Tout fichier remplacé est gardé en `*.bak-bci`. Relancer la commande (ou `bci install`) met l'instance à jour sans toucher à vos fichiers. Détail script par script : [scripts.md](scripts.md).
+Tout fichier remplacé est gardé en `*.bak-bcai`. Relancer la commande (ou `bcai install`) met l'instance à jour sans toucher à vos fichiers. Détail script par script : [scripts.md](scripts.md).
 
-## Commande `bci`
-Installée avec BCI (`~/.local/bin/bci` ; Windows : `bci.cmd` ; Termux : `$PREFIX/bin/bci`, qui l'exécute dans Alpine). La toute première installation passe forcément par la commande ci-dessus : avant elle, `bci` n'existe pas.
+## Commande `bcai`
+Installée avec BCAI (`~/.local/bin/bcai` ; Windows : `bcai.cmd` ; Termux : `$PREFIX/bin/bcai`, qui l'exécute dans Alpine). La toute première installation passe forcément par la commande ci-dessus : avant elle, `bcai` n'existe pas.
+
+`bci`, l'ancien nom, est **obsolète** : il n'est gardé que sur les installations antérieures au renommage, où il affiche un avertissement puis appelle `bcai` avec les mêmes arguments (`bin/bci`, `bin/bci.cmd`, `bin/bci.ps1`). Il disparaîtra dans une version ultérieure.
 
 | Commande | Effet |
 |---|---|
-| `bci install` (ou `bci update`) | met à jour depuis GitHub puis réinstalle ; aucun fichier personnel écrasé |
-| `bci uninstall` | désinstalle, après deux confirmations (oui, puis le mot `desinstaller`) et un avertissement en rouge ; de même avant de supprimer `~/ai` ou `~/project` |
-| `bci status` | versions, `CLAUDE_CONFIG_DIR`, SearXNG, nombre de sauvegardes, restic |
-| `bci backup` / `bci backup list` | sauvegarde immédiate / liste |
-| `bci search "requête"` | recherche web (skill `search`) |
-| `bci keys open\|close\|status` | coffre chiffré de `2-tools/4-keys-code` (restic, phrase secrète) |
-| `bci import [skills\|agents\|secrets\|llm]` | réimporte l'existant (copies, sans doublon) |
-| `bci version` | version (fichier `VERSION`, semver) et commit installés |
+| `bcai install` (ou `bcai update`) | met à jour depuis GitHub puis réinstalle ; aucun fichier personnel écrasé |
+| `bcai uninstall` | désinstalle, après deux confirmations (oui, puis le mot `desinstaller`) et un avertissement en rouge ; de même avant de supprimer `~/ai` ou `~/project` |
+| `bcai status` | versions, `CLAUDE_CONFIG_DIR`, SearXNG, nombre de sauvegardes, restic |
+| `bcai backup` / `bcai backup list` | sauvegarde immédiate / liste |
+| `bcai search "requête"` | recherche web (skill `search`) |
+| `bcai keys open\|close\|status` | coffre chiffré de `2-tools/4-keys-code` (restic, phrase secrète) |
+| `bcai import [skills\|agents\|secrets\|llm]` | réimporte l'existant (copies, sans doublon) |
+| `bcai version` | version (fichier `VERSION`, semver) et commit installés |
+
+## Mise à jour d'une installation BCI
+Avant BCAI, le projet s'appelait Better Claude Instance (BCI). Une installation de cette époque se met à jour avec `bci install` ou la commande d'installation ci-dessus ; rien n'est effacé :
+
+1. `~/ai/2-tools/3-software/better-claude-instance/` est renommé en `bcai/` et son dépôt Git pointe vers la nouvelle adresse. Un lien (jonction sous Windows) reste à l'ancien emplacement : les sessions Claude déjà ouvertes appellent encore leurs hooks par l'ancien chemin.
+2. `~/ai/2-tools/logs/backup-bci/` devient `backup-bcai/` (fusionné élément par élément si `backup-bcai/` existe déjà) ; les sauvegardes d'installation existantes restent celles de la première installation.
+3. Les chemins de `settings.json` (hooks) sont corrigés, après une copie datée dans `backup-bcai/reglages/`. Toute réécriture ultérieure de `settings.json` par l'installateur passe aussi par cette copie.
+4. La commande `bcai` est installée ; `bci` devient l'alias obsolète décrit plus haut.
+5. `~/ai/AGENTS.md` et le skill `memory`, copiés du skeleton, reçoivent les nouveaux chemins (copie datée dans `backup-bcai/reglages/` avant) ; les autres fichiers de `~/ai/memory`, `~/ai/0-persona` et des skills qui citent l'ancien chemin sont seulement signalés.
+6. Au démarrage d'une session ultérieure, quand aucune autre session `claude` ne tourne, qu'aucun `settings.json` ne cite plus l'ancien chemin et que le lien a plus de 24 h, le [hook mémoire](memory-hook.md#migration-depuis-bci) supprime le lien (il ne contient rien) ou, si l'ancien dossier n'avait pas pu être renommé, range ce dossier dans `~/ai/4-trash/`. Le hook fait aussi lui-même la migration si l'installateur n'a pas pu aller au bout.
+
+Script : `hooks/bcai-migrate.py` (`--check` : affiche ce qui reste à migrer, sans rien écrire). Les variables `BCI_*` restent lues en repli, les copies `*.bak-bci` sont restaurées par la désinstallation comme les `*.bak-bcai`.
 
 ## Pourquoi pas npm
 L'installation par npm est dépréciée par Anthropic au profit de l'installateur natif, et npm n'est pas présent par défaut sous Windows.

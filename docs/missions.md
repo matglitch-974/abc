@@ -52,7 +52,7 @@ Trois niveaux configurables à la création de `searxng-settings.yml` (jamais r�
 | Niveau | Prérequis | Effet |
 |--------|-----------|-------|
 | **FlareSolverr** | port 8191 ouvert | proxy global `http://localhost:8191` ; résout Cloudflare/JS via navigateur headless ; `SearxEngineCaptcha` → 60 s |
-| **Tor** | `--tor` / `BCI_TOR=1` / port 9050 | proxy global `socks5h://127.0.0.1:9050` ; réduit les bans IP ; augmente les CAPTCHA Google |
+| **Tor** | `--tor` / `BCAI_TOR=1` / port 9050 | proxy global `socks5h://127.0.0.1:9050` ; réduit les bans IP ; augmente les CAPTCHA Google |
 | **FlareSolverr + Tor** | les deux | FlareSolverr sur le clearnet, Tor pour Ahmia/Torch uniquement |
 
 `suspended_times` injectés par défaut dans les réglages générés :

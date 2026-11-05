@@ -43,10 +43,10 @@ Quand plusieurs feedbacks se recoupent : les fusionner en une règle plus courte
 
 ## Todos
 - Chaque unité de `~/project` a son `TODO.md` (`- [ ] tâche`).
-- `~/ai/memory/TODO.md` : section Transverse écrite à la main ; section Projets refaite automatiquement. Forcer la mise à jour : `python3 ~/ai/2-tools/3-software/better-claude-instance/hooks/memory-hook.py todo` (Windows : `python`).
+- `~/ai/memory/TODO.md` : section Transverse écrite à la main ; section Projets refaite automatiquement. Forcer la mise à jour : `python3 ~/ai/2-tools/3-software/bcai/hooks/memory-hook.py todo` (Windows : `python`).
 
 ## Sauvegardes
-Tout `~/ai` est sauvegardé une fois par jour dans `~/ai/2-tools/logs/backup-bci/` (restic, rotation tour de Hanoï ; détail : `docs/memory.md` du dépôt). Sauvegarde immédiate (avant une consolidation risquée) : `python3 ~/ai/2-tools/3-software/better-claude-instance/hooks/bci-backup.py quotidienne` ; liste : `… list`. Restaurer dans `~/ai/1-bench/<secteur>/`, comparer, recopier ce qui manque.
+Tout `~/ai` est sauvegardé une fois par jour dans `~/ai/2-tools/logs/backup-bcai/` (restic, rotation tour de Hanoï ; détail : `docs/memory.md` du dépôt). Sauvegarde immédiate (avant une consolidation risquée) : `python3 ~/ai/2-tools/3-software/bcai/hooks/bcai-backup.py quotidienne` ; liste : `… list`. Restaurer dans `~/ai/1-bench/<secteur>/`, comparer, recopier ce qui manque.
 
 ## Journal
 `journal/AAAA-MM-JJ.md` est écrit par le hook, jamais par l'agent. Il sert à reprendre après une fermeture brutale : relire le journal du jour pour savoir où la session s'est arrêtée.

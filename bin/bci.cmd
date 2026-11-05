@@ -1,2 +1,3 @@
 @echo off
-powershell -NoProfile -ExecutionPolicy Bypass -File "%USERPROFILE%\ai\2-tools\3-software\better-claude-instance\bin\bci.ps1" %*
+echo bci est obsolete : utilisez bcai 1>&2
+call "%USERPROFILE%\ai\2-tools\3-software\bcai\bin\bcai.cmd" %*

@@ -1,4 +1,4 @@
-# AGENTS.md — dépôt better-claude-instance
+# AGENTS.md — dépôt bcai
 
 Ce dépôt installe et documente une instance organisée de Claude Code.
 

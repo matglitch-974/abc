@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Hook mémoire de Better Claude Instance — automate sans LLM, branché sur les événements de Claude Code.
+"""Hook mémoire de BCAI — automate sans LLM, branché sur les événements de Claude Code.
 
 - Journal : chaque événement utile est ajouté aussitôt à ~/ai/memory/journal/AAAA-MM-JJ.md.
   Une fermeture brutale ne perd donc rien de ce qui a déjà eu lieu.
 - Todos : au démarrage de session, la section « Projets » de ~/ai/memory/TODO.md est
   réécrite à partir des TODO.md de ~/project.
-- Sauvegarde : au démarrage, bci-backup.py quotidienne (une par jour, en arrière-plan).
+- Sauvegarde : au démarrage, bcai-backup.py quotidienne (une par jour, en arrière-plan).
+- Ancien nom (BCI) : au démarrage, bcai-migrate.py migre une installation d'avant BCAI (dossier
+  better-claude-instance, backup-bci, chemins de settings.json) puis retire l'ancien emplacement (lien supprimé,
+  dossier rangé dans ~/ai/4-trash) dès qu'aucune session ne s'en sert plus.
 - Ancien ~/.claude : s'il était encore tenu par une session lors de l'installation, il est rangé
   dans ~/ai/4-trash au démarrage suivant (toute session le recréant est rangée de même).
 - Persona : le premier message de la session choisit le persona par `@<nom>` (fichier de
@@ -13,7 +16,7 @@
 - Isolement : un persona dont l'en-tête porte `isolated: true` ouvre une session cloisonnée dans
   les deux sens (mémoire propre dans ~/ai/isolated/<nom>/, accès croisés bloqués en PreToolUse).
 - Réalignement : ~/ai/memory/realign.md est réinjecté dans le contexte tous les N messages
-  de l'utilisateur (BCI_REALIGN_EVERY, 10 par défaut) et après chaque compaction.
+  de l'utilisateur (BCAI_REALIGN_EVERY, 10 par défaut) et après chaque compaction.
 
 Usage : appelé par Claude Code (JSON sur stdin), ou `memory-hook.py todo` pour le seul sommaire.
 Ne bloque jamais Claude Code : toute erreur est ignorée, code de sortie toujours 0.
@@ -26,10 +29,10 @@ import sys
 import time
 from pathlib import Path
 
-AI = Path(os.environ.get("BCI_AI") or Path.home() / "ai")   # BCI_AI : autre racine (tests)
+AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or Path.home() / "ai")   # BCAI_AI : autre racine (tests)
 MEM = AI / "memory"
 PROJECTS = Path.home() / "project"
-EVERY = int(os.environ.get("BCI_REALIGN_EVERY", "10") or 10)
+EVERY = int(os.environ.get("BCAI_REALIGN_EVERY") or os.environ.get("BCI_REALIGN_EVERY") or "10")
 BEGIN = "<!-- projets:début"
 END = "<!-- projets:fin -->"
 
@@ -165,9 +168,9 @@ def todo_sync():
 
 
 def backup():
-    """Sauvegarde quotidienne (bci-backup.py), détachée pour ne pas retarder le démarrage de la session."""
+    """Sauvegarde quotidienne (bcai-backup.py), détachée pour ne pas retarder le démarrage de la session."""
     import subprocess
-    script = Path(__file__).resolve().parent / "bci-backup.py"
+    script = Path(__file__).resolve().parent / "bcai-backup.py"
     kw = {"start_new_session": True} if os.name != "nt" else {"creationflags": 0x00000008}  # DETACHED_PROCESS
     subprocess.Popen([sys.executable, str(script), "quotidienne", "--if-needed"],
                      stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kw)
@@ -175,7 +178,7 @@ def backup():
 
 
 def other_sessions():
-    """Autres processus claude que celui-ci (sessions ouvertes avant ou hors BCI)."""
+    """Autres processus claude que celui-ci (sessions ouvertes avant ou hors BCAI)."""
     import subprocess
     try:
         if os.name == "nt":
@@ -189,13 +192,33 @@ def other_sessions():
     return n > 1
 
 
-def retire_old():
+def migrate_bci():
+    """Installation d'avant BCAI (better-claude-instance, backup-bci) : bcai-migrate.py, puis rangement.
+    Retourne (actions, autres sessions ou None si non calculé)."""
+    root = AI / "2-tools"
+    if not (os.path.lexists(root / "3-software" / "better-claude-instance") or (root / "logs" / "backup-bci").exists()):
+        return [], None
+    others = other_sessions()
+    import importlib.util
+    sys.dont_write_bytecode = True   # rien d'écrit dans le dépôt
+    spec = importlib.util.spec_from_file_location("bcai_migrate", Path(__file__).resolve().parent / "bcai-migrate.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    # Réglages qui citaient l'ancien chemin au démarrage : cette session-ci appelle ses hooks par là
+    # (Claude Code les a lus avant la correction) ; le rangement attend une session suivante.
+    cited = any(mod.cites_old(f.read_text(encoding="utf-8")) for f in mod.settings_files())
+    done = mod.migrate()
+    retired = "" if cited else mod.retire(others)
+    return done + ([retired] if retired else []), others
+
+
+def retire_old(others=None):
     """Range ~/.claude et ~/.claude.json laissés en cache par une session ouverte pendant l'installation."""
     cc = AI / "2-tools" / "3-software" / "claude-code"
     if Path(os.environ.get("CLAUDE_CONFIG_DIR") or "/").resolve() != cc.resolve():
         return ""
     stamp = time.strftime("%Y-%m-%d_%H-%M-%S")
-    others = other_sessions()
+    others = other_sessions() if others is None else others
     done = []
     for name, label in ((".claude", "claude-ancien"), (".claude.json", "claude.json-ancien")):
         old = Path.home() / name
@@ -232,8 +255,15 @@ def handle(event):
         journal(f"{tag} session démarrée ({src})")
         todo_sync()
         if src == "startup":
+            others = None
+            try:
+                lines, others = migrate_bci()
+                for line in lines:
+                    journal(f"{tag} migration BCI -> BCAI : {line}")
+            except Exception as e:   # la migration ne bloque jamais la session
+                journal(f"{tag} migration BCI -> BCAI : erreur : {short(e)}")
             journal(f"{tag} sauvegarde : {backup()}")
-            retired = retire_old()
+            retired = retire_old(others)
             if retired:
                 journal(f"{tag} rangé dans 4-trash : {retired}")
             out = "Début de session : reconnaissance des outils (skill `mission`) avant la première tâche.\n"

@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
-"""Sauvegardes de Better Claude Instance — restic >= 0.17 (dédupliqué, compressé), sinon repli tar.xz.
+"""Sauvegardes de BCAI — restic >= 0.17 (dédupliqué, compressé), sinon repli tar.xz.
 
-  bci-backup.py quotidienne [--if-needed]   sauvegarde du jour, rotation « tour de Hanoï »
-  bci-backup.py install-avant | install-apres   première installation seulement, conservées à vie
-  bci-backup.py list
+  bcai-backup.py quotidienne [--if-needed]   sauvegarde du jour, rotation « tour de Hanoï »
+  bcai-backup.py install-avant | install-apres   première installation seulement, conservées à vie
+  bcai-backup.py list
 
 Contenu : tout ~/ai (sauf les sauvegardes elles-mêmes) ; install-avant ajoute ~/.claude et ~/.claude.json
-s'ils existent encore. Destination : ~/ai/2-tools/logs/backup-bci/
+s'ils existent encore. Destination : ~/ai/2-tools/logs/backup-bcai/
   .restic/                          dépôt restic commun (sans mot de passe : données locales)
   .backup_AAAA-MM-JJ[_type]/meta.json   un dossier par sauvegarde : date à la seconde, versions, instantané
   .backup_…/metadata.json           copie lisible de la métadonnée embarquée (ci-dessous)
 Métadonnée : metadata.json à la racine de l'instantané restic (/metadata.json) ou de l'archive tar.xz :
-version de BCI (fichier VERSION + commit git), date, système, type, versions des dépendances (« absent »
+version de BCAI (fichier VERSION + commit git), date, système, type, versions des dépendances (« absent »
 si non installée), noms des MCP et des skills. Aucun secret ; le dossier personnel est écrit ~.
+(format 2 ; le format 1, d'avant le renommage en BCAI, nommait « bci » la clé « bcai ».)
+Ancien dossier backup-bci (avant BCAI) : repris tel quel au premier appel (adopt_legacy).
 Rotation (quotidienne) : la sauvegarde n° k va dans le jeu h = zéros terminaux de k en binaire (plafonné à
 SETS-1) et remplace l'ancienne de ce jeu ; elles s'espacent avec l'âge (au plus SETS sauvegardes).
-Ne bloque jamais : code de sortie 0, erreurs consignées dans backup-bci/errors.log.
+Ne bloque jamais : code de sortie 0, erreurs consignées dans backup-bcai/errors.log.
 """
 import io
 import json
@@ -31,11 +33,12 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 HOME = Path.home()
-AI = Path(os.environ.get("BCI_AI") or HOME / "ai")
-DEST = AI / "2-tools" / "logs" / "backup-bci"
+AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or HOME / "ai")
+DEST = AI / "2-tools" / "logs" / "backup-bcai"
+LEGACY = AI / "2-tools" / "logs" / "backup-bci"   # nom d'avant BCAI
 REPO = DEST / ".restic"
-SETS = max(1, int(os.environ.get("BCI_BACKUP_SETS", "8") or 8))
-SRC_DIR = Path(__file__).resolve().parent.parent  # dépôt better-claude-instance
+SETS = max(1, int(os.environ.get("BCAI_BACKUP_SETS") or os.environ.get("BCI_BACKUP_SETS") or "8"))
+SRC_DIR = Path(__file__).resolve().parent.parent  # dépôt bcai
 TYPES = ("quotidienne", "install-avant", "install-apres")
 CC = Path(os.environ.get("CLAUDE_CONFIG_DIR") or AI / "2-tools" / "3-software" / "claude-code")
 NOWIN = {"creationflags": 0x08000000} if os.name == "nt" else {}  # CREATE_NO_WINDOW : pas de console qui clignote
@@ -60,10 +63,10 @@ def version(cmd):
 
 def versions(md):
     """Résumé des versions pour meta.json, tiré de la métadonnée complète (aucune commande relancée)."""
-    b, dep = md.get("bci") or {}, md.get("dependances") or {}
-    bci = " ".join(x for x in (b.get("version"), (b.get("commit") or "")[:7], b.get("date_commit")) if x)
+    b, dep = md.get("bcai") or {}, md.get("dependances") or {}
+    bcai = " ".join(x for x in (b.get("version"), (b.get("commit") or "")[:7], b.get("date_commit")) if x)
     sysi = md.get("systeme") or {}
-    out = {"bci": bci or None, "python": dep.get("python")}
+    out = {"bcai": bcai or None, "python": dep.get("python")}
     for k in ("claude_code", "node", "git", "jq", "uv", "restic"):
         out[k] = None if dep.get(k) in (None, "absent") else dep.get(k)
     out["systeme"] = f"{sysi.get('nom')} {sysi.get('publication')} {sysi.get('arch')}"
@@ -123,7 +126,7 @@ def uv_tools():
     return found
 
 
-def bci_version():
+def bcai_version():
     v = {"version": None, "commit": None, "date_commit": None, "modifie": None}
     try:
         v["version"] = (SRC_DIR / "VERSION").read_text(encoding="utf-8").strip() or None
@@ -185,12 +188,12 @@ def metadata(kind, name, date):
         ps = "$PSVersionTable.PSVersion.ToString()"
         cmds.update({"powershell": ["powershell", "-NoProfile", "-Command", ps],
                      "pwsh": ["pwsh", "-NoProfile", "-Command", ps], "winget": ["winget", "--version"]})
-    m = {"format": 1, "nom": name, "type": kind, "date": date}
+    m = {"format": 2, "nom": name, "type": kind, "date": date}
     dep = {"python": platform.python_version()}
     with ThreadPoolExecutor(max_workers=8) as ex:
         # claude --version : deuxième ligne = tweakcc s'il a modifié Claude Code
         jobs = {k: ex.submit(tool, c, 2 if k == "claude_code" else 1) for k, c in cmds.items()}
-        uvt, bci = ex.submit(uv_tools), ex.submit(bci_version)
+        uvt, bcai = ex.submit(uv_tools), ex.submit(bcai_version)
         for k, f in jobs.items():
             try:
                 dep[k] = f.result()
@@ -203,9 +206,9 @@ def metadata(kind, name, date):
         for k in ("scrapling", "crawl4ai"):
             dep[k] = u.get(k, "absent")
         try:
-            m["bci"] = bci.result()
+            m["bcai"] = bcai.result()
         except Exception:
-            m["bci"] = None
+            m["bcai"] = None
     for k, f in (("systeme", system_info), ("mcp", mcp_names), ("skills", skill_names)):
         try:
             m[k] = f()
@@ -260,7 +263,7 @@ def backup(kind, if_needed=False):
     try:
         md = metadata(kind, d.name, date)
     except Exception as e:  # la métadonnée ne fait jamais échouer la sauvegarde
-        md = {"format": 1, "nom": d.name, "type": kind, "date": date, "erreur": type(e).__name__}
+        md = {"format": 2, "nom": d.name, "type": kind, "date": date, "erreur": type(e).__name__}
     md["mode"] = "restic" if use_restic else "tar.xz"
     md["sources"] = [tilde(str(p)) for p in sources]
     md_bytes = (json.dumps(md, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
@@ -279,7 +282,7 @@ def backup(kind, if_needed=False):
                 raise RuntimeError(f"restic init : {r.stderr.strip()[:300]}")
         # metadata.json donné en chemin relatif depuis un dossier temporaire : restic le range à la racine
         # de l'instantané (/metadata.json), à côté des sources
-        with tempfile.TemporaryDirectory(prefix="bci-meta-") as tmp:
+        with tempfile.TemporaryDirectory(prefix="bcai-meta-") as tmp:
             (Path(tmp) / "metadata.json").write_bytes(md_bytes)
             r = restic("backup", "--json", "--compression", "max", "--tag", d.name,
                        "--exclude", str(DEST), *excl, "metadata.json", *map(str, sources), cwd=tmp)
@@ -337,9 +340,37 @@ def rotate(new, jeu):
         restic("prune", timeout=7200)
 
 
+def adopt_legacy():
+    """Reprend l'ancien dossier backup-bci : renommé en backup-bcai, ou fusionné élément par élément si
+    backup-bcai existe déjà (un élément présent des deux côtés reste dans backup-bci). Reporté tant que
+    restic y tient un verrou (sauvegarde en cours). Retourne un message, ou ''."""
+    if not LEGACY.is_dir() or LEGACY.is_symlink():
+        return ""
+    locks = LEGACY / ".restic" / "locks"
+    if locks.is_dir() and any(locks.iterdir()):
+        return f"{LEGACY} : sauvegarde en cours, reprise au prochain appel"
+    if not DEST.exists():
+        LEGACY.rename(DEST)
+        return f"sauvegardes : {LEGACY} -> {DEST}"
+    left = []
+    for item in sorted(LEGACY.iterdir()):
+        if (DEST / item.name).exists():
+            left.append(item.name)
+        else:
+            item.rename(DEST / item.name)
+    if left:
+        return f"sauvegardes fusionnées dans {DEST} ; restés dans {LEGACY} (noms déjà pris) : {', '.join(left)}"
+    LEGACY.rmdir()   # vide
+    return f"sauvegardes : {LEGACY} fusionné dans {DEST}"
+
+
 def main():
     a = sys.argv[1:]
     try:
+        try:
+            adopt_legacy()
+        except OSError:
+            pass   # dossier tenu (Windows) : nouvel essai au prochain appel
         if a[:1] == ["list"]:
             for d, m in folders():
                 print(f"{d.name}  {m.get('type')}  {m.get('date')}  "

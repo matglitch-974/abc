@@ -1,14 +1,15 @@
 #!/bin/sh
-# Better Claude Instance — installation Linux / Android (Termux).
-#   curl -sL matglitch-974.github.io/BCI | sh
-#   (secours : curl -fsSL https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/install.sh | sh)
+# BCAI — installation Linux / Android (Termux).
+#   curl -sL matglitch-974.github.io/bc | sh
+#   (secours : curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/install.sh | sh)
 # Termux : installe Alpine Linux (proot) puis relance ce script à l'intérieur.
 # Linux : Debian, Ubuntu, Alpine, Fedora, Arch, openSUSE et dérivés.
 set -eu
-REPO="https://github.com/matglitch-974/better-claude-instance"
-BRANCH="${BCI_BRANCH:-main}"
-RAW="https://raw.githubusercontent.com/matglitch-974/better-claude-instance/$BRANCH"
-DEST="$HOME/ai/2-tools/3-software/better-claude-instance"
+REPO="https://github.com/matglitch-974/bcai"
+BRANCH="${BCAI_BRANCH:-${BCI_BRANCH:-main}}"   # BCI_BRANCH : ancien nom, encore lu
+RAW="https://raw.githubusercontent.com/matglitch-974/bcai/$BRANCH"
+DEST="$HOME/ai/2-tools/3-software/bcai"
+OLD_DEST="$HOME/ai/2-tools/3-software/better-claude-instance"   # emplacement d'avant le renommage en BCAI
 
 say() { printf '\n==> %s\n' "$1"; }
 
@@ -20,13 +21,18 @@ if [ ! -f /etc/alpine-release ] && { [ -n "${TERMUX_VERSION:-}" ] || [ -d /data/
   rm -rf "$HOME/.claude/downloads"   # restes d'un essai natif (binaire incompatible avec Android)
   # Test par entrée réelle : l'emplacement des conteneurs change selon la version de proot-distro.
   proot-distro login alpine -- true >/dev/null 2>&1 || proot-distro install alpine
-  proot-distro login alpine -- sh -c "apk add --no-cache curl && curl -fsSL '$RAW/install.sh' | BCI_BRANCH='$BRANCH' sh"
+  proot-distro login alpine -- sh -c "apk add --no-cache curl && curl -fsSL '$RAW/install.sh' | BCAI_BRANCH='$BRANCH' sh"
   grep -q "alias claude=" "$HOME/.bashrc" 2>/dev/null || \
     echo "alias claude='proot-distro login alpine -- sh -lc claude'" >> "$HOME/.bashrc"
-  # bci côté Termux : exécutée dans Alpine, arguments transmis tels quels
-  printf '#!/bin/sh\nexec proot-distro login alpine -- sh -lc '"'"'bci "$@"'"'"' bci "$@"\n' > "$PREFIX/bin/bci"
-  chmod +x "$PREFIX/bin/bci"
-  say "Terminé. Fermez puis rouvrez Termux, puis tapez : claude   (mises à jour : bci install)"
+  # bcai côté Termux : exécutée dans Alpine, arguments transmis tels quels
+  printf '#!/bin/sh\nexec proot-distro login alpine -- sh -lc '"'"'bcai "$@"'"'"' bcai "$@"\n' > "$PREFIX/bin/bcai"
+  chmod +x "$PREFIX/bin/bcai"
+  # bci : ancien nom (obsolète), gardé là où il était installé
+  if [ -e "$PREFIX/bin/bci" ]; then
+    printf '#!/bin/sh\necho "bci est obsolète : utilisez bcai" >&2\nexec bcai "$@"\n' > "$PREFIX/bin/bci"
+    chmod +x "$PREFIX/bin/bci"
+  fi
+  say "Terminé. Fermez puis rouvrez Termux, puis tapez : claude   (mises à jour : bcai install)"
   exit 0
 fi
 
@@ -43,7 +49,7 @@ elif command -v zypper  >/dev/null 2>&1; then $SUDO zypper --non-interactive ins
 else echo "Gestionnaire de paquets inconnu : installez curl, git, jq, python3 et nodejs, puis relancez." >&2; exit 1
 fi
 
-# restic : sauvegardes dédupliquées (>= 0.17 ; sinon bci-backup.py se replie sur tar.xz). Non bloquant.
+# restic : sauvegardes dédupliquées (>= 0.17 ; sinon bcai-backup.py se replie sur tar.xz). Non bloquant.
 { if   command -v apk     >/dev/null 2>&1; then $SUDO apk add --no-cache restic
   elif command -v apt-get >/dev/null 2>&1; then $SUDO apt-get install -y -qq restic
   elif command -v dnf     >/dev/null 2>&1; then $SUDO dnf install -y restic
@@ -56,8 +62,14 @@ if ! command -v claude >/dev/null 2>&1 && [ ! -x "$HOME/.local/bin/claude" ]; th
   curl -fsSL https://claude.ai/install.sh | bash
 fi
 
-say "Téléchargement de Better Claude Instance"
+say "Téléchargement de BCAI"
+# Installation d'avant BCAI : le dossier est renommé ; un lien reste à l'ancien emplacement pour les
+# sessions Claude ouvertes, qui appellent encore les hooks par là (retiré ensuite par memory-hook.py).
+if [ -d "$OLD_DEST" ] && [ ! -L "$OLD_DEST" ] && [ ! -e "$DEST" ]; then
+  mv "$OLD_DEST" "$DEST" && ln -s "$DEST" "$OLD_DEST" && echo "renommé  : $OLD_DEST -> $DEST"
+fi
 if [ -d "$DEST/.git" ]; then
+  git -C "$DEST" remote set-url origin "$REPO"   # clone de l'ancien dépôt better-claude-instance : nouvelle adresse
   git -C "$DEST" pull -q --ff-only
 else
   mkdir -p "$(dirname "$DEST")"
@@ -65,4 +77,4 @@ else
 fi
 
 sh "$DEST/bootstrap.sh"
-say "Terminé. Ouvrez un nouveau terminal, puis tapez : claude   (mises à jour : bci install)"
+say "Terminé. Ouvrez un nouveau terminal, puis tapez : claude   (mises à jour : bcai install)"

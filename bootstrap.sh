@@ -1,7 +1,7 @@
 #!/bin/sh
 # bootstrap.sh — crée ~/ai et ~/project, y range la configuration de Claude Code. Appelé par install.sh.
-# N'écrase jamais un fichier existant ; sauvegarde ce qu'il remplace en *.bak-bci.
-# Sauvegardes complètes juste avant et juste après (hooks/bci-backup.py, conservées à vie).
+# N'écrase jamais un fichier existant ; sauvegarde ce qu'il remplace en *.bak-bcai.
+# Sauvegardes complètes juste avant et juste après (hooks/bcai-backup.py, conservées à vie).
 set -eu
 SRC="$(cd "$(dirname "$0")" && pwd)"
 AI="$HOME/ai"
@@ -9,8 +9,13 @@ CC="$AI/2-tools/3-software/claude-code"   # configuration de Claude Code (CLAUDE
 OLD="$HOME/.claude"
 HOOK="$SRC/hooks/guard-sensible.sh"
 
+# --- Installation d'avant BCAI (better-claude-instance, backup-bci) : migration -----------
+# Dossier renommé (par install.sh), sauvegardes reprises, chemins de settings.json corrigés (copie
+# d'abord dans backup-bcai/reglages/), commandes et fichiers du skeleton mis à jour.
+python3 "$SRC/hooks/bcai-migrate.py" || echo "ATTENTION : migration depuis BCI incomplète (relancer bcai install)" >&2
+
 # --- Sauvegarde avant installation ------------------------------------------------
-if [ -d "$AI" ] || [ -d "$OLD" ]; then python3 "$SRC/hooks/bci-backup.py" install-avant || true; fi
+if [ -d "$AI" ] || [ -d "$OLD" ]; then python3 "$SRC/hooks/bcai-backup.py" install-avant || true; fi
 
 # --- Arborescence et fichiers de base -----------------------------------------
 mkdir -p "$AI/0-persona/system-agents" "$AI/1-bench" "$AI/2-tools/0-mcp" \
@@ -24,14 +29,16 @@ for t in user feedback project reference journal; do mkdir -p "$AI/memory/$t"; d
     mkdir -p "$(dirname "$dst")"; cp "$SRC/skeleton/$f" "$dst"; echo "créé     : $dst"
   fi
 done
-chmod +x "$SRC/hooks/memory-hook.py" "$SRC/hooks/bci-backup.py" "$SRC/hooks/bci-import.py" "$SRC/hooks/bci-keys.py" "$AI/2-tools/1-skills/bench/sector" \
+chmod +x "$SRC/hooks/memory-hook.py" "$SRC/hooks/bcai-backup.py" "$SRC/hooks/bcai-migrate.py" "$SRC/hooks/bcai-import.py" "$SRC/hooks/bcai-keys.py" "$AI/2-tools/1-skills/bench/sector" \
   "$AI/2-tools/1-skills/bench/agent-id.py" "$AI/2-tools/1-skills/project/new-unit" "$HOOK" \
   "$AI/2-tools/1-skills/mission/tool-scan.py" "$AI/2-tools/1-skills/mission/tool-install.py"
 
-# --- Commande bci ------------------------------------------------------------------
+# --- Commande bcai ------------------------------------------------------------------
 mkdir -p "$HOME/.local/bin"
-chmod +x "$SRC/bin/bci"
-ln -sfn "$SRC/bin/bci" "$HOME/.local/bin/bci"
+chmod +x "$SRC/bin/bcai" "$SRC/bin/bci"
+ln -sfn "$SRC/bin/bcai" "$HOME/.local/bin/bcai"
+# bci : ancien nom (obsolète), gardé seulement là où il était déjà installé
+if [ -L "$HOME/.local/bin/bci" ]; then ln -sfn "$SRC/bin/bci" "$HOME/.local/bin/bci"; fi
 
 # --- Environnement -------------------------------------------------------------
 MUSL=false
@@ -52,7 +59,7 @@ done
 export CLAUDE_CONFIG_DIR="$CC"
 
 # --- Import de l'existant (copies) : skills, secrets -> 2-tools/4-keys-code, autres LLM -> 3-llm ---
-python3 "$SRC/hooks/bci-import.py" all || true
+python3 "$SRC/hooks/bcai-import.py" all || true
 
 # --- Migration de ~/.claude vers ~/ai ----------------------------------------------
 # Chaque élément rejoint sa place ; ce qui reste (anciens liens) part dans 4-trash/.
@@ -60,13 +67,13 @@ if [ -d "$OLD" ] && [ ! -L "$OLD" ]; then
   for item in "$OLD"/* "$OLD"/.[!.]*; do
     [ -e "$item" ] || [ -L "$item" ] || continue
     n=$(basename "$item")
-    [ -L "$item" ] && [ "$n" != agents ] && continue          # anciens liens BCI : recréés plus bas
+    [ -L "$item" ] && [ "$n" != agents ] && continue          # anciens liens BCAI : recréés plus bas
     case "$n" in
-      settings.json) if [ -e "$AI/memory/settings.json" ]; then mv "$item" "$CC/settings.json.bak-bci"
+      settings.json) if [ -e "$AI/memory/settings.json" ]; then mv "$item" "$CC/settings.json.bak-bcai"
                      else mv "$item" "$AI/memory/settings.json"; fi ;;
       plugins) if [ -z "$(ls -A "$AI/2-tools/2-plugins")" ]; then rmdir "$AI/2-tools/2-plugins"; mv "$item" "$AI/2-tools/2-plugins"
-               else mv "$item" "$CC/plugins.bak-bci"; fi ;;
-      CLAUDE.md|skills) [ -e "$CC/$n.bak-bci" ] || mv "$item" "$CC/$n.bak-bci" ;;
+               else mv "$item" "$CC/plugins.bak-bcai"; fi ;;
+      CLAUDE.md|skills) [ -e "$CC/$n.bak-bcai" ] || mv "$item" "$CC/$n.bak-bcai" ;;
       *) [ -e "$CC/$n" ] || [ -L "$CC/$n" ] || mv "$item" "$CC/$n" ;;
     esac
   done
@@ -83,7 +90,7 @@ if [ -f "$HOME/.claude.json" ] && [ ! -L "$HOME/.claude.json" ]; then
 fi
 
 link() { # link <cible> <lien>
-  if [ -e "$2" ] && [ ! -L "$2" ]; then mv "$2" "$2.bak-bci"; echo "sauvegardé : $2.bak-bci"; fi
+  if [ -e "$2" ] && [ ! -L "$2" ]; then mv "$2" "$2.bak-bcai"; echo "sauvegardé : $2.bak-bcai"; fi
   ln -sfn "$1" "$2"; echo "lien     : $2 -> $1"
 }
 [ -L "$CC/agents" ] && rm "$CC/agents"
@@ -105,14 +112,21 @@ if [ ! -s "$S" ]; then
   printf '%s\n' "$ADD" > "$S"
   $MUSL && command -v jq >/dev/null && { jq '.env.USE_BUILTIN_RIPGREP="0"' "$S" > "$S.tmp" && mv "$S.tmp" "$S"; }
 elif command -v jq >/dev/null 2>&1; then
-  [ -e "$S.bak-bci" ] || cp "$S" "$S.bak-bci"
-  jq --argjson add "$ADD" --argjson musl "$MUSL" '
+  [ -e "$S.bak-bcai" ] || [ -e "$S.bak-bci" ] || cp "$S" "$S.bak-bcai"   # original d'avant la première installation
+  if ! jq --argjson add "$ADD" --argjson musl "$MUSL" '
     .permissions.deny = (((.permissions.deny // []) + $add.permissions.deny) | unique)
     | .hooks = (reduce ($add.hooks | keys[]) as $k (.hooks // {};
         .[$k] = (((.[$k] // []) | map(select((.hooks[0].command // "")
                    | (contains("guard-sensible") or contains("memory-hook")) | not)))
                  + $add.hooks[$k])))
-    | if $musl then .env.USE_BUILTIN_RIPGREP = "0" else . end' "$S" > "$S.tmp" && mv "$S.tmp" "$S"
+    | if $musl then .env.USE_BUILTIN_RIPGREP = "0" else . end' "$S" > "$S.tmp"; then
+    rm -f "$S.tmp"; echo "ATTENTION : $S illisible par jq, non modifié" >&2
+  elif cmp -s "$S.tmp" "$S"; then rm -f "$S.tmp"   # inchangé : rien à écrire
+  else   # copie datée avant toute écriture, y compris lors d'une mise à jour
+    mkdir -p "$AI/2-tools/logs/backup-bcai/reglages"
+    cp "$S" "$AI/2-tools/logs/backup-bcai/reglages/settings.json_$(date +%Y-%m-%d_%H-%M-%S)"
+    mv "$S.tmp" "$S"
+  fi
 else
   echo "ATTENTION : jq absent, $S existant non modifié. Ajoutez-y à la main : $ADD" >&2
 fi
@@ -157,15 +171,15 @@ if command -v uv >/dev/null 2>&1 && ! command -v crwl >/dev/null 2>&1; then
   { uv tool install -q crawl4ai && crawl4ai-setup; } || echo "ATTENTION : Crawl4AI non installé (navigateur requis)" >&2
 fi
 
-# --- Chiffrement de 4-keys-code (au choix ; BCI_ENCRYPT_KEYS=oui|non évite la question) ------
+# --- Chiffrement de 4-keys-code (au choix ; BCAI_ENCRYPT_KEYS=oui|non évite la question) ------
 if [ -d "$AI/2-tools/4-keys-code" ] && [ ! -f "$AI/2-tools/4-keys-code.restic/config" ] && command -v restic >/dev/null 2>&1; then
-  ans="${BCI_ENCRYPT_KEYS:-}"
+  ans="${BCAI_ENCRYPT_KEYS:-${BCI_ENCRYPT_KEYS:-}}"   # BCI_ENCRYPT_KEYS : ancien nom, encore lu
   if [ -z "$ans" ] && [ -r /dev/tty ]; then
     printf 'Chiffrer ~/ai/2-tools/4-keys-code (clés SSH, jetons, cookies) avec une phrase secrète ? [o/N] ' > /dev/tty
     read -r ans < /dev/tty || ans=""
   fi
-  case "$ans" in o|oui|y|yes) python3 "$SRC/hooks/bci-keys.py" close || true ;; esac
+  case "$ans" in o|oui|y|yes) python3 "$SRC/hooks/bcai-keys.py" close || true ;; esac
 fi
 
 # --- Sauvegarde après installation -------------------------------------------------
-python3 "$SRC/hooks/bci-backup.py" install-apres || true
+python3 "$SRC/hooks/bcai-backup.py" install-apres || true

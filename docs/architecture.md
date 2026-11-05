@@ -16,7 +16,7 @@
 │   │   ├── 1-skills/                     skills : persona, bench, project, memory, context, mission, search, scraping, sampling, specula, leçons…
 │   │   ├── 2-plugins/                    plugins de Claude Code
 │   │   ├── 3-software/                   logiciels de l'IA
-│   │   │   ├── better-claude-instance/   ce dépôt
+│   │   │   ├── bcai/                     ce dépôt
 │   │   │   ├── searxng/                  métamoteur local (skill search) ; réglages : searxng-settings.yml
 │   │   │   └── claude-code/              configuration de Claude Code (CLAUDE_CONFIG_DIR) : historiques, caches, .claude.json
 │   │   │       ├── CLAUDE.md  ───────▶ ~/ai/AGENTS.md
@@ -25,9 +25,9 @@
 │   │   │       ├── agents/system-agents ▶ ~/ai/0-persona/system-agents/
 │   │   │       └── settings.json ────▶ ~/ai/memory/settings.json
 │   │   ├── 4-keys-code/                  clés SSH, jetons, clés d'API, cookies (copies de l'existant)
-│   │   ├── 4-keys-code.restic/           coffre chiffré de 4-keys-code, si choisi (bci keys)
+│   │   ├── 4-keys-code.restic/           coffre chiffré de 4-keys-code, si choisi (bcai keys)
 │   │   └── logs/
-│   │       └── backup-bci/               sauvegardes (voir memory.md)
+│   │       └── backup-bcai/              sauvegardes (voir memory.md)
 │   ├── 3-llm/                            autres LLM : configs copiées, llms.md, models/ (modèles Ollama)
 │   ├── 4-trash/                          corbeille
 │   ├── isolated/<nom>/                   mémoire et journal des agents isolés (cloisonnés)
@@ -69,24 +69,26 @@ Voir [workspace.md](workspace.md).
 ## Dépôt du projet
 
 ```
-better-claude-instance/
+bcai/
 ├── README.md
 ├── LICENSE, NOTICE              AGPL-3.0-or-later + attribution
 ├── AGENTS.md, CLAUDE.md         règles pour travailler sur ce dépôt
 ├── SETUP.md                     guide d'installation destiné à un agent Claude Code
-├── VERSION                      version de BCI (semver), reprise par bci version et les sauvegardes
+├── VERSION                      version de BCAI (semver), reprise par bcai version et les sauvegardes
 ├── install.sh, install.ps1      installation Linux / Android, Windows
 ├── uninstall.sh, uninstall.ps1  désinstallation
 ├── bootstrap.sh                 création de ~/ai et ~/project (Linux)
-├── bin/bci, bci.ps1, bci.cmd    commande bci
+├── bin/bcai, bcai.ps1, bcai.cmd  commande bcai
+├── bin/bci, bci.ps1, bci.cmd     ancien nom de la commande (obsolète), appelle bcai
 ├── hooks/guard-sensible.sh      hook de protection de sensible/ et de 4-keys-code
 ├── hooks/memory-hook.py         mémoire, persona de session (@<nom>), rangement de l'ancien ~/.claude
-├── hooks/bci-backup.py          sauvegardes (restic ou tar.xz)
-├── hooks/bci-import.py          import de l'existant : skills, agents, secrets, autres LLM
-├── hooks/bci-keys.py            coffre chiffré de 4-keys-code (restic)
+├── hooks/bcai-backup.py         sauvegardes (restic ou tar.xz)
+├── hooks/bcai-import.py         import de l'existant : skills, agents, secrets, autres LLM
+├── hooks/bcai-keys.py           coffre chiffré de 4-keys-code (restic)
+├── hooks/bcai-migrate.py        migration d'une installation d'avant BCAI (better-claude-instance)
 ├── skeleton/                    fichiers copiés tels quels dans ~/ (jamais écrasés)
 └── docs/                        cette documentation
 ```
 Rôle de chaque script : [scripts.md](scripts.md).
 
-L'installateur clone le dépôt dans `~/ai/2-tools/3-software/better-claude-instance/` : c'est un logiciel de l'IA, mis à jour avec `git pull`.
+L'installateur clone le dépôt dans `~/ai/2-tools/3-software/bcai/` : c'est un logiciel de l'IA, mis à jour avec `git pull`.

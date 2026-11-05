@@ -1,6 +1,6 @@
 #!/bin/sh
-# Better Claude Instance — désinstallation Linux / Android (dans Alpine sous Termux).
-#   bci uninstall   (ou : curl -fsSL https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/uninstall.sh | sh)
+# BCAI — désinstallation Linux / Android (dans Alpine sous Termux).
+#   bcai uninstall   (ou : curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/uninstall.sh | sh)
 # Deux confirmations (oui, puis un mot à taper) avant toute modification, et de nouveau avant chaque suppression.
 # Remet la configuration de Claude Code dans ~/.claude, retire les liens et réglages ajoutés,
 # puis demande avant de toucher à ~/ai et ~/project. Claude Code reste installé.
@@ -19,8 +19,8 @@ confirm2() { # confirm2 <avertissement> <question> <mot>
   [ "$r" = "$3" ] || { echo "Annulé." > /dev/tty; return 1; }
 }
 
-confirm2 "ATTENTION : la désinstallation retire Better Claude Instance de Claude Code (réglages, hooks, liens, variable CLAUDE_CONFIG_DIR) et remet la configuration dans ~/.claude. Vos dossiers ~/ai et ~/project restent en place, sauf si vous demandez ensuite leur suppression." \
-  "Désinstaller Better Claude Instance ?" "desinstaller" || { echo "Rien n'a été modifié."; exit 0; }
+confirm2 "ATTENTION : la désinstallation retire BCAI de Claude Code (réglages, hooks, liens, variable CLAUDE_CONFIG_DIR) et remet la configuration dans ~/.claude. Vos dossiers ~/ai et ~/project restent en place, sauf si vous demandez ensuite leur suppression." \
+  "Désinstaller BCAI ?" "desinstaller" || { echo "Rien n'a été modifié."; exit 0; }
 
 # 1. Configuration : ~/ai/2-tools/3-software/claude-code -> ~/.claude (liens remplacés par des copies réelles)
 if [ -d "$CC" ] && [ ! -e "$CL" ]; then
@@ -31,13 +31,17 @@ if [ -d "$CC" ] && [ ! -e "$CL" ]; then
     [ -L "$l" ] || continue
     t=$(readlink "$l"); rm "$l"; [ -e "$t" ] && cp -R "$t" "$l" && echo "copié : $l"
   done
-  for b in "$CL"/*.bak-bci; do [ -e "$b" ] && mv "$b" "${b%.bak-bci}" && echo "restauré : ${b%.bak-bci}"; done
+  for b in "$CL"/*.bak-bcai; do [ -e "$b" ] && mv "$b" "${b%.bak-bcai}" && echo "restauré : ${b%.bak-bcai}"; done
+  # *.bak-bci : copies faites avant le renommage en BCAI
+  for b in "$CL"/*.bak-bci; do [ -e "$b" ] && [ ! -e "${b%.bak-bci}" ] && mv "$b" "${b%.bak-bci}" && echo "restauré : ${b%.bak-bci}"; done
 fi
 for f in "$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc"; do
   [ -f "$f" ] && grep -q CLAUDE_CONFIG_DIR "$f" && sed -i '/CLAUDE_CONFIG_DIR/d' "$f" && echo "variable retirée : $f"
 done
 
-[ -L "$HOME/.local/bin/bci" ] && rm "$HOME/.local/bin/bci" && echo "commande bci retirée"
+for c in bcai bci; do   # bci : ancien nom (obsolète)
+  [ -L "$HOME/.local/bin/$c" ] && rm "$HOME/.local/bin/$c" && echo "commande $c retirée"
+done
 
 # 2. Réglages : retirer uniquement ce que l'installation a ajouté
 S="$CL/settings.json"
@@ -48,14 +52,14 @@ if [ -f "$S" ] && command -v jq >/dev/null 2>&1; then
      "$S" > "$S.tmp" && mv "$S.tmp" "$S" && echo "réglages nettoyés : $S"
 fi
 
-# Modèles Ollama rangés dans ~/ai par BCI : remis dans ~/.ollama/models avant toute suppression de ~/ai
+# Modèles Ollama rangés dans ~/ai par BCAI : remis dans ~/.ollama/models avant toute suppression de ~/ai
 OM=$(sed -n 's/^export OLLAMA_MODELS="\(.*\)"$/\1/p' "$HOME/.profile" 2>/dev/null | tail -1)
 case "$OM" in "$AI"/*)
   mkdir -p "$HOME/.ollama/models" && mv "$OM"/* "$HOME/.ollama/models/" 2>/dev/null
   sed -i '/^export OLLAMA_MODELS=/d' "$HOME/.profile"; echo "modèles Ollama remis dans ~/.ollama/models" ;;
 esac
 
-confirm2 "DANGER : supprimer ~/ai efface DÉFINITIVEMENT mémoire, personas, skills, corbeille ET toutes les sauvegardes (backup-bci). Aucune récupération possible." \
+confirm2 "DANGER : supprimer ~/ai efface DÉFINITIVEMENT mémoire, personas, skills, corbeille ET toutes les sauvegardes (backup-bcai). Aucune récupération possible." \
   "Supprimer définitivement ~/ai ?" "supprimer ai" && rm -rf "$AI" && echo "~/ai supprimé"
 confirm2 "DANGER : supprimer ~/project efface DÉFINITIVEMENT tous vos projets, y compris leurs dossiers sensible/ et ce qui n'a jamais été poussé sur GitHub." \
   "Supprimer définitivement ~/project ?" "supprimer project" && rm -rf "$HOME/project" && echo "~/project supprimé"

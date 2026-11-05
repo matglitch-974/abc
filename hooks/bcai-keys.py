@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Coffre chiffré de ~/ai/2-tools/4-keys-code (clés SSH, jetons, clés d'API, cookies) — restic >= 0.17.
 
-  bci-keys.py close    chiffre 4-keys-code dans 4-keys-code.restic, vérifie, puis efface la version en clair
-                       (premier appel : crée le coffre, phrase secrète demandée deux fois)
-  bci-keys.py open     déchiffre le coffre dans 4-keys-code
-  bci-keys.py status   ouvert / fermé / non chiffré
+  bcai-keys.py close    chiffre 4-keys-code dans 4-keys-code.restic, vérifie, puis efface la version en clair
+                        (premier appel : crée le coffre, phrase secrète demandée deux fois)
+  bcai-keys.py open     déchiffre le coffre dans 4-keys-code
+  bcai-keys.py status   ouvert / fermé / non chiffré
 
-Phrase secrète : demandée au terminal, ou BCI_KEYS_PASSWORD. Phrase oubliée = secrets perdus.
+Phrase secrète : demandée au terminal, ou BCAI_KEYS_PASSWORD. Phrase oubliée = secrets perdus.
 """
 import getpass
 import os
@@ -21,13 +21,13 @@ for _s in (sys.stdout, sys.stderr):   # console Windows en cp1252 : jamais d'éc
     except AttributeError:
         pass
 
-AI = Path(os.environ.get("BCI_AI") or Path.home() / "ai")
+AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or Path.home() / "ai")
 KEYS = AI / "2-tools" / "4-keys-code"
 VAULT = AI / "2-tools" / "4-keys-code.restic"
 
 
 def password(confirm=False):
-    pw = os.environ.get("BCI_KEYS_PASSWORD")
+    pw = os.environ.get("BCAI_KEYS_PASSWORD") or os.environ.get("BCI_KEYS_PASSWORD")
     if pw:
         return pw
     pw = getpass.getpass("Phrase secrète de 4-keys-code : ")
@@ -41,7 +41,7 @@ def password(confirm=False):
 def restic(pw, *args, cwd=None):
     exe = shutil.which("restic")
     if not exe:
-        sys.exit("restic introuvable : installez-le (bci install), puis relancez.")
+        sys.exit("restic introuvable : installez-le (bcai install), puis relancez.")
     return subprocess.run([exe, "-r", str(VAULT), *args], cwd=cwd, capture_output=True, text=True,
                           env={**os.environ, "RESTIC_PASSWORD": pw})
 
@@ -79,7 +79,7 @@ def open_():
     if r.returncode:
         shutil.rmtree(KEYS, ignore_errors=True)
         sys.exit(f"restic restore : {r.stderr.strip()[:300]}")
-    print(f"4-keys-code ouvert : {KEYS}  (refermer : bci keys close)")
+    print(f"4-keys-code ouvert : {KEYS}  (refermer : bcai keys close)")
 
 
 def status():

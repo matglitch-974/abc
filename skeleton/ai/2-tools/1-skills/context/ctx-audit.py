@@ -3,7 +3,7 @@
 
 ctx-audit.py            estimation (2,3 octets par token : calibré sur Claude, texte français, 2026-11-03)
 ctx-audit.py --exact    mesure réelle : une session `claude -p` par fichier, comparée à une session vide
-                        (consomme un peu de quota ; modèle : BCI_AUDIT_MODEL, haiku par défaut)
+                        (consomme un peu de quota ; modèle : BCAI_AUDIT_MODEL, haiku par défaut)
 
 Chargé à chaque session : ~/ai/AGENTS.md et ses imports @ (récursifs), memory/realign.md (réinjecté),
 la ligne description de chaque skill.
@@ -16,10 +16,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-AI = Path(os.environ.get("BCI_AI") or Path.home() / "ai")   # BCI_AI : autre racine (tests)
+AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or Path.home() / "ai")   # BCAI_AI : autre racine (tests)
 BYTES_PER_TOKEN = 2.3
 SECTION_LIMIT = 300  # tokens : au-delà, une section est candidate à devenir un skill
-MODEL = os.environ.get("BCI_AUDIT_MODEL", "haiku")
+MODEL = os.environ.get("BCAI_AUDIT_MODEL") or os.environ.get("BCI_AUDIT_MODEL") or "haiku"
 
 
 def imports(path, seen):

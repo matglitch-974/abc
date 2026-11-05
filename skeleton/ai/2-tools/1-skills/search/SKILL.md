@@ -27,7 +27,7 @@ python3 … start [--tor] | stop | status
 Trois niveaux, appliqués automatiquement à la création des réglages (jamais réécrite ensuite) :
 
 1. **FlareSolverr** (`http://localhost:8191`, si détecté) : proxy global qui résout les challenges Cloudflare/JS via navigateur headless. `SearxEngineCaptcha` abaissé à 60 s (au lieu de 3 600 s) quand actif.
-2. **Tor** (`--tor` / `BCI_TOR=1` / port 9050 ouvert) : proxy global `socks5h://127.0.0.1:9050` sur tous les moteurs clearnet + Ahmia/Torch pour le dark web. Augmente les CAPTCHA Google mais réduit les bans IP.
+2. **Tor** (`--tor` / `BCAI_TOR=1` / port 9050 ouvert) : proxy global `socks5h://127.0.0.1:9050` sur tous les moteurs clearnet + Ahmia/Torch pour le dark web. Augmente les CAPTCHA Google mais réduit les bans IP.
 3. **FlareSolverr + Tor simultanés** : FlareSolverr comme proxy global (clearnet), Tor pour Ahmia/Torch uniquement.
 
 Priorité : FlareSolverr > Tor. Les deux peuvent coexister.

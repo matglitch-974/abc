@@ -16,7 +16,7 @@ import tempfile
 import time
 from pathlib import Path
 
-AI = Path(os.environ.get("BCI_AI") or Path.home() / "ai")
+AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or Path.home() / "ai")
 SKILLS = AI / "2-tools" / "1-skills"
 LOG = AI / "2-tools" / "installed.md"
 TRASH = AI / "4-trash"

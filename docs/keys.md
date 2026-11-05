@@ -2,8 +2,8 @@
 
 Un seul endroit pour les secrets : clés SSH, jetons, clés d'API, identifiants d'outils, cookies. Règle de l'instance : un secret n'est **jamais copié hors de ce dossier** (ni dans un projet, ni dans la mémoire, ni dans un rapport).
 
-## Remplissage : `hooks/bci-import.py secrets`
-Lancé par l'installateur (`bci-import.py all`) et à la demande (`bci import secrets`). Tout est **copié** : les originaux restent en place et les outils continuent de fonctionner. Relancer ne crée pas de doublon.
+## Remplissage : `hooks/bcai-import.py secrets`
+Lancé par l'installateur (`bcai-import.py all`) et à la demande (`bcai import secrets`). Tout est **copié** : les originaux restent en place et les outils continuent de fonctionner. Relancer ne crée pas de doublon.
 
 | Dossier | Contenu |
 |---|---|
@@ -16,18 +16,18 @@ Lancé par l'installateur (`bci-import.py all`) et à la demande (`bci import se
 
 Droits restreints au propriétaire (700 / 600) hors Windows. L'import n'affiche que les **noms** des variables, jamais leurs valeurs.
 
-## Chiffrement : `hooks/bci-keys.py` (commande `bci keys`)
-Le chiffrement est facultatif ; il exige restic. `bci-keys.py` vérifie seulement que restic est présent, pas sa version ; le seuil 0.17 est contrôlé par `bci-backup.py` pour les sauvegardes. L'installateur le propose une fois (`BCI_ENCRYPT_KEYS=oui|non` évite la question).
+## Chiffrement : `hooks/bcai-keys.py` (commande `bcai keys`)
+Le chiffrement est facultatif ; il exige restic. `bcai-keys.py` vérifie seulement que restic est présent, pas sa version ; le seuil 0.17 est contrôlé par `bcai-backup.py` pour les sauvegardes. L'installateur le propose une fois (`BCAI_ENCRYPT_KEYS=oui|non` évite la question).
 
 | Commande | Effet |
 |---|---|
-| `bci keys close` | chiffre `4-keys-code` dans `4-keys-code.restic` ; vérifie que le nombre de fichiers chiffrés égale celui des fichiers en clair ; garde les 3 derniers instantanés ; puis efface la version en clair. Premier appel : crée le coffre, phrase secrète demandée deux fois |
-| `bci keys open` | déchiffre le dernier instantané dans `4-keys-code` |
-| `bci keys status` | `ouvert`, `fermé (chiffré)`, `non chiffré` ou `absent` |
+| `bcai keys close` | chiffre `4-keys-code` dans `4-keys-code.restic` ; vérifie que le nombre de fichiers chiffrés égale celui des fichiers en clair ; garde les 3 derniers instantanés ; puis efface la version en clair. Premier appel : crée le coffre, phrase secrète demandée deux fois |
+| `bcai keys open` | déchiffre le dernier instantané dans `4-keys-code` |
+| `bcai keys status` | `ouvert`, `fermé (chiffré)`, `non chiffré` ou `absent` |
 
-- Phrase secrète demandée au terminal, ou lue dans `BCI_KEYS_PASSWORD`. **Phrase oubliée = secrets perdus.**
+- Phrase secrète demandée au terminal, ou lue dans `BCAI_KEYS_PASSWORD`. **Phrase oubliée = secrets perdus.**
 - Si la sauvegarde ou la vérification échoue, rien n'est effacé.
-- Coffre fermé : `bci import secrets` ne réimporte rien (ouvrez-le d'abord).
+- Coffre fermé : `bcai import secrets` ne réimporte rien (ouvrez-le d'abord).
 - Coffre créé : la version en clair n'entre jamais dans les sauvegardes quotidiennes, seul le coffre chiffré y va.
 
 ## Protections

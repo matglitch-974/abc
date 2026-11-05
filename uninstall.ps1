@@ -1,5 +1,5 @@
-# Better Claude Instance — désinstallation Windows (PowerShell).
-#   irm https://raw.githubusercontent.com/matglitch-974/better-claude-instance/main/uninstall.ps1 | iex
+# BCAI — désinstallation Windows (PowerShell).
+#   irm https://raw.githubusercontent.com/matglitch-974/bcai/main/uninstall.ps1 | iex
 # Remet la configuration de Claude Code dans ~/.claude, retire les liens et réglages ajoutés,
 # puis demande avant de toucher à ~/ai et ~/project. Claude Code reste installé.
 $ErrorActionPreference = 'Stop'
@@ -9,7 +9,7 @@ function Confirm2($Warning, $Question, $Word) {   # deux confirmations : [o/N], 
   if ((Read-Host "Seconde confirmation : tapez « $Word »") -ne $Word) { Write-Host 'Annulé.'; return $false }
   return $true
 }
-if (-not (Confirm2 'ATTENTION : la désinstallation retire Better Claude Instance de Claude Code (réglages, hooks, liens, variable CLAUDE_CONFIG_DIR) et remet la configuration dans ~/.claude. Vos dossiers ~/ai et ~/project restent en place, sauf si vous demandez ensuite leur suppression.' 'Désinstaller Better Claude Instance ?' 'desinstaller')) { Write-Host "Rien n'a été modifié."; exit 0 }
+if (-not (Confirm2 'ATTENTION : la désinstallation retire BCAI de Claude Code (réglages, hooks, liens, variable CLAUDE_CONFIG_DIR) et remet la configuration dans ~/.claude. Vos dossiers ~/ai et ~/project restent en place, sauf si vous demandez ensuite leur suppression.' 'Désinstaller BCAI ?' 'desinstaller')) { Write-Host "Rien n'a été modifié."; exit 0 }
 $AI = Join-Path $HOME 'ai'
 $CC = Join-Path $AI '2-tools\3-software\claude-code'
 $CL = Join-Path $HOME '.claude'
@@ -26,12 +26,12 @@ if ((Test-Path $CC) -and -not (Test-Path $CL)) {
   if ((Test-Path $ClaudeMd) -and ((Get-Content $ClaudeMd -Raw) -match '@~/ai/AGENTS.md')) { Remove-Item $ClaudeMd }
   Move-Item $CC $CL; Write-Host "configuration remise : $CL"
   if ((Test-Path "$CL\.claude.json") -and -not (Test-Path "$HOME\.claude.json")) { Move-Item "$CL\.claude.json" "$HOME\.claude.json" }
-  Get-ChildItem $CL -Filter '*.bak-bci' -Force | ForEach-Object {
-    $orig = $_.FullName -replace '\.bak-bci$',''
+  Get-ChildItem $CL -Force | Where-Object { $_.Name -match '\.bak-bc(a)?i$' } | ForEach-Object {   # .bak-bci : d'avant BCAI
+    $orig = $_.FullName -replace '\.bak-bc(a)?i$',''
     if (-not (Test-Path $orig)) { Move-Item $_.FullName $orig; Write-Host "restauré : $orig" }
   }
 }
-Remove-Item "$HOME\.local\bin\bci.cmd" -ErrorAction SilentlyContinue
+Remove-Item "$HOME\.local\bin\bcai.cmd", "$HOME\.local\bin\bci.cmd" -ErrorAction SilentlyContinue   # bci : ancien nom
 [Environment]::SetEnvironmentVariable('CLAUDE_CONFIG_DIR', $null, 'User'); Remove-Item Env:CLAUDE_CONFIG_DIR -ErrorAction SilentlyContinue
 
 # 2. Réglages : retirer uniquement ce que l'installation a ajouté
@@ -45,7 +45,7 @@ if (Test-Path $S) {
   [IO.File]::WriteAllText($S, ($cfg | ConvertTo-Json -Depth 20)); Write-Host "réglages nettoyés : $S"
 }
 
-# Modèles Ollama rangés dans ~/ai par BCI : remis dans ~/.ollama/models avant toute suppression de ~/ai
+# Modèles Ollama rangés dans ~/ai par BCAI : remis dans ~/.ollama/models avant toute suppression de ~/ai
 $OM = [Environment]::GetEnvironmentVariable('OLLAMA_MODELS', 'User')
 if ($OM -and $OM.StartsWith($AI)) {
   New-Item -ItemType Directory -Force "$HOME\.ollama\models" | Out-Null
@@ -53,6 +53,6 @@ if ($OM -and $OM.StartsWith($AI)) {
   [Environment]::SetEnvironmentVariable('OLLAMA_MODELS', $null, 'User'); Write-Host 'modèles Ollama remis dans ~/.ollama/models'
 }
 
-if (Confirm2 'DANGER : supprimer ~/ai efface DÉFINITIVEMENT mémoire, personas, skills, corbeille ET toutes les sauvegardes (backup-bci). Aucune récupération possible.' 'Supprimer définitivement ~/ai ?' 'supprimer ai') { Remove-Item -Recurse -Force $AI; Write-Host '~/ai supprimé' }
+if (Confirm2 'DANGER : supprimer ~/ai efface DÉFINITIVEMENT mémoire, personas, skills, corbeille ET toutes les sauvegardes (backup-bcai). Aucune récupération possible.' 'Supprimer définitivement ~/ai ?' 'supprimer ai') { Remove-Item -Recurse -Force $AI; Write-Host '~/ai supprimé' }
 if (Confirm2 "DANGER : supprimer ~/project efface DÉFINITIVEMENT tous vos projets, y compris leurs dossiers sensible/ et ce qui n'a jamais été poussé sur GitHub." 'Supprimer définitivement ~/project ?' 'supprimer project') { Remove-Item -Recurse -Force (Join-Path $HOME 'project'); Write-Host '~/project supprimé' }
 Write-Host 'Désinstallation terminée. Claude Code lui-même reste installé. Ouvrez un nouveau terminal.'
