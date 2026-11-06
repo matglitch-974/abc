@@ -76,7 +76,7 @@ abc/
 ├── SETUP.md                     guide d'installation destiné à un agent Claude Code
 ├── VERSION                      version d'ABC (semver), reprise par abc version et les sauvegardes
 ├── ABC-install-<version>.sh, .ps1  installation Linux / Android, Windows (nom versionné)
-├── install.sh                   ancien nom (BCAI), renvoi pendant la version 0.4
+├── install.sh, install.ps1      anciens points d'entrée (BCAI), renvois vers l'installateur versionné
 ├── publish.sh                   publication : installateurs renommés, liens courts du dépôt Pages
 ├── uninstall.sh, uninstall.ps1  désinstallation
 ├── bootstrap.sh                 création de ~/ai et ~/project (Linux)
