@@ -31,7 +31,7 @@ done
 git -C "$SRC" add README.md SETUP.md docs
 
 # --- 2. Liens courts (GitHub Pages) -----------------------------------------------------------
-# .ps1 : une seule ligne, sans BOM (exécutée par irm | iex).
+# .ps1 : une seule ligne en ASCII pur, sans BOM (exécutée par irm | iex).
 ps1="irm $RAW/ABC-install-$V.ps1 | iex"
 sh_relay() {
   printf '#!/bin/sh\n# %s\ncurl -fsSL %s/ABC-install-%s.sh | sh\n' "$1" "$RAW" "$V"

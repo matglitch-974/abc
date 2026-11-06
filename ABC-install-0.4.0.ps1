@@ -1,11 +1,11 @@
-# ABC (Agents with a Better Context) — installation Windows 10 / 11 (PowerShell).
+# ABC (Agents with a Better Context) - installation Windows 10 / 11 (PowerShell).
 #   irm matglitch-974.github.io/abc.ps1 | iex
 #   (secours : irm https://raw.githubusercontent.com/matglitch-974/abc/main/ABC-install-<version>.ps1 | iex)
-# Fichier sans BOM : exécuté par irm | iex (un BOM casserait la première ligne).
+# Fichier en ASCII pur (sans BOM) : execute par irm | iex, lu de la meme facon par PowerShell 5.1 et 7.
 $ErrorActionPreference = 'Stop'
 $Repo   = 'https://github.com/matglitch-974/abc'
 $Branch = if ($env:ABC_BRANCH) { $env:ABC_BRANCH } elseif ($env:BCAI_BRANCH) { $env:BCAI_BRANCH } else { 'main' }   # BCAI_BRANCH : ancien nom
-# Nom de la commande de Claude Code : agent par défaut ; ABC_CLI=claude garde le nom d'origine.
+# Nom de la commande de Claude Code : agent par defaut ; ABC_CLI=claude garde le nom d'origine.
 $Cli    = if ($env:ABC_CLI) { $env:ABC_CLI } else { 'agent' }
 $AI     = Join-Path $HOME 'ai'
 $OLD    = Join-Path $HOME '.claude'
@@ -15,12 +15,13 @@ $OldDests = 'bcai','better-claude-instance' | ForEach-Object { Join-Path $AI "2-
 
 function Say($m) { Write-Host "`n==> $m" -ForegroundColor Cyan }
 function Refresh-Path { $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') + ";$HOME\.local\bin" }
-$HasWinget = [bool](Get-Command winget -ErrorAction SilentlyContinue)   # absent sur les Windows allégés
+$HasWinget = [bool](Get-Command winget.exe -CommandType Application -ErrorAction SilentlyContinue)   # absent sur les Windows alleges
+# Winget (fonction) appelle winget.exe : PowerShell ignore la casse, 'winget' rappellerait la fonction elle-meme.
 function Winget($id) {
   if (-not $HasWinget) { return $false }
-  winget install --id $id -e --source winget --accept-package-agreements --accept-source-agreements; Refresh-Path; return $true
+  & winget.exe install --id $id -e --source winget --accept-package-agreements --accept-source-agreements | Out-Host; Refresh-Path; return $true
 }
-# Python hors PATH (installé pour l'utilisateur seul, alias WindowsApps) : chercher aussi le lanceur py et les dossiers usuels.
+# Python hors PATH (installe pour l'utilisateur seul, alias WindowsApps) : chercher aussi le lanceur py et les dossiers usuels.
 function Find-Python {
   $c = Get-Command python -ErrorAction SilentlyContinue | Where-Object { $_.Source -notlike '*WindowsApps*' } | Select-Object -First 1
   if ($c) { return $c.Source }
@@ -37,7 +38,7 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
   if (-not (Winget 'Git.Git')) { Write-Error 'Git est requis et winget est absent : installez Git pour Windows (git-scm.com), puis relancez.' }
 }
 
-# --- uv (outils Python ; sert aussi à installer Python sans winget) -------------------
+# --- uv (outils Python ; sert aussi a installer Python sans winget) -------------------
 if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
   Say 'Installation de uv'
   if (-not (Winget 'astral-sh.uv')) { Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression; Refresh-Path }
@@ -58,9 +59,9 @@ if (-not (Get-Command claude -ErrorAction SilentlyContinue) -and -not (Test-Path
   Refresh-Path
 }
 
-# --- Commande agent : claude.exe renommé (Windows permet de renommer un exe en cours d'exécution) ------
-# Un claude.exe neuf (mise à jour, réinstallation) remplace l'agent.exe précédent, rangé dans 4-trash.
-# Un agent.exe qui n'est pas Claude Code (CLI de Cursor, par exemple) n'est jamais touché : claude reste.
+# --- Commande agent : claude.exe renomme (Windows permet de renommer un exe en cours d'execution) ------
+# Un claude.exe neuf (mise a jour, reinstallation) remplace l'agent.exe precedent, range dans 4-trash.
+# Un agent.exe qui n'est pas Claude Code (CLI de Cursor, par exemple) n'est jamais touche : claude reste.
 if ($Cli -ne 'claude' -and (Test-Path "$Native\claude.exe")) {
   $Target = "$Native\$Cli.exe"
   if ((Test-Path $Target) -and -not (Is-ClaudeCode $Target)) {
@@ -68,44 +69,44 @@ if ($Cli -ne 'claude' -and (Test-Path "$Native\claude.exe")) {
   } else {
     if (Test-Path $Target) {
       $Trash = Join-Path $AI '4-trash'; New-Item -ItemType Directory -Force $Trash | Out-Null
-      Move-Item $Target "$Trash\$Cli.exe_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')"; Write-Host "rangé    : ancien $Target -> 4-trash"
+      Move-Item $Target "$Trash\$Cli.exe_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')"; Write-Host "range    : ancien $Target -> 4-trash"
     }
     Rename-Item "$Native\claude.exe" "$Cli.exe"; Write-Host "commande : claude -> $Cli ($Target)"
   }
 }
 $Agent = (Get-Command $Cli, claude -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1).Source
 
-# --- Téléchargement ------------------------------------------------------------
-Say "Téléchargement d'ABC"
-# Installation d'avant ABC (bcai, ou better-claude-instance) : le dossier est renommé ; une jonction reste à
-# l'ancien emplacement pour les sessions ouvertes, qui appellent encore les hooks par là (retirée ensuite par
-# memory-hook.py). Dossier tenu par un programme : nouveau clone, l'ancien est rangé plus tard par le hook mémoire.
+# --- Telechargement ------------------------------------------------------------
+Say "Telechargement d'ABC"
+# Installation d'avant ABC (bcai, ou better-claude-instance) : le dossier est renomme ; une jonction reste a
+# l'ancien emplacement pour les sessions ouvertes, qui appellent encore les hooks par la (retiree ensuite par
+# memory-hook.py). Dossier tenu par un programme : nouveau clone, l'ancien est range plus tard par le hook memoire.
 foreach ($OldDest in $OldDests) {
   if ((Test-Path $OldDest) -and -not (Get-Item $OldDest -Force).LinkType -and -not (Test-Path $Dest)) {
-    try { [IO.Directory]::Move($OldDest, $Dest); Write-Host "renommé  : $OldDest -> $Dest" }
-    catch { Write-Host "en cache : $OldDest est encore utilisé ; nouveau clone dans $Dest" }
+    try { [IO.Directory]::Move($OldDest, $Dest); Write-Host "renomme  : $OldDest -> $Dest" }
+    catch { Write-Host "en cache : $OldDest est encore utilise ; nouveau clone dans $Dest" }
     if ((Test-Path $Dest) -and -not (Test-Path $OldDest)) {
       try { New-Item -ItemType Junction -Path $OldDest -Target $Dest | Out-Null } catch { Write-Warning "jonction $OldDest impossible : $_" }
     }
   }
 }
-if (Test-Path "$Dest\.git") { git -C $Dest remote set-url origin $Repo; git -C $Dest pull -q --ff-only }   # set-url : clone de l'ancien dépôt
+if (Test-Path "$Dest\.git") { git -C $Dest remote set-url origin $Repo; git -C $Dest pull -q --ff-only }   # set-url : clone de l'ancien depot
 else { New-Item -ItemType Directory -Force (Split-Path $Dest) | Out-Null; git clone -q --depth 1 -b $Branch $Repo $Dest }
 
 $Py = Find-Python
-if (-not $Py) { Write-Error 'Python introuvable après installation : installez Python 3 (python.org), puis relancez.' }
+if (-not $Py) { Write-Error 'Python introuvable apres installation : installez Python 3 (python.org), puis relancez.' }
 $Backup = Join-Path $Dest 'hooks\abc-backup.py'
 
 # --- Installation d'avant ABC (BCAI, BCI : dossiers, sauvegardes, commandes) : migration ---------------
-# Sauvegardes reprises, chemins de settings.json corrigés (copie d'abord dans backup-abc\reglages),
-# commandes et fichiers du skeleton mis à jour.
+# Sauvegardes reprises, chemins de settings.json corriges (copie d'abord dans backup-abc\reglages),
+# commandes et fichiers du skeleton mis a jour.
 & $Py (Join-Path $Dest 'hooks\abc-migrate.py')
 
-# --- Sauvegarde avant installation (première installation seulement, conservée à vie) ----
+# --- Sauvegarde avant installation (premiere installation seulement, conservee a vie) ----
 if ((Test-Path $AI) -or (Test-Path $OLD)) { & $Py $Backup install-avant }
 
-# --- Arborescence et fichiers de base (jamais écrasés) ---------------------------
-Say 'Création de ~/ai et ~/project'
+# --- Arborescence et fichiers de base (jamais ecrases) ---------------------------
+Say 'Creation de ~/ai et ~/project'
 '0-persona\system-agents','1-bench','2-tools\0-mcp','2-tools\1-skills','2-tools\2-plugins','2-tools\3-software\claude-code','2-tools\logs','3-llm','4-trash' |
   ForEach-Object { New-Item -ItemType Directory -Force (Join-Path $AI $_) | Out-Null }
 New-Item -ItemType Directory -Force (Join-Path $HOME 'project') | Out-Null
@@ -114,51 +115,51 @@ New-Item -ItemType Directory -Force (Join-Path $HOME 'project') | Out-Null
 $Skel = Join-Path $Dest 'skeleton'
 Get-ChildItem $Skel -Recurse -File | ForEach-Object {
   $dst = Join-Path $HOME $_.FullName.Substring($Skel.Length + 1)
-  if (Test-Path $dst) { Write-Host "conservé : $dst" }
-  else { New-Item -ItemType Directory -Force (Split-Path $dst) | Out-Null; Copy-Item $_.FullName $dst; Write-Host "créé     : $dst" }
+  if (Test-Path $dst) { Write-Host "conserve : $dst" }
+  else { New-Item -ItemType Directory -Force (Split-Path $dst) | Out-Null; Copy-Item $_.FullName $dst; Write-Host "cree     : $dst" }
 }
 
 # --- Import de l'existant (copies) : skills, secrets -> 2-tools\4-keys-code, autres LLM -> 3-llm ---
-Say "Import de l'existant (skills, clés et jetons, autres LLM)"
+Say "Import de l'existant (skills, cles et jetons, autres LLM)"
 & $Py (Join-Path $Dest 'hooks\abc-import.py') all
 
 # --- Configuration de Claude Code dans ~/ai (CLAUDE_CONFIG_DIR) ----------------------
 [Environment]::SetEnvironmentVariable('CLAUDE_CONFIG_DIR', $CC, 'User'); $env:CLAUDE_CONFIG_DIR = $CC
 $Stamp = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
-# Migration par copie : une session Claude ouverte garde des fichiers de ~/.claude verrouillés.
-# Les fichiers illisibles sont sautés (ce ne sont que des caches de session) ; l'original est ensuite
-# rangé dans 4-trash. S'il est encore tenu, il reste en cache temporaire jusqu'au prochain démarrage
-# d'une session ABC (memory-hook.py) ou au prochain `abc install`, qui le rangent à leur tour.
+# Migration par copie : une session Claude ouverte garde des fichiers de ~/.claude verrouilles.
+# Les fichiers illisibles sont sautes (ce ne sont que des caches de session) ; l'original est ensuite
+# range dans 4-trash. S'il est encore tenu, il reste en cache temporaire jusqu'au prochain demarrage
+# d'une session ABC (memory-hook.py) ou au prochain `abc install`, qui le rangent a leur tour.
 function Copy-Soft($from, $to) {
   if (Test-Path $to) { return }
   Copy-Item $from $to -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
-  if ($err) { Write-Host "sauté    : $($err.Count) fichier(s) en cours d'utilisation dans $from" }
+  if ($err) { Write-Host "saute    : $($err.Count) fichier(s) en cours d'utilisation dans $from" }
 }
 function Retire($p, $label) {
   if (-not (Test-Path $p)) { return }
-  # Renommage atomique : Move-Item copierait puis supprimerait élément par élément (déplacement partiel).
+  # Renommage atomique : Move-Item copierait puis supprimerait element par element (deplacement partiel).
   $dst = "$AI\4-trash\$label`_$Stamp"
-  try { if (Test-Path $p -PathType Container) { [IO.Directory]::Move($p, $dst) } else { [IO.File]::Move($p, $dst) }; Write-Host "rangé    : $p -> 4-trash" }
-  catch { Write-Host "en cache : $p est encore utilisé par une session ouverte ; rangé au prochain démarrage d'ABC" }
+  try { if (Test-Path $p -PathType Container) { [IO.Directory]::Move($p, $dst) } else { [IO.File]::Move($p, $dst) }; Write-Host "range    : $p -> 4-trash" }
+  catch { Write-Host "en cache : $p est encore utilise par une session ouverte ; range au prochain demarrage d'ABC" }
 }
 if ((Test-Path $OLD) -and -not (Get-Item $OLD -Force).LinkType) {
   Get-ChildItem $OLD -Force | ForEach-Object {
-    $item = $_; $n = $item.Name; $f = $item.FullName           # dans switch, $_ désigne la valeur testée
-    if ($item.LinkType) { return }                               # anciens liens ABC : recréés plus bas
+    $item = $_; $n = $item.Name; $f = $item.FullName           # dans switch, $_ designe la valeur testee
+    if ($item.LinkType) { return }                               # anciens liens ABC : recrees plus bas
     switch ($n) {
       'plugins' { if (-not (Get-ChildItem "$AI\2-tools\2-plugins" -Force)) { Remove-Item "$AI\2-tools\2-plugins"; Copy-Soft $f "$AI\2-tools\2-plugins" } else { Copy-Soft $f "$CC\plugins.bak-abc" } }
       { $_ -in 'CLAUDE.md','skills' } { Copy-Soft $f "$CC\$n.bak-abc" }
       default { Copy-Soft $f "$CC\$n" }
     }
   }
-  Write-Host "migré    : ~/.claude -> $CC"
+  Write-Host "migre    : ~/.claude -> $CC"
   Retire $OLD 'claude-ancien'
-  # Sessions Claude encore ouvertes (hors ABC) : leur laisser les identifiants, sinon elles sont déconnectées.
-  # Ce reliquat est rangé par memory-hook.py dès qu'aucune autre session ne tourne.
+  # Sessions Claude encore ouvertes (hors ABC) : leur laisser les identifiants, sinon elles sont deconnectees.
+  # Ce reliquat est range par memory-hook.py des qu'aucune autre session ne tourne.
   $Cred = "$AI\4-trash\claude-ancien_$Stamp\.credentials.json"
   if (-not (Test-Path $OLD) -and (Test-Path $Cred) -and (Get-Process agent, claude -ErrorAction SilentlyContinue)) {
     New-Item -ItemType Directory -Force $OLD | Out-Null; Copy-Item $Cred "$OLD\.credentials.json"
-    Write-Host "gardé    : ~/.claude/.credentials.json (sessions Claude ouvertes ; rangé quand elles seront fermées)"
+    Write-Host "garde    : ~/.claude/.credentials.json (sessions Claude ouvertes ; range quand elles seront fermees)"
   }
 }
 $OldJson = Join-Path $HOME '.claude.json'
@@ -167,11 +168,11 @@ if (Test-Path $OldJson) { Copy-Soft $OldJson "$CC\.claude.json"; Retire $OldJson
 # Windows : les liens symboliques de fichiers exigent des droits admin.
 # CLAUDE.md importe donc AGENTS.md ; settings.json reste un vrai fichier dans $CC ; les dossiers sont des jonctions.
 New-Item -ItemType Directory -Force "$CC\agents" | Out-Null
-function Backup($p) {   # une copie .bak-abc existante n'est jamais écrasée : suffixe daté, puis -N
+function Backup($p) {   # une copie .bak-abc existante n'est jamais ecrasee : suffixe date, puis -N
   if (-not (Test-Path $p) -or (Get-Item $p -Force).LinkType) { return }
   $b = "$p.bak-abc"; $i = 1
   if (Test-Path -LiteralPath $b) { $b = "$p.bak-abc-$Stamp"; while (Test-Path -LiteralPath $b) { $b = "$p.bak-abc-$Stamp-$i"; $i++ } }
-  Move-Item -LiteralPath $p $b -Force; Write-Host "sauvegardé : $b"
+  Move-Item -LiteralPath $p $b -Force; Write-Host "sauvegarde : $b"
 }
 $ClaudeMd = "$CC\CLAUDE.md"
 if (-not ((Test-Path $ClaudeMd) -and ((Get-Content $ClaudeMd -Raw) -match '@~/ai/AGENTS.md'))) {
@@ -179,15 +180,15 @@ if (-not ((Test-Path $ClaudeMd) -and ((Get-Content $ClaudeMd -Raw) -match '@~/ai
 }
 # agents\0-persona expose toutes les personas comme sous-agents ; l'ancien lien agents\system-agents ferait doublon.
 $OldAg = "$CC\agents\system-agents"
-if ((Test-Path $OldAg) -and (Get-Item $OldAg -Force).LinkType) { (Get-Item $OldAg -Force).Delete(); Write-Host "retiré   : $OldAg (remplacé par agents\0-persona)" }
+if ((Test-Path $OldAg) -and (Get-Item $OldAg -Force).LinkType) { (Get-Item $OldAg -Force).Delete(); Write-Host "retire   : $OldAg (remplace par agents\0-persona)" }
 foreach ($pair in @(@("$CC\skills", "$AI\2-tools\1-skills"), @("$CC\plugins", "$AI\2-tools\2-plugins"), @("$CC\agents\0-persona", "$AI\0-persona"))) {
   $link, $target = $pair
   if ((Test-Path $link) -and (Get-Item $link -Force).LinkType) { (Get-Item $link -Force).Delete() } else { Backup $link }
   New-Item -ItemType Junction -Path $link -Target $target | Out-Null; Write-Host "lien     : $link -> $target"
 }
 
-# --- settings.json : agents intégrés désactivés + hooks sensible/ et mémoire -----
-# bash de Git : remonter depuis git.exe (cmd\, bin\ ou mingw64\bin\ selon le PATH) jusqu'à la racine de Git
+# --- settings.json : agents integres desactives + hooks sensible/ et memoire -----
+# bash de Git : remonter depuis git.exe (cmd\, bin\ ou mingw64\bin\ selon le PATH) jusqu'a la racine de Git
 $Bash = $null; $d = Split-Path (Get-Command git).Source
 while ($d -and -not $Bash) { if (Test-Path "$d\bin\bash.exe") { $Bash = "$d\bin\bash.exe" } else { $d = Split-Path $d } }
 if (-not $Bash) { Write-Warning 'bash de Git introuvable : hook guard-sensible inactif'; $Bash = 'bash' }
@@ -210,22 +211,22 @@ $mem = [pscustomobject]@{ type = 'command'; command = $MemCmd }
 foreach ($ev in 'SessionStart','UserPromptSubmit','PreToolUse','PostToolUse','PreCompact','Stop','SessionEnd') {
   $list = @(@($cfg.hooks.$ev) | Where-Object { $_ -and -not ($_.hooks[0].command -like '*memory-hook*') })
   $entry = if ($ev -eq 'PostToolUse') { [pscustomobject]@{ matcher = 'Write|Edit|MultiEdit|NotebookEdit'; hooks = @($mem) } }
-           elseif ($ev -eq 'PreToolUse') { [pscustomobject]@{ matcher = 'Read|Write|Edit|MultiEdit|NotebookEdit|Glob|Grep|Bash'; hooks = @($mem) } }   # cloison des agents isolés
+           elseif ($ev -eq 'PreToolUse') { [pscustomobject]@{ matcher = 'Read|Write|Edit|MultiEdit|NotebookEdit|Glob|Grep|Bash'; hooks = @($mem) } }   # cloison des agents isoles
            else { [pscustomobject]@{ hooks = @($mem) } }
   $cfg.hooks | Add-Member $ev @($list + $entry) -Force
 }
 $Json = $cfg | ConvertTo-Json -Depth 20
-if ((Test-Path $S) -and ([IO.File]::ReadAllText($S) -cne $Json)) {   # copie datée avant toute écriture
+if ((Test-Path $S) -and ([IO.File]::ReadAllText($S) -cne $Json)) {   # copie datee avant toute ecriture
   $Keep = "$AI\2-tools\logs\backup-abc\reglages"
   New-Item -ItemType Directory -Force $Keep | Out-Null; Copy-Item $S "$Keep\settings.json_$Stamp"
 }
 [IO.File]::WriteAllText($S, $Json)   # UTF-8 sans BOM
-Write-Host "réglages : $S"
+Write-Host "reglages : $S"
 
-# --- Outils : restic, recherche web (SearXNG local, sans clé) ; non bloquants
+# --- Outils : restic, recherche web (SearXNG local, sans cle) ; non bloquants
 Say 'Outils de recherche web et de sauvegarde'
-# Section non bloquante : en mode Stop, PowerShell 5.1 change le stderr redirigé d'un programme
-# (« No MCP server named … ») en erreur fatale. Les échecs sont signalés par $LASTEXITCODE.
+# Section non bloquante : en mode Stop, PowerShell 5.1 change le stderr redirige d'un programme
+# ('No MCP server named ...') en erreur fatale. Les echecs sont signales par $LASTEXITCODE.
 $ErrorActionPreference = 'Continue'
 if (-not (Get-Command restic -ErrorAction SilentlyContinue) -and -not (Winget 'restic.restic')) {
   # sans winget : binaire officiel depuis les releases GitHub, dans ~/.local/bin
@@ -237,15 +238,15 @@ if (-not (Get-Command restic -ErrorAction SilentlyContinue) -and -not (Winget 'r
     New-Item -ItemType Directory -Force "$HOME\.local\bin" | Out-Null
     Move-Item (Get-ChildItem "$tmp\restic*.exe" | Select-Object -First 1).FullName "$HOME\.local\bin\restic.exe" -Force
     Remove-Item $zip, $tmp -Recurse -Force; Refresh-Path
-  } catch { Write-Warning "restic non installé (sauvegardes en tar.xz, pas de coffre chiffré) : $_" }
+  } catch { Write-Warning "restic non installe (sauvegardes en tar.xz, pas de coffre chiffre) : $_" }
 }
-if (-not (Get-Command npx -ErrorAction SilentlyContinue) -and -not (Winget 'OpenJS.NodeJS.LTS')) { Write-Warning 'Node.js absent et winget indisponible : MCP searxng et playwright non installés (nodejs.org)' }
+if (-not (Get-Command npx -ErrorAction SilentlyContinue) -and -not (Winget 'OpenJS.NodeJS.LTS')) { Write-Warning 'Node.js absent et winget indisponible : MCP searxng et playwright non installes (nodejs.org)' }
 $env:Path = "$HOME\.local\bin;$env:Path"
 $SXD = "$AI\2-tools\3-software\searxng"
 if (Get-Command uv -ErrorAction SilentlyContinue) {
-  # Le dépôt contient 4 gabarits dont le nom porte « : » (utils/templates), refusés par Git sous Windows :
-  # protectNTFS levé pour ce dépôt seul ; ces fichiers ne sont pas écrits (inutiles en local).
-  # Un clone cassé par l'ancienne méthode (sans requirements.txt) part dans 4-trash et est refait.
+  # Le depot contient 4 gabarits dont le nom porte ':' (utils/templates), refuses par Git sous Windows :
+  # protectNTFS leve pour ce depot seul ; ces fichiers ne sont pas ecrits (inutiles en local).
+  # Un clone casse par l'ancienne methode (sans requirements.txt) part dans 4-trash et est refait.
   if ((Test-Path $SXD) -and -not (Test-Path "$SXD\requirements.txt")) { Move-Item $SXD "$AI\4-trash\searxng-casse_$Stamp" }
   if (Test-Path "$SXD\.git") { git -C $SXD -c core.protectNTFS=false pull -q --ff-only }
   else { git -c core.protectNTFS=false clone -q --depth 1 https://github.com/searxng/searxng.git $SXD; git -C $SXD config core.protectNTFS false }
@@ -253,46 +254,46 @@ if (Get-Command uv -ErrorAction SilentlyContinue) {
   $env:VIRTUAL_ENV = "$SXD\.venv"
   uv pip install -q setuptools wheel -r "$SXD\requirements.txt"
   if ($LASTEXITCODE -eq 0) { uv pip install -q --no-build-isolation -e $SXD }
-  if ($LASTEXITCODE -ne 0) { Write-Warning 'SearXNG non installé (recherche web indisponible)' }
+  if ($LASTEXITCODE -ne 0) { Write-Warning 'SearXNG non installe (recherche web indisponible)' }
   Remove-Item Env:VIRTUAL_ENV
 }
 if ($Agent) {
-  foreach ($old in 'duckduckgo','brave') { & $Agent mcp remove -s user $old *> $null }   # remplacés par SearXNG
+  foreach ($old in 'duckduckgo','brave') { & $Agent mcp remove -s user $old *> $null }   # remplaces par SearXNG
   & $Agent mcp get searxng *> $null
-  if ($LASTEXITCODE -ne 0) { & $Agent mcp add -s user searxng -e 'SEARXNG_URL=http://127.0.0.1:8888' -- npx -y mcp-searxng; if ($LASTEXITCODE -ne 0) { Write-Warning 'MCP searxng non installé' } }
+  if ($LASTEXITCODE -ne 0) { & $Agent mcp add -s user searxng -e 'SEARXNG_URL=http://127.0.0.1:8888' -- npx -y mcp-searxng; if ($LASTEXITCODE -ne 0) { Write-Warning 'MCP searxng non installe' } }
   foreach ($m in @(@('fetch','uvx','mcp-server-fetch'), @('playwright','npx','-y','@playwright/mcp@latest'))) {
     & $Agent mcp get $m[0] *> $null
-    if ($LASTEXITCODE -ne 0) { & $Agent mcp add -s user $m[0] -- @($m[1..($m.Count-1)]); if ($LASTEXITCODE -ne 0) { Write-Warning "MCP $($m[0]) non installé" } }
+    if ($LASTEXITCODE -ne 0) { & $Agent mcp add -s user $m[0] -- @($m[1..($m.Count-1)]); if ($LASTEXITCODE -ne 0) { Write-Warning "MCP $($m[0]) non installe" } }
   }
 }
 if ((Get-Command uv -ErrorAction SilentlyContinue) -and -not (Get-Command scrapling -ErrorAction SilentlyContinue)) {
-  uv tool install -q 'scrapling[ai,fetchers]'; if ($LASTEXITCODE -eq 0) { scrapling install } else { Write-Warning 'Scrapling non installé' }
+  uv tool install -q 'scrapling[ai,fetchers]'; if ($LASTEXITCODE -eq 0) { scrapling install } else { Write-Warning 'Scrapling non installe' }
 }
 if ($Agent -and (Get-Command scrapling -ErrorAction SilentlyContinue)) {
   & $Agent mcp get scrapling *> $null; if ($LASTEXITCODE -ne 0) { & $Agent mcp add -s user scrapling -- scrapling mcp }
 }
 if ((Get-Command uv -ErrorAction SilentlyContinue) -and -not (Get-Command crwl -ErrorAction SilentlyContinue)) {
-  uv tool install -q crawl4ai; if ($LASTEXITCODE -eq 0) { crawl4ai-setup } else { Write-Warning 'Crawl4AI non installé' }
+  uv tool install -q crawl4ai; if ($LASTEXITCODE -eq 0) { crawl4ai-setup } else { Write-Warning 'Crawl4AI non installe' }
 }
 
-# --- Commande abc (dans ~/.local/bin, ajouté au PATH utilisateur si absent) ---------------
+# --- Commande abc (dans ~/.local/bin, ajoute au PATH utilisateur si absent) ---------------
 $Bin = "$HOME\.local\bin"
 New-Item -ItemType Directory -Force $Bin | Out-Null
 Copy-Item "$Dest\bin\abc.cmd" "$Bin\abc.cmd" -Force
-# bcai : ancien nom, devenu un renvoi vers abc, posé par abc-migrate.py là où bcai était installée
-# (il disparaîtra à la version suivante) ; bci, plus ancien encore, part dans 4-trash.
+# bcai : ancien nom, devenu un renvoi vers abc, pose par abc-migrate.py la ou bcai etait installee
+# (il disparaitra a la version suivante) ; bci, plus ancien encore, part dans 4-trash.
 $UserPath = [Environment]::GetEnvironmentVariable('Path','User')
-if (($UserPath -split ';') -notcontains $Bin) {   # PATH utilisateur vide : pas de « ; » initial
+if (($UserPath -split ';') -notcontains $Bin) {   # PATH utilisateur vide : pas de ';' initial
   [Environment]::SetEnvironmentVariable('Path', ((@($UserPath -split ';') + $Bin | Where-Object { $_ }) -join ';'), 'User')
 }
 
-# --- Sauvegarde après installation ---------------------------------------------------
-# --- Chiffrement de 4-keys-code (au choix ; ABC_ENCRYPT_KEYS=oui|non évite la question) ------
+# --- Sauvegarde apres installation ---------------------------------------------------
+# --- Chiffrement de 4-keys-code (au choix ; ABC_ENCRYPT_KEYS=oui|non evite la question) ------
 $Keys = Join-Path $Dest 'hooks\abc-keys.py'
 if ((Test-Path "$AI\2-tools\4-keys-code") -and -not (Test-Path "$AI\2-tools\4-keys-code.restic\config") -and (Get-Command restic -ErrorAction SilentlyContinue)) {
-  $ans = if ($env:ABC_ENCRYPT_KEYS) { $env:ABC_ENCRYPT_KEYS } elseif ($env:BCAI_ENCRYPT_KEYS) { $env:BCAI_ENCRYPT_KEYS } else { Read-Host "Chiffrer ~/ai/2-tools/4-keys-code (clés SSH, jetons, cookies) avec une phrase secrète ? [o/N]" }
+  $ans = if ($env:ABC_ENCRYPT_KEYS) { $env:ABC_ENCRYPT_KEYS } elseif ($env:BCAI_ENCRYPT_KEYS) { $env:BCAI_ENCRYPT_KEYS } else { Read-Host "Chiffrer ~/ai/2-tools/4-keys-code (cles SSH, jetons, cookies) avec une phrase secrete ? [o/N]" }
   if ($ans -match '^(o|oui|y|yes)$') { & $Py $Keys close }
 }
 
 & $Py $Backup install-apres
-Say "Terminé. Ouvrez un nouveau terminal, puis tapez : $Cli   (Claude Code ; mises à jour : abc install)"
+Say "Termine. Ouvrez un nouveau terminal, puis tapez : $Cli   (Claude Code ; mises a jour : abc install)"
