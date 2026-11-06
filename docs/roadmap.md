@@ -25,13 +25,13 @@ Dictée vocale instantanée dans l'esprit de Wispr Flow : parler, et le texte pr
 - **Interface** : ultra minimaliste, en terminal ; au plus un indicateur d'enregistrement.
 - **Chaîne** : micro → transcription locale → nettoyage (ponctuation, hésitations, mise en forme) → presse-papiers ou saisie directe.
 - **Transcription** : modèle local obligatoire, l'API Claude n'acceptant pas l'audio en entrée (vérifié, novembre 2026). Candidats à évaluer : whisper.cpp, faster-whisper, ou un modèle local de voix plus récent.
-- **Nettoyage** : Haiku 5.5 via `claude -p` (abonnement, sans clé), ou modèle local pour un fonctionnement hors ligne.
+- **Nettoyage** : Haiku 5.5 via `agent -p` (abonnement, sans clé), ou modèle local pour un fonctionnement hors ligne.
 - **Plateformes** : Linux (X11 et Wayland diffèrent pour le raccourci global et la saisie), Windows ; Android/Termux à évaluer (micro via Termux:API).
 - **Mesures d'acceptation** : latence entre fin de parole et texte inséré, taux d'erreur sur le français, consommation de quota par dictée.
 
 ## Fait
 - **Retrait du prompt système de comportement d'Anthropic** (novembre 2026), par tweakcc 4.4.0 : [`patch/tri-prompts.tsv`](../patch/tri-prompts.tsv) classe chaque fragment (RETIRER, GARDER, DOUTE gardé) ; seuls ton, style, rédaction, « doing tasks », proactivité et agents intégrés refusés sont vidés, outils, mécanique du harnais et sécurité restent intacts.
-- Rejouer après une mise à jour de Claude Code : `node patch/apply-prompt-patch.mjs` (vide les fragments RETIRER en gardant l'en-tête tweakcc, puis `npx tweakcc@4.4.0 --apply --yes`) ; claude.exe ne doit pas être en cours d'exécution.
+- Rejouer après une mise à jour de Claude Code : `node patch/apply-prompt-patch.mjs` (vide les fragments RETIRER en gardant l'en-tête tweakcc, puis `npx tweakcc@4.4.0 --apply --yes`) ; le binaire (`agent.exe`) ne doit pas être en cours d'exécution. Le script donne à tweakcc le chemin de `agent` (`TWEAKCC_CC_INSTALLATION_PATH`), qu'il ne trouverait pas seul.
 
 ## Pistes évoquées, non retenues
 - **Installation par npm** : dépréciée par Anthropic (voir [installation.md](installation.md)).

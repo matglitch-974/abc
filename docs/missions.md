@@ -6,7 +6,7 @@ La méthode est dans `AGENTS.md` parce qu'elle s'applique en permanence ; le ski
 Inspiré de Dr. Stone : partir de l'objectif, remonter jusqu'aux prérequis élémentaires, puis gravir l'arbre palier par palier.
 
 1. **Reconnaissance** par un sous-agent `slave` : `tool-scan.py local` inventorie skills, MCP, plugins et agents installés ; `tool-scan.py online` interroge le registre officiel MCP (`registry.modelcontextprotocol.io`) et GitHub (étoiles, licence, dernière mise à jour, archivage). Le sous-agent complète par une recherche web (forums, comparatifs).
-2. **Installation automatique** des outils retenus par `tool-install.py` (`claude mcp add -s user`, ou copie d'un dossier contenant `SKILL.md`). Chaque installation est journalisée dans `~/ai/2-tools/installed.md` et réversible (`tool-install.py remove <nom>`). Exclus d'office : outils exigeant une clé ou un compte, dépôts archivés.
+2. **Installation automatique** des outils retenus par `tool-install.py` (`agent mcp add -s user`, ou copie d'un dossier contenant `SKILL.md`). Chaque installation est journalisée dans `~/ai/2-tools/installed.md` et réversible (`tool-install.py remove <nom>`). Exclus d'office : outils exigeant une clé ou un compte, dépôts archivés.
 3. **Décomposition** en tâches atomiques, de la plus simple à la plus complexe, prérequis d'abord.
 4. **Carte `PLAN.md`** : une tâche par ligne (`T3 [ ] tâche | <- T1,T2 | @outil | ok: preuve`), sans prose.
 
@@ -18,7 +18,7 @@ Inspiré de Dr. Stone : partir de l'objectif, remonter jusqu'aux prérequis él�
 - **Format de `PLAN.md`** : choisi pour être relu par un LLM au moindre coût (identifiants courts, dépendances `<-`, états `[ ] [~] [x] [!]`), y compris après une compaction.
 
 ## Recherche web (skill `scraping`)
-Installés par `bootstrap.sh` / `install.ps1` ; tous gratuits et sans clé :
+Installés par `bootstrap.sh` / `ABC-install-<version>.ps1` ; tous gratuits et sans clé :
 
 | Outil | Licence | Rôle |
 |---|---|---|
@@ -52,7 +52,7 @@ Trois niveaux configurables à la création de `searxng-settings.yml` (jamais r�
 | Niveau | Prérequis | Effet |
 |--------|-----------|-------|
 | **FlareSolverr** | port 8191 ouvert | proxy global `http://localhost:8191` ; résout Cloudflare/JS via navigateur headless ; `SearxEngineCaptcha` → 60 s |
-| **Tor** | `--tor` / `BCAI_TOR=1` / port 9050 | proxy global `socks5h://127.0.0.1:9050` ; réduit les bans IP ; augmente les CAPTCHA Google |
+| **Tor** | `--tor` / `ABC_TOR=1` / port 9050 | proxy global `socks5h://127.0.0.1:9050` ; réduit les bans IP ; augmente les CAPTCHA Google |
 | **FlareSolverr + Tor** | les deux | FlareSolverr sur le clearnet, Tor pour Ahmia/Torch uniquement |
 
 `suspended_times` injectés par défaut dans les réglages générés :

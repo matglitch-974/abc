@@ -1,4 +1,4 @@
-# AGENTS.md — dépôt bcai
+# AGENTS.md — dépôt abc
 
 Ce dépôt installe et documente une instance organisée de Claude Code.
 

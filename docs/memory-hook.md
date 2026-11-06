@@ -1,6 +1,6 @@
 # Hook mémoire (`hooks/memory-hook.py`)
 
-Un automate sans LLM, branché sur les événements de Claude Code par l'installateur (`settings.json`, section `hooks`). Il tient le journal, le sommaire des tâches, la sauvegarde quotidienne, le persona de la session, la cloison des agents isolés, range l'ancien `~/.claude` et achève la migration d'une installation d'avant BCAI.
+Un automate sans LLM, branché sur les événements de Claude Code par l'installateur (`settings.json`, section `hooks`). Il tient le journal, le sommaire des tâches, la sauvegarde quotidienne, le persona de la session, la cloison des agents isolés, range l'ancien `~/.claude` et achève la migration d'une installation d'avant ABC.
 
 Il ne bloque jamais Claude Code : toute erreur est consignée dans le journal (`[hook] erreur : …`) et le code de sortie reste 0. Seule exception voulue : un accès refusé par la cloison des agents isolés (code 2, voir plus bas).
 
@@ -8,8 +8,8 @@ Il ne bloque jamais Claude Code : toute erreur est consignée dans le journal (`
 
 | Événement | Ce que fait le hook |
 |---|---|
-| `SessionStart` | journal (`session démarrée (<source>)`) ; section Projets de `TODO.md` refaite. Au lancement (`startup`) : migration depuis BCI s'il en reste une trace, sauvegarde quotidienne lancée en arrière-plan, rangement de l'ancien `~/.claude`, rappel injecté (« reconnaissance des outils, skill `mission` »). Après compaction (`compact`) : `realign.md` et le persona réinjectés |
-| `UserPromptSubmit` | premier message : choix du persona (`@nom`) ; journal (200 premiers caractères du message) ; tous les `BCAI_REALIGN_EVERY` messages (10 par défaut, 0 = jamais) : `realign.md` réinjecté |
+| `SessionStart` | journal (`session démarrée (<source>)`) ; section Projets de `TODO.md` refaite. Au lancement (`startup`) : migration depuis un ancien nom (BCAI, BCI) s'il en reste une trace, sauvegarde quotidienne lancée en arrière-plan, rangement de l'ancien `~/.claude`, rappel injecté (« reconnaissance des outils, skill `mission` »). Après compaction (`compact`) : `realign.md` et le persona réinjectés |
+| `UserPromptSubmit` | premier message : choix du persona (`@nom`) ; journal (200 premiers caractères du message) ; tous les `ABC_REALIGN_EVERY` messages (10 par défaut, 0 = jamais) : `realign.md` réinjecté |
 | `PreToolUse` (Read, Write, Edit, MultiEdit, NotebookEdit, Glob, Grep, Bash) | cloison des agents isolés |
 | `PostToolUse` (Write, Edit, MultiEdit, NotebookEdit) | journal du fichier modifié |
 | `PreCompact` | journal (`compaction (<déclencheur>)`) |
@@ -27,7 +27,7 @@ Chaque ligne du journal porte l'heure et les 8 premiers caractères de l'identif
 À la main : `python3 hooks/memory-hook.py todo`.
 
 ## Sauvegarde quotidienne
-Au lancement d'une session, le hook démarre `hooks/bcai-backup.py quotidienne --if-needed` dans un processus détaché : la session n'attend pas, et rien ne se passe si la sauvegarde du jour existe déjà. Détail des sauvegardes : [memory.md](memory.md#sauvegardes-hooksbcai-backuppy).
+Au lancement d'une session, le hook démarre `hooks/abc-backup.py quotidienne --if-needed` dans un processus détaché : la session n'attend pas, et rien ne se passe si la sauvegarde du jour existe déjà. Détail des sauvegardes : [memory.md](memory.md#sauvegardes-hooksabc-backuppy).
 
 ## Persona de la session
 Au premier message, `@<nom>` en tête choisit le persona : le hook cherche dans `~/ai/0-persona/` (sous-dossiers compris) un fichier dont le nom, avec ou sans extension, vaut `<nom>`. Sans `@`, ou si le nom est introuvable, c'est `slave` (avec une note dans le second cas). Le texte du persona, sans son en-tête, est injecté dans le contexte, puis réinjecté après chaque compaction. Le choix est gardé dans `~/ai/memory/.state/<session>.persona`.
@@ -41,21 +41,21 @@ Un persona dont l'en-tête porte `isolated: true` ouvre une session cloisonnée 
 Limites : `AGENTS.md` et la mémoire importée sont chargés au démarrage, avant le choix du persona ; la consigne d'isolement demande de les ignorer. Le filtre examine le texte des paramètres de l'outil : il n'est pas une barrière absolue, et il refuse aussi l'écriture d'un fichier qui ne fait que citer le chemin complet de ce dossier.
 
 ## Rangement de `~/.claude`
-Une session Claude Code ouverte pendant l'installation garde l'ancienne configuration et peut recréer `~/.claude` ou `~/.claude.json`. Au lancement de chaque session BCAI (seulement si `CLAUDE_CONFIG_DIR` vaut `~/ai/2-tools/3-software/claude-code`), le hook :
-1. compte les autres processus `claude` (`tasklist` sous Windows, `pgrep` ailleurs ; en cas d'échec, il suppose qu'il y en a) ;
+Une session Claude Code ouverte pendant l'installation garde l'ancienne configuration et peut recréer `~/.claude` ou `~/.claude.json`. Au lancement de chaque session ABC (seulement si `CLAUDE_CONFIG_DIR` vaut `~/ai/2-tools/3-software/claude-code`), le hook :
+1. compte les autres processus de Claude Code, `agent` et `claude` (`tasklist` sous Windows, `pgrep` ailleurs ; en cas d'échec, il suppose qu'il y en a) ;
 2. si `~/.claude` ne contient plus que `.credentials.json` et que d'autres sessions tournent, le laisse : ce sont leurs identifiants ;
 3. sinon, déplace `~/.claude` et `~/.claude.json` dans `~/ai/4-trash/` sous les noms `claude-ancien_<date>` et `claude.json-ancien_<date>` (suffixe `-1`, `-2`… si le nom existe déjà) ;
 4. si d'autres sessions tournent, recopie `.credentials.json` dans un `~/.claude` neuf pour ne pas les déconnecter.
 
 Un dossier encore verrouillé est laissé en place : nouvel essai au lancement suivant. Ce qui a été rangé est noté dans le journal.
 
-## Migration depuis BCI
-Au lancement, s'il reste `~/ai/2-tools/3-software/better-claude-instance` (dossier ou lien) ou `~/ai/2-tools/logs/backup-bci`, le hook lance `hooks/bcai-migrate.py` (étapes détaillées dans [installation.md](installation.md#mise-à-jour-dune-installation-bci)), puis retire l'ancien emplacement à trois conditions : les réglages ne le citaient déjà plus au démarrage de cette session (sinon cette session et celles démarrées avec ces réglages l'utilisent encore : un hook `PreToolUse` introuvable fait sortir Python avec le code 2, qui bloque l'outil), aucune autre session `claude` ne tourne (même comptage que ci-dessous), et le lien a plus de 24 h (marge pour une session que ce comptage ne verrait pas). Le lien de compatibilité est supprimé (il ne contient rien, sa cible `bcai/` reste ; rangé dans la corbeille, il pointerait encore vers `bcai/`) ; un ancien dossier réel, resté parce qu'il n'avait pas pu être renommé, part dans `~/ai/4-trash/better-claude-instance_<date>`. Chaque action est notée dans le journal (`migration BCI -> BCAI : …`) ; une erreur n'interrompt pas la session.
+## Migration depuis un ancien nom
+Au lancement, s'il reste `~/ai/2-tools/3-software/bcai` ou `better-claude-instance` (dossier ou lien), ou `~/ai/2-tools/logs/backup-bcai` ou `backup-bci`, le hook lance `hooks/abc-migrate.py` (étapes détaillées dans [installation.md](installation.md#mise-à-jour-dune-installation-bcai-ou-bci)), puis retire l'ancien emplacement à trois conditions : les réglages ne le citaient déjà plus au démarrage de cette session (sinon cette session et celles démarrées avec ces réglages l'utilisent encore : un hook `PreToolUse` introuvable fait sortir Python avec le code 2, qui bloque l'outil), aucune autre session de Claude Code (`agent` ou `claude`) ne tourne (même comptage que ci-dessous), et le lien a plus de 24 h (marge pour une session que ce comptage ne verrait pas). Le lien de compatibilité est supprimé (il ne contient rien, sa cible `abc/` reste ; rangé dans la corbeille, il pointerait encore vers `abc/`) ; un ancien dossier réel, resté parce qu'il n'avait pas pu être renommé, part dans `~/ai/4-trash/<ancien nom>_<date>`. Chaque action est notée dans le journal (`migration vers ABC : …`) ; une erreur n'interrompt pas la session.
 
 ## Fichiers d'état
 `~/ai/memory/.state/<session>.count` (nombre de messages), `.persona`, `.isolated` ; effacés à `SessionEnd`.
 
 ## Variables
-- `BCAI_REALIGN_EVERY` : fréquence de réinjection de `realign.md` (10 par défaut, 0 = jamais).
-- `BCAI_AI` : autre racine que `~/ai`, pour les tests.
-- Les anciens noms `BCI_REALIGN_EVERY` et `BCI_AI` sont encore lus si les nouveaux ne sont pas définis.
+- `ABC_REALIGN_EVERY` : fréquence de réinjection de `realign.md` (10 par défaut, 0 = jamais).
+- `ABC_AI` : autre racine que `~/ai`, pour les tests.
+- Les anciens noms `BCAI_REALIGN_EVERY` et `BCAI_AI` sont encore lus pendant cette version si les nouveaux ne sont pas définis.
