@@ -7,7 +7,7 @@ Lu à chaque session. Le détail vit dans les skills (chargés à la demande) : 
 ├── AGENTS.md      ce fichier
 ├── 0-persona/     personas (`@<nom>` en début de session ; défaut slave) ; system-agents/slave.md
 ├── 1-bench/       travail temporaire, un secteur par sous-agent
-├── 2-tools/       0-mcp, 1-skills, 2-plugins, 3-software (bcai ; claude-code = config Claude Code), 4-keys-code (clés, jetons, cookies : jamais copiés hors de là), logs (backup-bcai)
+├── 2-tools/       0-mcp, 1-skills, 2-plugins, 3-software (abc ; claude-code = config Claude Code), 4-keys-code (clés, jetons, cookies : jamais copiés hors de là), logs (backup-abc)
 ├── 3-llm/         autres LLM (configs, llms.md, modèles)
 ├── 4-trash/       corbeille
 └── memory/        INDEX.md, TODO.md, realign.md, settings.json, <type>/, journal/
@@ -32,7 +32,7 @@ Fermeture possible à tout instant : écrire au fil de l'eau, jamais en fin de s
 @~/ai/memory/INDEX.md
 @~/ai/memory/TODO.md
 
-- Le hook `memory-hook.py` tient seul `journal/`, la section Projets de `TODO.md` et la sauvegarde quotidienne (`2-tools/logs/backup-bcai/`) : ne pas y toucher.
+- Le hook `memory-hook.py` tient seul `journal/`, la section Projets de `TODO.md` et la sauvegarde quotidienne (`2-tools/logs/backup-abc/`) : ne pas y toucher.
 - À chaque étape terminée : un fait par fichier dans `memory/<type>/` + une ligne dans `INDEX.md` (skill `memory`).
 - Correction de l'utilisateur → fichier `feedback/`. Technique découverte → skill `2-tools/1-skills/<sujet>/`. Signaler chaque leçon enregistrée.
 - Vérifier ce qu'un souvenir nomme avant d'agir dessus.

@@ -12,7 +12,7 @@ description: Comment Claude génère ses tokens, ce qu'il peut réellement régl
 - **temperature / top_p / top_k : indisponibles.** Supprimés (400) sur tous les modèles Claude actuels (Fable 5.x, Opus 5.x/4.7/4.8, Sonnet 5, et valeurs non par défaut refusées sur Sonnet 5.5 et Haiku 5.5) ; la version d'API `2026-10-21` les refuse sur tous les modèles. Seuls d'anciens modèles (Haiku 4.5, Sonnet/Opus 4.6) les acceptaient encore avec `2023-06-01`.
 - **effort** (`low` … `max`) : profondeur de réflexion et dépense de tokens. C'est le vrai levier.
 - **modèle** (Haiku, Sonnet, Opus, Fable) et **max_tokens**.
-- Dans Claude Code : `claude --effort <niveau>` et `--model <modèle>` au lancement, `/model` en session, `/fast` (même modèle, sortie plus rapide).
+- Dans Claude Code : `agent --effort <niveau>` (ou `claude`, selon le nom de la commande) et `--model <modèle>` au lancement, `/model` en session, `/fast` (même modèle, sortie plus rapide).
 
 `generate.py` délègue un passage à une instance isolée (sans outils, sans CLAUDE.md, réglages ni MCP) dont ces réglages sont fixés, puis rend le texte avec ses paramètres. Par défaut : `claude -p` avec le compte connecté (abonnement, pas de clé API), modèle `claude-sonnet-5-5`.
 ```

@@ -1,4 +1,0 @@
-#!/bin/sh
-# bci : ancien nom de la commande bcai (obsolète), gardé pour les installations existantes.
-echo "bci est obsolète : utilisez bcai" >&2
-exec "$HOME/ai/2-tools/3-software/bcai/bin/bcai" "$@"

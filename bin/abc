@@ -1,0 +1,57 @@
+#!/bin/sh
+# abc — commande d'ABC (Linux, Alpine sous Termux ; Windows : abc.cmd).
+set -eu
+DEST="$HOME/ai/2-tools/3-software/abc"
+AI="$HOME/ai"
+PY=$(command -v python3 || command -v python)
+CLI="${ABC_CLI:-agent}"; command -v "$CLI" >/dev/null 2>&1 || CLI=claude   # commande de Claude Code
+
+usage() {
+  cat <<'TXT'
+abc install            installe ou met à jour ABC (dernière version de GitHub) ; alias : abc update
+abc uninstall          désinstalle, après deux confirmations (puis deux autres avant toute suppression)
+abc status             état : versions, configuration, recherche, sauvegardes
+abc backup [list]      sauvegarde immédiate, ou liste des sauvegardes
+abc search "requête"   recherche web (SearXNG local) ; options : abc search -h
+abc keys open|close|status   coffre chiffré de 2-tools/4-keys-code (restic)
+abc import [skills|agents|secrets|llm]   réimporte l'existant (copies ; idempotent)
+abc version            version installée
+TXT
+}
+
+case "${1:-}" in
+  install|update)
+    shift
+    # Dépôt mis à jour (git pull), puis installateur de la version obtenue ; aucune donnée écrasée.
+    if [ -d "$DEST/.git" ]; then git -C "$DEST" pull -q --ff-only || echo "ATTENTION : mise à jour Git impossible, version locale utilisée" >&2; fi
+    exec sh "$DEST/ABC-install-$(cat "$DEST/VERSION").sh" "$@" ;;
+  uninstall)
+    exec sh "$DEST/uninstall.sh" ;;
+  backup)
+    if [ "${2:-}" = list ]; then exec "$PY" "$DEST/hooks/abc-backup.py" list; fi
+    exec "$PY" "$DEST/hooks/abc-backup.py" quotidienne ;;
+  search)
+    shift; exec "$PY" "$AI/2-tools/1-skills/search/search.py" "$@" ;;
+  keys)
+    shift; exec "$PY" "$DEST/hooks/abc-keys.py" "$@" ;;
+  import)
+    shift; [ $# -eq 0 ] && set -- all; exec "$PY" "$DEST/hooks/abc-import.py" "$@" ;;
+  version)
+    V=$(cat "$DEST/VERSION" 2>/dev/null || echo '?')
+    git -C "$DEST" log -1 --format="ABC $V %h (%cs)" 2>/dev/null || echo "ABC $V : dépôt Git introuvable ($DEST)" ;;
+  status)
+    V=$(cat "$DEST/VERSION" 2>/dev/null || echo '?')
+    git -C "$DEST" log -1 --format="ABC          $V %h (%cs)" 2>/dev/null || echo "ABC          introuvable"
+    printf 'Claude Code  %s (commande %s)\n' "$("$CLI" --version 2>/dev/null || echo absent)" "$CLI"
+    printf 'config       %s %s\n' "${CLAUDE_CONFIG_DIR:-NON DÉFINIE}" \
+      "$([ "${CLAUDE_CONFIG_DIR:-}" = "$AI/2-tools/3-software/claude-code" ] && echo '(ok)' || echo '(ouvrir un nouveau terminal)')"
+    [ -e "$HOME/.claude" ] && echo "ATTENTION    ~/.claude existe : cache laissé par une session hors ABC, rangé dans 4-trash au prochain démarrage de $CLI"
+    printf 'recherche    %s\n' "$("$PY" "$AI/2-tools/1-skills/search/search.py" status 2>/dev/null || echo 'SearXNG absent')"
+    printf 'sauvegardes  %s\n' "$("$PY" "$DEST/hooks/abc-backup.py" list 2>/dev/null | wc -l | tr -d ' ') ($AI/2-tools/logs/backup-abc)"
+    if command -v restic >/dev/null 2>&1; then printf 'restic       %s\n' "$(restic version | cut -d' ' -f2)"
+    else echo "restic       absent (sauvegardes en tar.xz)"; fi ;;
+  ""|-h|--help|help)
+    usage ;;
+  *)
+    echo "abc : commande inconnue « $1 »" >&2; usage >&2; exit 1 ;;
+esac

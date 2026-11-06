@@ -6,7 +6,7 @@
 
 Moteurs : ceux de SearXNG (Google, Bing, Brave, DuckDuckGo, Qwant, Yahoo, Yandex…, Startpage ; science : arXiv,
 PubMed, Semantic Scholar, OpenAlex, Crossref, Google Scholar) ; Tor (Ahmia, Torch, catégorie onions) si
---tor / BCAI_TOR=1 ou si 127.0.0.1:9050 écoute au premier démarrage.
+--tor / ABC_TOR=1 ou si 127.0.0.1:9050 écoute au premier démarrage.
 FlareSolverr (127.0.0.1:8191) : bypass automatique des challenges JS/Cloudflare si détecté au premier démarrage.
 Réglages : ~/ai/2-tools/3-software/searxng-settings.yml (créé au premier lancement, jamais réécrit).
 """
@@ -24,11 +24,11 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or Path.home() / "ai")
+AI = Path(os.environ.get("ABC_AI") or os.environ.get("BCAI_AI") or Path.home() / "ai")
 SX = AI / "2-tools" / "3-software" / "searxng"
 SETTINGS = AI / "2-tools" / "3-software" / "searxng-settings.yml"
 LOG = AI / "2-tools" / "logs" / "searxng.log"
-PORT = int(os.environ.get("BCAI_SEARX_PORT") or os.environ.get("BCI_SEARX_PORT") or "8888")
+PORT = int(os.environ.get("ABC_SEARX_PORT") or os.environ.get("BCAI_SEARX_PORT") or "8888")
 URL = f"http://127.0.0.1:{PORT}"
 PY = SX / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 ENABLE = ["bing", "google", "qwant", "yahoo", "yandex", "wiby", "crossref", "openalex", "startpage"]
@@ -43,12 +43,12 @@ def port_open(port):
 def write_settings():
     if SETTINGS.exists():
         return
-    tor = port_open(9050) or (os.environ.get("BCAI_TOR") or os.environ.get("BCI_TOR") or "").lower() in ("1", "true", "yes")
+    tor = port_open(9050) or (os.environ.get("ABC_TOR") or os.environ.get("BCAI_TOR") or "").lower() in ("1", "true", "yes")
     flaresolverr = port_open(8191)
     captcha_suspend = 60 if flaresolverr else 3600
 
     lines = [
-        "# Réglages SearXNG de BCAI (search.py). Modifiable ; jamais réécrit.",
+        "# Réglages SearXNG d'ABC (search.py). Modifiable ; jamais réécrit.",
         "use_default_settings: true",
         "server:",
         f'  secret_key: "{secrets.token_hex(32)}"',
@@ -106,7 +106,7 @@ def start():
     if running():
         return True
     if not PY.exists():
-        sys.exit(f"SearXNG absent ({SX}) : relancer l'installation de BCAI.")
+        sys.exit(f"SearXNG absent ({SX}) : relancer l'installation d'ABC.")
     write_settings()
     LOG.parent.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, SEARXNG_SETTINGS_PATH=str(SETTINGS))
@@ -161,7 +161,7 @@ def main():
         if SETTINGS.exists():
             print(f"# Réglages déjà créés : --tor ignoré. Pour l'activer, supprimer {SETTINGS} et relancer.", file=sys.stderr)
         else:
-            os.environ["BCAI_TOR"] = "1"
+            os.environ["ABC_TOR"] = "1"
 
     if sys.argv[1:2] and sys.argv[1] in ("start", "stop", "status"):
         cmd = sys.argv[1]
@@ -182,7 +182,7 @@ def main():
     p.add_argument("--json", action="store_true")
     p.add_argument("--tor", action="store_true",
                    help="proxy global Tor (socks5h://127.0.0.1:9050) + Ahmia/Torch ; "
-                        "effectif uniquement si les réglages n'existent pas encore (ou BCAI_TOR=1)")
+                        "effectif uniquement si les réglages n'existent pas encore (ou ABC_TOR=1)")
     search(p.parse_args())
 
 

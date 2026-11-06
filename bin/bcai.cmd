@@ -1,2 +1,3 @@
 @echo off
-powershell -NoProfile -ExecutionPolicy Bypass -File "%USERPROFILE%\ai\2-tools\3-software\bcai\bin\bcai.ps1" %*
+echo bcai est devenu abc : utilisez abc 1>&2
+call "%~dp0abc.cmd" %*

@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Import de l'existant dans BCAI — appelé par install.ps1 / bootstrap.sh avant la migration.
+"""Import de l'existant dans ABC — appelé par install.ps1 / bootstrap.sh avant la migration.
 
 Tout est COPIÉ (les originaux restent, les outils continuent de marcher), sauf les modèles Ollama,
 déplacés une seule fois pour ne pas doubler des gigaoctets.
 
-  bcai-import.py skills    skills de ~/.claude/skills -> ~/ai/2-tools/1-skills
+  abc-import.py skills    skills de ~/.claude/skills -> ~/ai/2-tools/1-skills
                            nom déjà pris : le skill importé devient <nom>1 (puis 2, 3…), ligne ajoutée à TODO.md
-  bcai-import.py agents    agents de ~/.claude/agents -> ~/ai/0-persona (sélection par @<nom>) ; même règle de conflit
-  bcai-import.py secrets   clés SSH, variables secrètes, identifiants d'outils, cookies -> ~/ai/2-tools/4-keys-code
-  bcai-import.py llm       configs des autres LLM -> ~/ai/3-llm/<outil> ; modèles Ollama -> BCAI_MODELS_DIR
-  bcai-import.py all       les trois (plus l'ancien 2-tools/0-mcp/sensible versé dans 4-keys-code)
+  abc-import.py agents    agents de ~/.claude/agents -> ~/ai/0-persona (sélection par @<nom>) ; même règle de conflit
+  abc-import.py secrets   clés SSH, variables secrètes, identifiants d'outils, cookies -> ~/ai/2-tools/4-keys-code
+  abc-import.py llm       configs des autres LLM -> ~/ai/3-llm/<outil> ; modèles Ollama -> ABC_MODELS_DIR
+  abc-import.py all       les trois (plus l'ancien 2-tools/0-mcp/sensible versé dans 4-keys-code)
 
-Variables : BCAI_AI (autre racine, tests), BCAI_MODELS_DIR (modèles ; défaut ~/ai/3-llm/models).
+Variables : ABC_AI (autre racine, tests), ABC_MODELS_DIR (modèles ; défaut ~/ai/3-llm/models).
 Idempotent : relancer ne duplique rien. Fichiers secrets ignorés si 4-keys-code est chiffré et fermé.
 """
 import hashlib
@@ -33,7 +33,7 @@ for _s in (sys.stdout, sys.stderr):   # console Windows en cp1252 : jamais d'éc
         pass
 
 HOME = Path.home()
-AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or HOME / "ai")
+AI = Path(os.environ.get("ABC_AI") or os.environ.get("BCAI_AI") or HOME / "ai")
 SKILLS = AI / "2-tools" / "1-skills"
 KEYS = AI / "2-tools" / "4-keys-code"
 VAULT = AI / "2-tools" / "4-keys-code.restic"
@@ -119,21 +119,21 @@ def import_skills(src=None):
         h = tree_hash(sk)
         name, n = sk.name, 0
         target = SKILLS / name
-        # déjà importé (marque .bcai-import, ou .bci-import avant BCAI), ou identique au skill de même nom : rien à faire
+        # déjà importé (marque .abc-import, ou .bcai-import et .bci-import des anciens noms), ou identique au skill de même nom : rien à faire
         if (target.is_dir() and tree_hash(target) == h) or any(
                 (c / m).is_file() and (c / m).read_text().strip() == h
-                for c in SKILLS.iterdir() if c.is_dir() for m in (".bcai-import", ".bci-import")):
+                for c in SKILLS.iterdir() if c.is_dir() for m in (".abc-import", ".bcai-import", ".bci-import")):
             continue
         while target.exists():
             n += 1
             target = SKILLS / f"{sk.name}{n}"
         shutil.copytree(sk, target)
-        (target / ".bcai-import").write_text(h + "\n")   # empreinte de l'original : pas de réimport
+        (target / ".abc-import").write_text(h + "\n")   # empreinte de l'original : pas de réimport
         if n:
             md = target / "SKILL.md"
             md.write_text(re.sub(r"^(name:\s*).*$", rf"\g<1>{target.name}", md.read_text(encoding="utf-8"),
                                  count=1, flags=re.M), encoding="utf-8")
-            todo_line(f"Conflit de skills : « {sk.name} » existait déjà dans BCAI ; le vôtre est renommé "
+            todo_line(f"Conflit de skills : « {sk.name} » existait déjà dans ABC ; le vôtre est renommé "
                       f"« {target.name} » ({target}). Fusionner, garder les deux ou en retirer un.")
             say(f"skill {sk.name} -> {target.name} (conflit noté dans TODO.md)")
         else:
@@ -150,7 +150,7 @@ def import_agents(src=None):
     taken = {f.stem: f for f in root.rglob("*.md")}
     for ag in sorted(src.rglob("*.md")):
         if any(is_link(p) for p in [ag, *ag.parents] if src in p.parents or p == src):
-            continue   # liens BCAI (0-persona, ancien system-agents)
+            continue   # liens ABC (0-persona, ancien system-agents)
         data = ag.read_bytes()
         if any(f.read_bytes() == data for f in taken.values()):
             continue
@@ -231,7 +231,7 @@ def chromium_dirs():
 
 def import_secrets():
     if vault_closed():
-        say("4-keys-code est chiffré et fermé : secrets non réimportés (bcai keys open, puis relancer)")
+        say("4-keys-code est chiffré et fermé : secrets non réimportés (abc keys open, puis relancer)")
         return
     KEYS.mkdir(parents=True, exist_ok=True)
     private(KEYS)
@@ -306,14 +306,14 @@ LLM_DIRS = {"ollama": ".ollama", "grok": ".grok", "codex": ".codex", "gemini": "
 
 
 def set_user_env(name, value):
-    if os.environ.get("BCAI_AI") or os.environ.get("BCI_AI"):   # racine de test : ne jamais toucher l'environnement réel
+    if os.environ.get("ABC_AI") or os.environ.get("BCAI_AI"):   # racine de test : ne jamais toucher l'environnement réel
         say(f"(test) {name}={value} non posé")
         os.environ[name] = value
         return
     if WIN:   # via .NET : diffuse le changement aux nouveaux terminaux (WM_SETTINGCHANGE)
         subprocess.run(["powershell", "-NoProfile", "-Command",
-                        f"[Environment]::SetEnvironmentVariable('{name}', $env:BCAI_VAL, 'User')"],
-                       env={**os.environ, "BCAI_VAL": value}, check=True)
+                        f"[Environment]::SetEnvironmentVariable('{name}', $env:ABC_VAL, 'User')"],
+                       env={**os.environ, "ABC_VAL": value}, check=True)
     else:
         prof = HOME / ".profile"
         s = prof.read_text(encoding="utf-8") if prof.is_file() else ""
@@ -336,7 +336,7 @@ def user_env(name):
 def import_llm():
     LLM.mkdir(parents=True, exist_ok=True)
     report = ["# LLM présents sur cette machine", "",
-              "Généré par bcai-import.py. Configs copiées ici (originaux en place) ; secrets dans 2-tools/4-keys-code/llm.", ""]
+              "Généré par abc-import.py. Configs copiées ici (originaux en place) ; secrets dans 2-tools/4-keys-code/llm.", ""]
     big = []
     for tool, rel in LLM_DIRS.items():
         src = HOME / rel
@@ -358,10 +358,10 @@ def import_llm():
         copy_any(src, LLM / tool / (src.name if src.is_file() else ""), skip=skip)
         report.append(f"- **{tool}** : `{src}` -> `3-llm/{tool}/`")
         say(f"LLM {tool} -> 3-llm/{tool}")
-    # modèles Ollama : un seul exemplaire, déplacé vers BCAI_MODELS_DIR
+    # modèles Ollama : un seul exemplaire, déplacé vers ABC_MODELS_DIR
     if (HOME / ".ollama").exists() or shutil.which("ollama"):
         cur = Path(user_env("OLLAMA_MODELS") or HOME / ".ollama" / "models")
-        dst = Path(os.environ.get("BCAI_MODELS_DIR") or os.environ.get("BCI_MODELS_DIR") or LLM / "models") / "ollama"
+        dst = Path(os.environ.get("ABC_MODELS_DIR") or os.environ.get("BCAI_MODELS_DIR") or LLM / "models") / "ollama"
         dst.mkdir(parents=True, exist_ok=True)
         if cur.is_dir() and cur.resolve() != dst.resolve():
             for item in cur.iterdir():
@@ -373,8 +373,8 @@ def import_llm():
         set_user_env("OLLAMA_MODELS", str(dst))
         report.append(f"- **modèles Ollama** : `{dst}` (OLLAMA_MODELS ; redémarrer Ollama pour la prise en compte)")
         say(f"modèles Ollama -> {dst} (OLLAMA_MODELS posé)")
-    # autres poids de modèles rangés dans BCAI_MODELS_DIR (gguf, safetensors…) : inventoriés, jamais copiés
-    mdir = Path(os.environ.get("BCAI_MODELS_DIR") or os.environ.get("BCI_MODELS_DIR") or LLM / "models")
+    # autres poids de modèles rangés dans ABC_MODELS_DIR (gguf, safetensors…) : inventoriés, jamais copiés
+    mdir = Path(os.environ.get("ABC_MODELS_DIR") or os.environ.get("BCAI_MODELS_DIR") or LLM / "models")
     weights = sorted(f for f in mdir.rglob("*") if f.is_file() and f.suffix.lower() in
                      (".gguf", ".safetensors", ".bin", ".onnx")) if mdir.is_dir() else []
     if weights:

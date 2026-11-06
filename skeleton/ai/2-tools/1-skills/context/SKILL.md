@@ -5,7 +5,7 @@ description: Mesurer et compresser le contexte chargé à chaque session (AGENTS
 
 # Compression du contexte
 
-Mesurer : `python3 ~/ai/2-tools/1-skills/context/ctx-audit.py` (estimation) ou `--exact` (sessions `claude -p` réelles). Windows : `python`.
+Mesurer : `python3 ~/ai/2-tools/1-skills/context/ctx-audit.py` (estimation) ou `--exact` (sessions `agent -p` réelles ; Claude Code, commande renommée par ABC). Windows : `python`.
 
 ## Méthodes, par ordre de gain
 1. **Charger à la demande** : ce qui ne sert pas à chaque tour quitte AGENTS.md pour un skill (coût au repos : sa ligne `description`).

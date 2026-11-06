@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Installation automatique d'outils trouvés par la reconnaissance, avec journal et retrait.
 
-  tool-install.py mcp <nom> <commande> [args…]   claude mcp add -s user <nom> -- <commande> [args…]
+  tool-install.py mcp <nom> <commande> [args…]   agent mcp add -s user <nom> -- <commande> [args…]
   tool-install.py skill <url-git> [sous-dossier]  copie le dossier contenant SKILL.md dans ~/ai/2-tools/1-skills/
-  tool-install.py remove <nom>                    MCP : claude mcp remove ; skill : déplacé dans ~/ai/4-trash/
+  tool-install.py remove <nom>                    MCP : agent mcp remove ; skill : déplacé dans ~/ai/4-trash/
   tool-install.py log                             tout ce qui a été installé
 
 Journal : ~/ai/2-tools/installed.md (date, type, nom, source).
@@ -16,10 +16,14 @@ import tempfile
 import time
 from pathlib import Path
 
-AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or Path.home() / "ai")
+AI = Path(os.environ.get("ABC_AI") or os.environ.get("BCAI_AI") or Path.home() / "ai")
 SKILLS = AI / "2-tools" / "1-skills"
 LOG = AI / "2-tools" / "installed.md"
 TRASH = AI / "4-trash"
+
+
+# Commande de Claude Code : agent (renommée par ABC), ou claude si gardée sous ce nom ; ABC_CLI force le choix.
+CLI = os.environ.get("ABC_CLI") or ("agent" if shutil.which("agent") else "claude")
 
 
 def log(kind, name, src):
@@ -42,10 +46,10 @@ def logged(name):
 
 
 def mcp(name, cmd):
-    if subprocess.run(["claude", "mcp", "get", name], capture_output=True).returncode == 0:
+    if subprocess.run([CLI, "mcp", "get", name], capture_output=True).returncode == 0:
         print(f"déjà présent : {name}")
         return 0
-    r = subprocess.run(["claude", "mcp", "add", "-s", "user", name, "--", *cmd])
+    r = subprocess.run([CLI, "mcp", "add", "-s", "user", name, "--", *cmd])
     if r.returncode == 0:
         log("mcp", name, " ".join(cmd))
         print(f"installé : MCP {name} (actif à la prochaine session)")
@@ -75,7 +79,7 @@ def skill(url, sub=""):
 def remove(name):
     kind = logged(name)
     if kind == "mcp":
-        r = subprocess.run(["claude", "mcp", "remove", "-s", "user", name]).returncode
+        r = subprocess.run([CLI, "mcp", "remove", "-s", "user", name]).returncode
     elif kind == "skill" and (SKILLS / name).exists():
         TRASH.mkdir(parents=True, exist_ok=True)
         shutil.move(str(SKILLS / name), str(TRASH / f"{name}-{time.strftime('%Y%m%d%H%M%S')}"))

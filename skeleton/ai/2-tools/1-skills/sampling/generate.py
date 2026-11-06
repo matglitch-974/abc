@@ -4,12 +4,13 @@
   generate.py [--model M] [--effort E] [--system S] [--compare E1,E2,…] [--api] [--dry-run] "consigne"
   (consigne lue sur stdin si absente)
 
-Par défaut : `claude -p` avec le compte connecté (abonnement, sans clé API), sans outils,
+Par défaut : `agent -p` (Claude Code ; ou `claude -p`) avec le compte connecté (abonnement, sans clé API), sans outils,
 sans CLAUDE.md, réglages ni MCP. --api : SDK `anthropic` et clé API à la place.
 temperature / top_p / top_k ne sont plus acceptés par les modèles Claude actuels : voir SKILL.md.
 """
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -18,8 +19,12 @@ import time
 EFFORTS = ("low", "medium", "high", "xhigh", "max")
 
 
+# Commande de Claude Code : agent (renommée par ABC), ou claude si gardée sous ce nom ; ABC_CLI force le choix.
+CLI = os.environ.get("ABC_CLI") or ("agent" if shutil.which("agent") else "claude")
+
+
 def cli_cmd(model, effort, system, prompt):
-    cmd = ["claude", "-p", "--model", model, "--effort", effort, "--tools", "", "--strict-mcp-config",
+    cmd = [CLI, "-p", "--model", model, "--effort", effort, "--tools", "", "--strict-mcp-config",
            "--setting-sources", "", "--no-session-persistence", "--output-format", "json"]
     if system:
         cmd += ["--system-prompt", system]
@@ -32,7 +37,7 @@ def via_cli(model, effort, system, prompt):
     try:
         d = json.loads(r.stdout)
     except ValueError:
-        return None, f"échec de claude -p : {(r.stderr or r.stdout).strip()[:300]}"
+        return None, f"échec de {CLI} -p : {(r.stderr or r.stdout).strip()[:300]}"
     u = d.get("usage") or {}
     head = (f"modèles={','.join(d.get('modelUsage') or {}) or model} effort={effort} "
             f"tokens sortie={u.get('output_tokens')} durée={time.time() - t:.0f}s")
@@ -69,7 +74,7 @@ def main():
     p.add_argument("--effort", default="medium", choices=EFFORTS)
     p.add_argument("--system", default="")
     p.add_argument("--compare", help="efforts séparés par des virgules, ex. low,max")
-    p.add_argument("--api", action="store_true", help="SDK anthropic + clé API au lieu de claude -p")
+    p.add_argument("--api", action="store_true", help="SDK anthropic + clé API au lieu de agent -p")
     p.add_argument("--dry-run", action="store_true", help="affiche les commandes sans rien lancer")
     a = p.parse_args()
     prompt = a.prompt if a.prompt is not None else sys.stdin.read()
@@ -83,8 +88,8 @@ def main():
         for e in efforts:
             print(json.dumps(cli_cmd(a.model, e, a.system, prompt), ensure_ascii=False))
         return 0
-    if not a.api and not shutil.which("claude"):
-        sys.exit("claude introuvable dans le PATH")
+    if not a.api and not shutil.which(CLI):
+        sys.exit(f"{CLI} introuvable dans le PATH (Claude Code : agent ou claude ; ABC_CLI)")
     run = via_api if a.api else via_cli
     code = 0
     for e in efforts:

@@ -1,6 +1,6 @@
 #!/bin/sh
-# BCAI — désinstallation Linux / Android (dans Alpine sous Termux).
-#   bcai uninstall   (ou : curl -fsSL https://raw.githubusercontent.com/matglitch-974/bcai/main/uninstall.sh | sh)
+# ABC — désinstallation Linux / Android (dans Alpine sous Termux).
+#   abc uninstall   (ou : curl -fsSL https://raw.githubusercontent.com/matglitch-974/abc/main/uninstall.sh | sh)
 # Deux confirmations (oui, puis un mot à taper) avant toute modification, et de nouveau avant chaque suppression.
 # Remet la configuration de Claude Code dans ~/.claude, retire les liens et réglages ajoutés,
 # puis demande avant de toucher à ~/ai et ~/project. Claude Code reste installé.
@@ -19,8 +19,8 @@ confirm2() { # confirm2 <avertissement> <question> <mot>
   [ "$r" = "$3" ] || { echo "Annulé." > /dev/tty; return 1; }
 }
 
-confirm2 "ATTENTION : la désinstallation retire BCAI de Claude Code (réglages, hooks, liens, variable CLAUDE_CONFIG_DIR) et remet la configuration dans ~/.claude. Vos dossiers ~/ai et ~/project restent en place, sauf si vous demandez ensuite leur suppression." \
-  "Désinstaller BCAI ?" "desinstaller" || { echo "Rien n'a été modifié."; exit 0; }
+confirm2 "ATTENTION : la désinstallation retire ABC de Claude Code (réglages, hooks, liens, variable CLAUDE_CONFIG_DIR) et remet la configuration dans ~/.claude. Vos dossiers ~/ai et ~/project restent en place, sauf si vous demandez ensuite leur suppression." \
+  "Désinstaller ABC ?" "desinstaller" || { echo "Rien n'a été modifié."; exit 0; }
 
 # 1. Configuration : ~/ai/2-tools/3-software/claude-code -> ~/.claude (liens remplacés par des copies réelles)
 if [ -d "$CC" ] && [ ! -e "$CL" ]; then
@@ -31,17 +31,25 @@ if [ -d "$CC" ] && [ ! -e "$CL" ]; then
     [ -L "$l" ] || continue
     t=$(readlink "$l"); rm "$l"; [ -e "$t" ] && cp -R "$t" "$l" && echo "copié : $l"
   done
-  for b in "$CL"/*.bak-bcai; do [ -e "$b" ] && [ ! -e "${b%.bak-bcai}" ] && mv "$b" "${b%.bak-bcai}" && echo "restauré : ${b%.bak-bcai}"; done
-  # *.bak-bci : copies faites avant le renommage en BCAI
-  for b in "$CL"/*.bak-bci; do [ -e "$b" ] && [ ! -e "${b%.bak-bci}" ] && mv "$b" "${b%.bak-bci}" && echo "restauré : ${b%.bak-bci}"; done
+  for b in "$CL"/*.bak-abc; do [ -e "$b" ] && [ ! -e "${b%.bak-abc}" ] && mv "$b" "${b%.bak-abc}" && echo "restauré : ${b%.bak-abc}"; done
+  # *.bak-bcai, *.bak-bci : copies faites avant le renommage en ABC
+  for s in bcai bci; do
+    for b in "$CL"/*.bak-$s; do [ -e "$b" ] && [ ! -e "${b%.bak-$s}" ] && mv "$b" "${b%.bak-$s}" && echo "restauré : ${b%.bak-$s}"; done
+  done
 fi
 for f in "$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc"; do
   [ -f "$f" ] && grep -q CLAUDE_CONFIG_DIR "$f" && sed -i '/CLAUDE_CONFIG_DIR/d' "$f" && echo "variable retirée : $f"
 done
 
-for c in bcai bci; do   # bci : ancien nom (obsolète)
+for c in abc bcai bci; do   # bcai, bci : anciens noms
   [ -L "$HOME/.local/bin/$c" ] && rm "$HOME/.local/bin/$c" && echo "commande $c retirée"
 done
+# Commande de Claude Code : agent redevient claude (s'il s'agit bien de Claude Code et que claude est libre)
+CLI="${ABC_CLI:-agent}"
+if [ "$CLI" != claude ] && [ -e "$HOME/.local/bin/$CLI" ] && [ ! -e "$HOME/.local/bin/claude" ] \
+   && "$HOME/.local/bin/$CLI" --version 2>/dev/null | head -n 1 | grep -q 'Claude Code'; then
+  mv "$HOME/.local/bin/$CLI" "$HOME/.local/bin/claude" && echo "commande : $CLI -> claude"
+fi
 
 # 2. Réglages : retirer uniquement ce que l'installation a ajouté
 S="$CL/settings.json"
@@ -52,14 +60,14 @@ if [ -f "$S" ] && command -v jq >/dev/null 2>&1; then
      "$S" > "$S.tmp" && mv "$S.tmp" "$S" && echo "réglages nettoyés : $S"
 fi
 
-# Modèles Ollama rangés dans ~/ai par BCAI : remis dans ~/.ollama/models avant toute suppression de ~/ai
+# Modèles Ollama rangés dans ~/ai par ABC : remis dans ~/.ollama/models avant toute suppression de ~/ai
 OM=$(sed -n 's/^export OLLAMA_MODELS="\(.*\)"$/\1/p' "$HOME/.profile" 2>/dev/null | tail -1)
 case "$OM" in "$AI"/*)
   mkdir -p "$HOME/.ollama/models" && mv "$OM"/* "$HOME/.ollama/models/" 2>/dev/null
   sed -i '/^export OLLAMA_MODELS=/d' "$HOME/.profile"; echo "modèles Ollama remis dans ~/.ollama/models" ;;
 esac
 
-confirm2 "DANGER : supprimer ~/ai efface DÉFINITIVEMENT mémoire, personas, skills, corbeille ET toutes les sauvegardes (backup-bcai). Aucune récupération possible." \
+confirm2 "DANGER : supprimer ~/ai efface DÉFINITIVEMENT mémoire, personas, skills, corbeille ET toutes les sauvegardes (backup-abc). Aucune récupération possible." \
   "Supprimer définitivement ~/ai ?" "supprimer ai" && rm -rf "$AI" && echo "~/ai supprimé"
 confirm2 "DANGER : supprimer ~/project efface DÉFINITIVEMENT tous vos projets, y compris leurs dossiers sensible/ et ce qui n'a jamais été poussé sur GitHub." \
   "Supprimer définitivement ~/project ?" "supprimer project" && rm -rf "$HOME/project" && echo "~/project supprimé"

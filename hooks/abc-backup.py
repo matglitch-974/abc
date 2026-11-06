@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Sauvegardes de BCAI — restic >= 0.17 (dédupliqué, compressé), sinon repli tar.xz.
+"""Sauvegardes d'ABC — restic >= 0.17 (dédupliqué, compressé), sinon repli tar.xz.
 
-  bcai-backup.py quotidienne [--if-needed]   sauvegarde du jour, rotation « tour de Hanoï »
-  bcai-backup.py install-avant | install-apres   première installation seulement, conservées à vie
-  bcai-backup.py list
+  abc-backup.py quotidienne [--if-needed]   sauvegarde du jour, rotation « tour de Hanoï »
+  abc-backup.py install-avant | install-apres   première installation seulement, conservées à vie
+  abc-backup.py list
 
 Contenu : tout ~/ai (sauf les sauvegardes elles-mêmes) ; install-avant ajoute ~/.claude et ~/.claude.json
-s'ils existent encore. Destination : ~/ai/2-tools/logs/backup-bcai/
+s'ils existent encore. Destination : ~/ai/2-tools/logs/backup-abc/
   .restic/                          dépôt restic commun (sans mot de passe : données locales)
   .backup_AAAA-MM-JJ[_type]/meta.json   un dossier par sauvegarde : date à la seconde, versions, instantané
   .backup_…/metadata.json           copie lisible de la métadonnée embarquée (ci-dessous)
 Métadonnée : metadata.json à la racine de l'instantané restic (/metadata.json) ou de l'archive tar.xz :
-version de BCAI (fichier VERSION + commit git), date, système, type, versions des dépendances (« absent »
+version d'ABC (fichier VERSION + commit git), date, système, type, versions des dépendances (« absent »
 si non installée), noms des MCP et des skills. Aucun secret ; le dossier personnel est écrit ~.
-(format 2 ; le format 1, d'avant le renommage en BCAI, nommait « bci » la clé « bcai ».)
-Ancien dossier backup-bci (avant BCAI) : repris tel quel au premier appel (adopt_legacy).
+(format 3 ; la clé « abc » s'appelait « bcai » au format 2, du temps de BCAI, et « bci » au format 1.)
+Anciens dossiers backup-bcai (BCAI) et backup-bci (BCI) : repris tels quels au premier appel (adopt_legacy).
 Rotation (quotidienne) : la sauvegarde n° k va dans le jeu h = zéros terminaux de k en binaire (plafonné à
 SETS-1) et remplace l'ancienne de ce jeu ; elles s'espacent avec l'âge (au plus SETS sauvegardes).
-Ne bloque jamais : code de sortie 0, erreurs consignées dans backup-bcai/errors.log.
+Ne bloque jamais : code de sortie 0, erreurs consignées dans backup-abc/errors.log.
 """
 import io
 import json
@@ -34,12 +34,14 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 HOME = Path.home()
-AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or HOME / "ai")
-DEST = AI / "2-tools" / "logs" / "backup-bcai"
-LEGACY = AI / "2-tools" / "logs" / "backup-bci"   # nom d'avant BCAI
+AI = Path(os.environ.get("ABC_AI") or os.environ.get("BCAI_AI") or HOME / "ai")
+DEST = AI / "2-tools" / "logs" / "backup-abc"
+LEGACIES = [AI / "2-tools" / "logs" / n for n in ("backup-bcai", "backup-bci")]   # noms d'avant ABC (BCAI, BCI)
 REPO = DEST / ".restic"
-SETS = max(1, int(os.environ.get("BCAI_BACKUP_SETS") or os.environ.get("BCI_BACKUP_SETS") or "8"))
-SRC_DIR = Path(__file__).resolve().parent.parent  # dépôt bcai
+# Commande de Claude Code : agent (renommée par ABC), ou claude si gardée sous ce nom ; ABC_CLI force le choix.
+CLI = os.environ.get("ABC_CLI") or ("agent" if shutil.which("agent") else "claude")
+SETS = max(1, int(os.environ.get("ABC_BACKUP_SETS") or os.environ.get("BCAI_BACKUP_SETS") or "8"))
+SRC_DIR = Path(__file__).resolve().parent.parent  # dépôt abc
 TYPES = ("quotidienne", "install-avant", "install-apres")
 CC = Path(os.environ.get("CLAUDE_CONFIG_DIR") or AI / "2-tools" / "3-software" / "claude-code")
 NOWIN = {"creationflags": 0x08000000} if os.name == "nt" else {}  # CREATE_NO_WINDOW : pas de console qui clignote
@@ -75,10 +77,10 @@ def version(cmd):
 
 def versions(md):
     """Résumé des versions pour meta.json, tiré de la métadonnée complète (aucune commande relancée)."""
-    b, dep = md.get("bcai") or {}, md.get("dependances") or {}
-    bcai = " ".join(x for x in (b.get("version"), (b.get("commit") or "")[:7], b.get("date_commit")) if x)
+    b, dep = md.get("abc") or md.get("bcai") or {}, md.get("dependances") or {}
+    abc = " ".join(x for x in (b.get("version"), (b.get("commit") or "")[:7], b.get("date_commit")) if x)
     sysi = md.get("systeme") or {}
-    out = {"bcai": bcai or None, "python": dep.get("python")}
+    out = {"abc": abc or None, "python": dep.get("python")}
     for k in ("claude_code", "node", "git", "jq", "uv", "restic"):
         out[k] = None if dep.get(k) in (None, "absent") else dep.get(k)
     out["systeme"] = f"{sysi.get('nom')} {sysi.get('publication')} {sysi.get('arch')}"
@@ -138,7 +140,7 @@ def uv_tools():
     return found
 
 
-def bcai_version():
+def abc_version():
     v = {"version": None, "commit": None, "date_commit": None, "modifie": None}
     try:
         v["version"] = (SRC_DIR / "VERSION").read_text(encoding="utf-8").strip() or None
@@ -192,7 +194,7 @@ def skill_names():
 
 def metadata(kind, name, date):
     """Métadonnée embarquée dans chaque sauvegarde ; aucune erreur ne remonte (commandes en parallèle, 10 s max)."""
-    cmds = {"claude_code": ["claude", "--version"], "node": ["node", "--version"], "npm": ["npm", "--version"],
+    cmds = {"claude_code": [CLI, "--version"], "node": ["node", "--version"], "npm": ["npm", "--version"],
             "git": ["git", "--version"], "restic": ["restic", "version"], "uv": ["uv", "--version"],
             "jq": ["jq", "--version"], "ripgrep": ["rg", "--version"], "curl": ["curl", "--version"],
             "bash": ["bash", "--version"]}
@@ -200,12 +202,12 @@ def metadata(kind, name, date):
         ps = "$PSVersionTable.PSVersion.ToString()"
         cmds.update({"powershell": ["powershell", "-NoProfile", "-Command", ps],
                      "pwsh": ["pwsh", "-NoProfile", "-Command", ps], "winget": ["winget", "--version"]})
-    m = {"format": 2, "nom": name, "type": kind, "date": date}
+    m = {"format": 3, "nom": name, "type": kind, "date": date}
     dep = {"python": platform.python_version()}
     with ThreadPoolExecutor(max_workers=8) as ex:
-        # claude --version : deuxième ligne = tweakcc s'il a modifié Claude Code
+        # agent --version : deuxième ligne = tweakcc s'il a modifié Claude Code
         jobs = {k: ex.submit(tool, c, 2 if k == "claude_code" else 1) for k, c in cmds.items()}
-        uvt, bcai = ex.submit(uv_tools), ex.submit(bcai_version)
+        uvt, abc = ex.submit(uv_tools), ex.submit(abc_version)
         for k, f in jobs.items():
             try:
                 dep[k] = f.result()
@@ -218,9 +220,9 @@ def metadata(kind, name, date):
         for k in ("scrapling", "crawl4ai"):
             dep[k] = u.get(k, "absent")
         try:
-            m["bcai"] = bcai.result()
+            m["abc"] = abc.result()
         except Exception:
-            m["bcai"] = None
+            m["abc"] = None
     for k, f in (("systeme", system_info), ("mcp", mcp_names), ("skills", skill_names)):
         try:
             m[k] = f()
@@ -275,7 +277,7 @@ def backup(kind, if_needed=False):
     try:
         md = metadata(kind, d.name, date)
     except Exception as e:  # la métadonnée ne fait jamais échouer la sauvegarde
-        md = {"format": 2, "nom": d.name, "type": kind, "date": date, "erreur": type(e).__name__}
+        md = {"format": 3, "nom": d.name, "type": kind, "date": date, "erreur": type(e).__name__}
     md["mode"] = "restic" if use_restic else "tar.xz"
     md["sources"] = [tilde(str(p)) for p in sources]
     md_bytes = (json.dumps(md, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
@@ -294,7 +296,7 @@ def backup(kind, if_needed=False):
                 raise RuntimeError(f"restic init : {r.stderr.strip()[:300]}")
         # metadata.json donné en chemin relatif depuis un dossier temporaire : restic le range à la racine
         # de l'instantané (/metadata.json), à côté des sources
-        with tempfile.TemporaryDirectory(prefix="bcai-meta-") as tmp:
+        with tempfile.TemporaryDirectory(prefix="abc-meta-") as tmp:
             (Path(tmp) / "metadata.json").write_bytes(md_bytes)
             r = restic("backup", "--json", "--compression", "max", "--tag", d.name,
                        "--exclude", str(DEST), *excl, "metadata.json", *map(str, sources), cwd=tmp)
@@ -353,27 +355,33 @@ def rotate(new, jeu):
 
 
 def adopt_legacy():
-    """Reprend l'ancien dossier backup-bci : renommé en backup-bcai, ou fusionné élément par élément si
-    backup-bcai existe déjà (un élément présent des deux côtés reste dans backup-bci). Reporté tant que
-    restic y tient un verrou (sauvegarde en cours). Retourne un message, ou ''."""
-    if not LEGACY.is_dir() or is_link(LEGACY):
-        return ""
-    locks = LEGACY / ".restic" / "locks"
-    if locks.is_dir() and any(locks.iterdir()):
-        return f"{LEGACY} : sauvegarde en cours, reprise au prochain appel"
-    if not DEST.exists():
-        LEGACY.rename(DEST)
-        return f"sauvegardes : {LEGACY} -> {DEST}"
-    left = []
-    for item in sorted(LEGACY.iterdir()):
-        if (DEST / item.name).exists():
-            left.append(item.name)
-        else:
-            item.rename(DEST / item.name)
-    if left:
-        return f"sauvegardes fusionnées dans {DEST} ; restés dans {LEGACY} (noms déjà pris) : {', '.join(left)}"
-    LEGACY.rmdir()   # vide
-    return f"sauvegardes : {LEGACY} fusionné dans {DEST}"
+    """Reprend les anciens dossiers (backup-bcai de BCAI, backup-bci de BCI) : renommés en backup-abc, ou
+    fusionnés élément par élément si backup-abc existe déjà (un élément présent des deux côtés reste dans
+    l'ancien dossier). Reporté tant que restic y tient un verrou (sauvegarde en cours). Retourne un message, ou ''."""
+    out = []
+    for legacy in LEGACIES:
+        if not legacy.is_dir() or is_link(legacy):
+            continue
+        locks = legacy / ".restic" / "locks"
+        if locks.is_dir() and any(locks.iterdir()):
+            out.append(f"{legacy} : sauvegarde en cours, reprise au prochain appel")
+            continue
+        if not DEST.exists():
+            legacy.rename(DEST)
+            out.append(f"sauvegardes : {legacy} -> {DEST}")
+            continue
+        left = []
+        for item in sorted(legacy.iterdir()):
+            if (DEST / item.name).exists():
+                left.append(item.name)
+            else:
+                item.rename(DEST / item.name)
+        if left:
+            out.append(f"sauvegardes fusionnées dans {DEST} ; restés dans {legacy} (noms déjà pris) : {', '.join(left)}")
+            continue
+        legacy.rmdir()   # vide
+        out.append(f"sauvegardes : {legacy} fusionné dans {DEST}")
+    return " ; ".join(out)
 
 
 def main():

@@ -47,6 +47,16 @@ if (missing.length) console.log('absents (fragment disparu de cette version ?) :
 if (dry) console.log('(dry-run : rien écrit)');
 
 if (!noApply) {
-  const r = spawnSync('npx', ['-y', TWEAKCC, '--apply', '--yes'], { stdio: 'inherit', shell: process.platform === 'win32' });
+  // tweakcc cherche `claude` dans le PATH : la commande renommée en `agent` par ABC lui est indiquée
+  // par TWEAKCC_CC_INSTALLATION_PATH (sauf si l'appelant l'a déjà posée, ou si ccInstallationPath la fixe).
+  const env = { ...process.env };
+  if (!env.TWEAKCC_CC_INSTALLATION_PATH) {
+    const bin = path.join(os.homedir(), '.local', 'bin');
+    const exe = process.platform === 'win32' ? '.exe' : '';
+    const cli = env.ABC_CLI || 'agent';
+    const found = [cli, 'claude'].map(n => path.join(bin, n + exe)).find(p => fs.existsSync(p));
+    if (found) { env.TWEAKCC_CC_INSTALLATION_PATH = found; console.log(`binaire visé : ${found}`); }
+  }
+  const r = spawnSync('npx', ['-y', TWEAKCC, '--apply', '--yes'], { stdio: 'inherit', shell: process.platform === 'win32', env });
   process.exit(r.status ?? 1);
 }

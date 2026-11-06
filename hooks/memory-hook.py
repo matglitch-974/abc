@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Hook mémoire de BCAI — automate sans LLM, branché sur les événements de Claude Code.
+"""Hook mémoire d'ABC — automate sans LLM, branché sur les événements de Claude Code.
 
 - Journal : chaque événement utile est ajouté aussitôt à ~/ai/memory/journal/AAAA-MM-JJ.md.
   Une fermeture brutale ne perd donc rien de ce qui a déjà eu lieu.
 - Todos : au démarrage de session, la section « Projets » de ~/ai/memory/TODO.md est
   réécrite à partir des TODO.md de ~/project.
-- Sauvegarde : au démarrage, bcai-backup.py quotidienne (une par jour, en arrière-plan).
-- Ancien nom (BCI) : au démarrage, bcai-migrate.py migre une installation d'avant BCAI (dossier
-  better-claude-instance, backup-bci, chemins de settings.json) puis retire l'ancien emplacement (lien supprimé,
-  dossier rangé dans ~/ai/4-trash) dès qu'aucune session ne s'en sert plus.
+- Sauvegarde : au démarrage, abc-backup.py quotidienne (une par jour, en arrière-plan).
+- Anciens noms (BCAI, BCI) : au démarrage, abc-migrate.py migre une installation d'avant ABC (dossiers
+  bcai ou better-claude-instance, backup-bcai ou backup-bci, chemins de settings.json, commandes) puis retire
+  l'ancien emplacement (lien supprimé, dossier rangé dans ~/ai/4-trash) dès qu'aucune session ne s'en sert plus.
 - Ancien ~/.claude : s'il était encore tenu par une session lors de l'installation, il est rangé
   dans ~/ai/4-trash au démarrage suivant (toute session le recréant est rangée de même).
 - Persona : le premier message de la session choisit le persona par `@<nom>` (fichier de
@@ -16,7 +16,7 @@
 - Isolement : un persona dont l'en-tête porte `isolated: true` ouvre une session cloisonnée dans
   les deux sens (mémoire propre dans ~/ai/isolated/<nom>/, accès croisés bloqués en PreToolUse).
 - Réalignement : ~/ai/memory/realign.md est réinjecté dans le contexte tous les N messages
-  de l'utilisateur (BCAI_REALIGN_EVERY, 10 par défaut) et après chaque compaction.
+  de l'utilisateur (ABC_REALIGN_EVERY, 10 par défaut) et après chaque compaction.
 
 Usage : appelé par Claude Code (JSON sur stdin), ou `memory-hook.py todo` pour le seul sommaire.
 Ne bloque jamais Claude Code : toute erreur est ignorée, code de sortie toujours 0.
@@ -30,10 +30,10 @@ import sys
 import time
 from pathlib import Path
 
-AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or Path.home() / "ai")   # BCAI_AI : autre racine (tests)
+AI = Path(os.environ.get("ABC_AI") or os.environ.get("BCAI_AI") or Path.home() / "ai")   # ABC_AI : autre racine (tests)
 MEM = AI / "memory"
 PROJECTS = Path.home() / "project"
-EVERY = int(os.environ.get("BCAI_REALIGN_EVERY") or os.environ.get("BCI_REALIGN_EVERY") or "10")
+EVERY = int(os.environ.get("ABC_REALIGN_EVERY") or os.environ.get("BCAI_REALIGN_EVERY") or "10")
 BEGIN = "<!-- projets:début"
 END = "<!-- projets:fin -->"
 
@@ -180,9 +180,9 @@ def todo_sync():
 
 
 def backup():
-    """Sauvegarde quotidienne (bcai-backup.py), détachée pour ne pas retarder le démarrage de la session."""
+    """Sauvegarde quotidienne (abc-backup.py), détachée pour ne pas retarder le démarrage de la session."""
     import subprocess
-    script = Path(__file__).resolve().parent / "bcai-backup.py"
+    script = Path(__file__).resolve().parent / "abc-backup.py"
     kw = {"start_new_session": True} if os.name != "nt" else {"creationflags": 0x00000008}  # DETACHED_PROCESS
     subprocess.Popen([sys.executable, str(script), "quotidienne", "--if-needed"],
                      stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kw)
@@ -190,30 +190,34 @@ def backup():
 
 
 def other_sessions():
-    """Autres processus claude que celui-ci (sessions ouvertes avant ou hors BCAI)."""
+    """Autres processus Claude Code que celui-ci (sessions ouvertes avant ou hors ABC).
+    Claude Code tourne sous le nom agent (renommé par ABC) ou claude : les deux sont comptés
+    (un autre programme nommé agent, comme le CLI de Cursor, ne fait que retarder le rangement)."""
     import subprocess
     try:
         if os.name == "nt":
-            out = subprocess.run(["tasklist", "/FI", "IMAGENAME eq claude.exe", "/NH"],
-                                 capture_output=True, text=True, timeout=10).stdout
-            n = out.lower().count("claude.exe")
+            out = subprocess.run(["tasklist", "/NH", "/FO", "CSV"],
+                                 capture_output=True, text=True, timeout=10).stdout.lower()
+            n = out.count('"agent.exe"') + out.count('"claude.exe"')
         else:
-            n = len(subprocess.run(["pgrep", "-x", "claude"], capture_output=True, text=True, timeout=10).stdout.split())
+            n = sum(len(subprocess.run(["pgrep", "-x", name], capture_output=True, text=True, timeout=10).stdout.split())
+                    for name in ("agent", "claude"))
     except (OSError, subprocess.SubprocessError):
         return True   # dans le doute, ne déconnecter personne
     return n > 1
 
 
-def migrate_bci():
-    """Installation d'avant BCAI (better-claude-instance, backup-bci) : bcai-migrate.py, puis rangement.
+def migrate_old():
+    """Installation d'avant ABC (bcai ou better-claude-instance, backup-bcai ou backup-bci) : abc-migrate.py, puis rangement.
     Retourne (actions, autres sessions ou None si non calculé)."""
     root = AI / "2-tools"
-    if not (os.path.lexists(root / "3-software" / "better-claude-instance") or (root / "logs" / "backup-bci").exists()):
+    if not (any(os.path.lexists(root / "3-software" / n) for n in ("bcai", "better-claude-instance"))
+            or any((root / "logs" / n).exists() for n in ("backup-bcai", "backup-bci"))):
         return [], None
     others = other_sessions()
     import importlib.util
     sys.dont_write_bytecode = True   # rien d'écrit dans le dépôt
-    spec = importlib.util.spec_from_file_location("bcai_migrate", Path(__file__).resolve().parent / "bcai-migrate.py")
+    spec = importlib.util.spec_from_file_location("abc_migrate", Path(__file__).resolve().parent / "abc-migrate.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     # Réglages qui citaient l'ancien chemin au démarrage : cette session-ci appelle ses hooks par là
@@ -269,11 +273,11 @@ def handle(event):
         if src == "startup":
             others = None
             try:
-                lines, others = migrate_bci()
+                lines, others = migrate_old()
                 for line in lines:
-                    journal(f"{tag} migration BCI -> BCAI : {line}")
+                    journal(f"{tag} migration vers ABC : {line}")
             except Exception as e:   # la migration ne bloque jamais la session
-                journal(f"{tag} migration BCI -> BCAI : erreur : {short(e)}")
+                journal(f"{tag} migration vers ABC : erreur : {short(e)}")
             journal(f"{tag} sauvegarde : {backup()}")
             retired = retire_old(others)
             if retired:

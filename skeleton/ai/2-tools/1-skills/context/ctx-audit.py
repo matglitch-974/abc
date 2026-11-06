@@ -2,8 +2,8 @@
 """Audit du contexte chargé à chaque session : tokens par fichier, doublons, sections à sortir en skill.
 
 ctx-audit.py            estimation (2,3 octets par token : calibré sur Claude, texte français, 2026-11-03)
-ctx-audit.py --exact    mesure réelle : une session `claude -p` par fichier, comparée à une session vide
-                        (consomme un peu de quota ; modèle : BCAI_AUDIT_MODEL, haiku par défaut)
+ctx-audit.py --exact    mesure réelle : une session `agent -p` (ou `claude -p`) par fichier, comparée à une session vide
+                        (consomme un peu de quota ; modèle : ABC_AUDIT_MODEL, haiku par défaut)
 
 Chargé à chaque session : ~/ai/AGENTS.md et ses imports @ (récursifs), memory/realign.md (réinjecté),
 la ligne description de chaque skill.
@@ -11,15 +11,20 @@ la ligne description de chaque skill.
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-AI = Path(os.environ.get("BCAI_AI") or os.environ.get("BCI_AI") or Path.home() / "ai")   # BCAI_AI : autre racine (tests)
+AI = Path(os.environ.get("ABC_AI") or os.environ.get("BCAI_AI") or Path.home() / "ai")   # ABC_AI : autre racine (tests)
 BYTES_PER_TOKEN = 2.3
 SECTION_LIMIT = 300  # tokens : au-delà, une section est candidate à devenir un skill
-MODEL = os.environ.get("BCAI_AUDIT_MODEL") or os.environ.get("BCI_AUDIT_MODEL") or "haiku"
+MODEL = os.environ.get("ABC_AUDIT_MODEL") or os.environ.get("BCAI_AUDIT_MODEL") or "haiku"
+
+
+# Commande de Claude Code : agent (renommée par ABC), ou claude si gardée sous ce nom ; ABC_CLI force le choix.
+CLI = os.environ.get("ABC_CLI") or ("agent" if shutil.which("agent") else "claude")
 
 
 def imports(path, seen):
@@ -44,13 +49,13 @@ def exact_tokens(text, base=None):
     def run(body):
         with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False, encoding="utf-8") as f:
             f.write(body)
-        out = subprocess.run(["claude", "-p", "ok", "--system-prompt-file", f.name, "--tools", "",
+        out = subprocess.run([CLI, "-p", "ok", "--system-prompt-file", f.name, "--tools", "",
                               "--setting-sources", "", "--strict-mcp-config", "--model", MODEL,
                               "--output-format", "json"], capture_output=True, text=True, encoding="utf-8")
         Path(f.name).unlink(missing_ok=True)
         res = json.loads(out.stdout or "{}")
         if res.get("is_error") or not res.get("usage", {}).get("input_tokens"):
-            sys.exit(f"Mesure impossible : {res.get('result') or out.stderr.strip() or 'claude -p sans réponse'}")
+            sys.exit(f"Mesure impossible : {res.get('result') or out.stderr.strip() or f'{CLI} -p sans réponse'}")
         u = res["usage"]
         return u["input_tokens"] + u.get("cache_creation_input_tokens", 0) + u.get("cache_read_input_tokens", 0)
     return run(text) - (base if base is not None else run("."))
