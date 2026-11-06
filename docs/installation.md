@@ -67,7 +67,6 @@ Installée avec ABC (`~/.local/bin/abc` ; Windows : `abc.cmd` ; Termux : `$PREFI
 | Commande | Effet |
 |---|---|
 | `abc install` (ou `abc update`) | met à jour depuis GitHub puis réinstalle ; aucun fichier personnel écrasé |
-| `abc uninstall` | désinstalle, après deux confirmations (oui, puis le mot `desinstaller`) et un avertissement en rouge ; de même avant de supprimer `~/ai` ou `~/project` |
 | `abc status` | versions, `CLAUDE_CONFIG_DIR`, SearXNG, nombre de sauvegardes, restic |
 | `abc backup` / `abc backup list` | sauvegarde immédiate / liste |
 | `abc search "requête"` | recherche web (skill `search`) |
@@ -79,7 +78,7 @@ Installée avec ABC (`~/.local/bin/abc` ; Windows : `abc.cmd` ; Termux : `$PREFI
 ABC lance Claude Code sous le nom `agent` au lieu de `claude`. Ce n'est pas un alias ni un script enveloppe : l'installateur **renomme** la commande créée par l'installateur officiel (Windows : `~/.local/bin/claude.exe` devient `agent.exe` ; Linux : le lien `~/.local/bin/claude` devient `agent`). Windows permet de renommer un exécutable en cours d'exécution : une session ouverte continue de tourner.
 
 - **Garder `claude`** : installer avec `ABC_CLI=claude` (PowerShell : `$env:ABC_CLI='claude'` avant la commande d'installation). Un autre nom est possible de la même façon.
-- **Revenir à `claude`** après coup : renommer `~/.local/bin/agent.exe` (ou `agent`) en `claude.exe` (ou `claude`) ; `abc uninstall` le fait. Les scripts d'ABC prennent `agent` s'il existe, sinon `claude` ; `ABC_CLI` force le choix. Si un outil tweakcc est configuré (`~/.tweakcc/config.json`, `ccInstallationPath`), le remettre sur le nouveau chemin.
+- **Revenir à `claude`** après coup : renommer `~/.local/bin/agent.exe` (ou `agent`) en `claude.exe` (ou `claude`). Les scripts d'ABC prennent `agent` s'il existe, sinon `claude` ; `ABC_CLI` force le choix. Si un outil tweakcc est configuré (`~/.tweakcc/config.json`, `ccInstallationPath`), le remettre sur le nouveau chemin.
 - **Mise à jour ou réinstallation de Claude Code** : l'installateur officiel recrée `claude`. Relancer `abc install` : le `claude` neuf remplace l'ancien `agent`, rangé dans `~/ai/4-trash/`. Un patch tweakcc appliqué à l'ancien binaire est à rejouer (`node patch/apply-prompt-patch.mjs`, qui vise `agent`).
 
 **Conflit de nom connu** : le CLI de Cursor (`cursor-agent`) s'installe lui aussi sous le nom `agent` (Linux et macOS : `~/.local/bin/agent`). L'installateur vérifie que `agent --version` répond « Claude Code » avant de remplacer quoi que ce soit ; sinon il laisse `claude` et l'indique. Si les deux sont présents, le premier dans le `PATH` gagne : choisir un autre nom avec `ABC_CLI`.
@@ -103,7 +102,7 @@ Avant ABC, le projet s'appelait BCAI (dossier `3-software/bcai`, commande `bcai`
 5. `~/ai/AGENTS.md` et le skill `memory`, copiés du skeleton, reçoivent les nouveaux chemins (copie datée dans `backup-abc/reglages/` avant) ; les autres fichiers de `~/ai/memory`, `~/ai/0-persona` et des skills qui citent un ancien chemin sont seulement signalés.
 6. Au démarrage d'une session ultérieure, quand aucune autre session de Claude Code (`agent` ou `claude`) ne tourne, qu'aucun `settings.json` ne cite plus d'ancien chemin et que le lien a plus de 24 h, le [hook mémoire](memory-hook.md#migration-depuis-un-ancien-nom) supprime le lien (il ne contient rien) ou, si l'ancien dossier n'avait pas pu être renommé, range ce dossier dans `~/ai/4-trash/`. Le hook fait aussi lui-même la migration si l'installateur n'a pas pu aller au bout.
 
-Script : `hooks/abc-migrate.py` (`--check` : affiche ce qui reste à migrer, sans rien écrire). Les variables `BCAI_*` restent lues en repli pendant cette version ; les copies `*.bak-bcai` et `*.bak-bci` sont restaurées par la désinstallation comme les `*.bak-abc`.
+Script : `hooks/abc-migrate.py` (`--check` : affiche ce qui reste à migrer, sans rien écrire). Les variables `BCAI_*` restent lues en repli pendant cette version.
 
 ## Pourquoi pas npm
 L'installation par npm est dépréciée par Anthropic au profit de l'installateur natif, et npm n'est pas présent par défaut sous Windows.
@@ -111,6 +110,5 @@ L'installation par npm est dépréciée par Anthropic au profit de l'installateu
 ## Pourquoi Alpine sous Android
 Claude Code ne fournit pas de binaire pour Android. Il fournit en revanche un binaire `linux-arm64-musl`, qui fonctionne dans Alpine Linux lancé par `proot-distro`. Alpine est retenue pour sa légèreté (Ubuntu est trop lourde pour un téléphone). Sous Termux, la commande `agent` est un alias qui entre dans Alpine et y lance Claude Code.
 
-## Désinstallation et dépannage
-- [Désinstallation](uninstall.md)
+## Dépannage
 - [Dépannage](troubleshooting.md)

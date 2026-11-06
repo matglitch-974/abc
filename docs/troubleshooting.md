@@ -55,9 +55,3 @@ Corriger : redéfinir la variable avec le jeton exact, ouvrir un nouveau termina
 | `apk: command not found` | commande tapée dans Termux au lieu d'Alpine | utiliser l'alias `agent`, ou `proot-distro login alpine` |
 | `~/.local/bin is not in your PATH` | session ouverte avant l'installation | ouvrir un nouveau terminal (ou `. ~/.profile`) |
 | recherche de fichiers en échec sous Alpine | ripgrep intégré compilé pour glibc | `USE_BUILTIN_RIPGREP=0`, ajouté automatiquement |
-
-## Désinstallation
-
-| Symptôme | Cause | Solution |
-|---|---|---|
-| La configuration n'est pas remise dans `~/.claude` | `~/.claude` existe déjà | voir [uninstall.md](uninstall.md#si-claude-existe-déjà) |

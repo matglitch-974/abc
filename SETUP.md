@@ -1,6 +1,6 @@
 # SETUP.md — guide d'installation pour un agent Claude Code
 
-Ce fichier s'adresse à **l'agent** (Claude Code) à qui l'utilisateur demande, en n'importe quels termes, d'installer, d'adapter, de mettre à jour ou de désinstaller ABC. Un humain peut le lire, mais il est écrit pour être exécuté.
+Ce fichier s'adresse à **l'agent** (Claude Code) à qui l'utilisateur demande, en n'importe quels termes, d'installer, d'adapter ou de mettre à jour ABC. Un humain peut le lire, mais il est écrit pour être exécuté.
 
 Pourquoi passer par un agent : chaque instance de Claude Code est différente (`CLAUDE.md`, skills, agents, réglages, hooks, serveurs MCP, mémoire). L'installateur applique une recette fixe ; toi, tu peux voir ce qui existe déjà et adapter l'import.
 
@@ -101,6 +101,3 @@ Ta session a démarré avant l'installation : elle lit encore l'ancienne configu
 `abc install` (ou `abc update`) : `git pull` du dépôt puis réinstallation ; rien de personnel n'est écrasé. Après une mise à jour, relis le diff du dépôt et signale ce qui change pour l'utilisateur.
 
 Installation d'avant le renommage en ABC (dossier `~/ai/2-tools/3-software/bcai` ou `better-claude-instance`, commande `bcai` ou `bci`) : la commande d'installation la migre ([docs/installation.md](docs/installation.md#mise-à-jour-dune-installation-bcai-ou-bci)). Ensuite, `python3 ~/ai/2-tools/3-software/abc/hooks/abc-migrate.py --check` (Windows : `python`) liste ce qui reste à migrer, dont les fichiers de mémoire, de personas ou de skills qui citent encore l'ancien chemin : propose leur correction à l'utilisateur, ne la fais pas sans son accord.
-
-## Désinstallation
-La désinstallation demande deux confirmations tapées au clavier, puis deux autres avant chaque suppression : **l'utilisateur la lance lui-même** (`abc uninstall`). Tu peux lui expliquer ce qu'elle fait ([docs/uninstall.md](docs/uninstall.md)) et, s'il le demande, préparer les étapes réversibles à la main (remettre la configuration dans `~/.claude`, retirer `CLAUDE_CONFIG_DIR`, restaurer les `*.bak-abc`, retirer les réglages ajoutés). La suppression de `~/ai` et `~/project` n'est jamais de ton ressort.

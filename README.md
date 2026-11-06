@@ -11,7 +11,7 @@ Vous y gagnez une mémoire écrite au fil de l'eau, des personas à choisir d'un
 > ABC fonctionne sous Windows 10 / 11, Linux et Android (Termux). Il n'est pas conçu pour l'environnement Apple : ni macOS, ni iPhone, ni iPad.
 
 > [!IMPORTANT]
-> **Claude Code se lance avec `agent`, plus avec `claude`.** L'installateur renomme la commande de Claude Code (`~/.local/bin/claude.exe` devient `agent.exe` ; sous Linux, le lien `~/.local/bin/claude` devient `agent`) : vous tapez `agent`, `agent --resume`, `agent -p "…"`, etc. Pour garder `claude`, lancez l'installation avec `ABC_CLI=claude` ; pour y revenir après coup, renommez `agent` en `claude` au même endroit (`abc uninstall` le fait aussi). Conflit connu : le CLI de Cursor s'installe lui aussi sous le nom `agent` ; l'installateur ne touche jamais un `agent` qui n'est pas Claude Code et garde alors `claude`. Détails et limites (mises à jour, `claude doctor`, messages qui citent encore `claude`) : [la commande agent](docs/installation.md#commande-agent).
+> **Claude Code se lance avec `agent`, plus avec `claude`.** L'installateur renomme la commande de Claude Code (`~/.local/bin/claude.exe` devient `agent.exe` ; sous Linux, le lien `~/.local/bin/claude` devient `agent`) : vous tapez `agent`, `agent --resume`, `agent -p "…"`, etc. Pour garder `claude`, lancez l'installation avec `ABC_CLI=claude` ; pour y revenir après coup, renommez `agent` en `claude` au même endroit. Conflit connu : le CLI de Cursor s'installe lui aussi sous le nom `agent` ; l'installateur ne touche jamais un `agent` qui n'est pas Claude Code et garde alors `claude`. Détails et limites (mises à jour, `claude doctor`, messages qui citent encore `claude`) : [la commande agent](docs/installation.md#commande-agent).
 
 ## Utilisation
 
@@ -91,16 +91,12 @@ Tout se pilote avec la commande `abc` :
 | `abc search "requête"` | recherche web locale, sans clé |
 | `abc keys open` / `close` | ouvre ou referme le coffre chiffré de vos clés |
 | `abc import` | réimporte vos skills, agents, secrets ou autres LLM (sans doublon) |
-| `abc uninstall` | désinstalle, après deux confirmations |
 
 Installé sous un ancien nom (BCAI, ou BCI avant lui) ? Relancez la commande d'installation ci-dessus (les anciennes adresses `…/bc.ps1` et `…/bc` mènent au même installateur) : dossier, sauvegardes, réglages et commandes sont migrés tout seuls ; le démarrage d'une session le fait aussi. La commande `bcai` affiche ensuite un renvoi vers `abc` pendant cette version, puis disparaîtra ([détail](docs/installation.md#mise-à-jour-dune-installation-bcai-ou-bci)).
 
 ## Fonctionnalités
 
 Voici ce qu'ABC apporte à votre Claude Code. Chaque point renvoie à la documentation pour le détail.
-
-> [!TIP]
-> `abc uninstall` remet l'essentiel en place : votre configuration revient dans `~/.claude`, et `~/ai` et `~/project` ne sont touchés que si vous le demandez, avec un mot de confirmation à taper en entier. Ce n'est pas un retour complet en arrière : les MCP `duckduckgo` et `brave` retirés à l'installation ne sont pas restaurés, les MCP ajoutés (`fetch`, `searxng`, `playwright`, `scrapling`) restent déclarés, et toutes les entrées `Agent(…)` de `permissions.deny` sont retirées, y compris les vôtres. Voir [la désinstallation](docs/uninstall.md).
 
 #### Un seul dossier pour l'IA
 
@@ -182,7 +178,6 @@ Le détail de chaque dossier est dans [l'architecture](docs/architecture.md).
 - [Projets](docs/projects.md) : hiérarchie, `sensible/`, protections
 - [Espace de travail](docs/workspace.md) : secteurs de `1-bench`, corbeille
 - [Missions et recherche web](docs/missions.md) : reconnaissance d'outils, SearXNG, scraping
-- [Désinstallation](docs/uninstall.md)
 - [Dépannage](docs/troubleshooting.md)
 - [Nommage et langue](docs/naming.md)
 - [Feuille de route](docs/roadmap.md)

@@ -78,7 +78,6 @@ abc/
 ├── ABC-install-<version>.sh, .ps1  installation Linux / Android, Windows (nom versionné)
 ├── install.sh, install.ps1      anciens points d'entrée (BCAI), renvois vers l'installateur versionné
 ├── publish.sh                   publication : installateurs renommés, liens courts du dépôt Pages
-├── uninstall.sh, uninstall.ps1  désinstallation
 ├── bootstrap.sh                 création de ~/ai et ~/project (Linux)
 ├── bin/abc, abc.ps1, abc.cmd  commande abc
 ├── bin/bcai, bcai.cmd           ancien nom de la commande (obsolète, version 0.4), appelle abc

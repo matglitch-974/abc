@@ -2,7 +2,7 @@
 
 Ce que fait chaque script, tel qu'il est écrit. Le dépôt est cloné dans `~/ai/2-tools/3-software/abc/` ; les scripts de `skeleton/` sont copiés dans `~/ai` (jamais par-dessus un fichier existant).
 
-## Installation et désinstallation (racine du dépôt)
+## Installation (racine du dépôt)
 
 ### `ABC-install-<version>.ps1` (Windows 10 / 11)
 1. Installe ce qui manque : Git (winget ; sans winget, arrêt avec un message), uv (winget, sinon script officiel d'Astral), Python 3.13 (winget, sinon `uv python install`), Claude Code (installateur officiel `claude.ai/install.ps1`).
@@ -28,11 +28,8 @@ Même déroulé que les étapes 3 à 10 de `ABC-install-<version>.ps1`, avec ces
 - la fusion de `settings.json` exige `jq` ; sans lui, le fichier existant n'est pas modifié (avertissement) ; fusion qui change le fichier : copie datée dans `backup-abc/reglages/` d'abord ;
 - `abc` est un lien `~/.local/bin/abc` → `bin/abc` ; un ancien lien `~/.local/bin/bcai` est repointé vers le renvoi `bin/bcai`, `~/.local/bin/bci` est rangé (`abc-migrate.py`) ; uv est installé par le script officiel s'il manque.
 
-### `uninstall.sh`, `uninstall.ps1`
-Voir [uninstall.md](uninstall.md).
-
 ## Commande `abc` (`bin/`)
-`bin/abc` (sh), `bin/abc.ps1` appelé par `bin/abc.cmd` (Windows). `bin/bcai`, `bin/bcai.cmd` : ancien nom, obsolète, gardé pendant la version 0.4 (avertissement, puis `abc` avec les mêmes arguments). Sous-commandes : `install` / `update`, `uninstall`, `status`, `backup [list]`, `search`, `keys open|close|status`, `import [skills|agents|secrets|llm]`, `version`. Voir [installation.md](installation.md#commande-abc).
+`bin/abc` (sh), `bin/abc.ps1` appelé par `bin/abc.cmd` (Windows). `bin/bcai`, `bin/bcai.cmd` : ancien nom, obsolète, gardé pendant la version 0.4 (avertissement, puis `abc` avec les mêmes arguments). Sous-commandes : `install` / `update`, `status`, `backup [list]`, `search`, `keys open|close|status`, `import [skills|agents|secrets|llm]`, `version`. Voir [installation.md](installation.md#commande-abc).
 
 ## Hooks et outils (`hooks/`)
 
